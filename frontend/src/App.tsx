@@ -121,7 +121,7 @@ function App() {
                 const isPlayable = me?.tiles.some(t => t.id === cellId);
                 let tileIcon = null;
                 
-                if (isPlayable && gameState.phase === 'PlayTile') {
+                if (isPlayable) {
                   const neighbors = [];
                   if (rIdx > 0) neighbors.push(gameState.board[rIdx - 1][cIdx]);
                   if (rIdx < 8) neighbors.push(gameState.board[rIdx + 1][cIdx]);
