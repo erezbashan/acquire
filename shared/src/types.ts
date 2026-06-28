@@ -73,6 +73,7 @@ export interface GameState {
     playerId: string;
     tileId: TileId;
     availableCorps: Corporation[];
+    size: number;
   };
 }
 

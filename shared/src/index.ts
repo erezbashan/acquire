@@ -11,5 +11,6 @@ export {
   calculateNetWorth,
   getPlayerFinancials,
   resolveMergeStocks,
+  getStockPrice,
   type PlayerFinancials
 } from './engine';

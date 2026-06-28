@@ -136,11 +136,14 @@ export function playTile(state: GameState, playerId: string, tileId: TileId): Ga
     // Founding a corporation
     const availableCorps = CORPORATIONS.filter(c => !newState.corporations[c].isActive);
     if (availableCorps.length > 0) {
+      const { count } = fillCorporation(newBoard.map(r => [...r]), tile.row, tile.col, availableCorps[0]);
+      
       newState.phase = 'FoundCorporation';
       newState.pendingFounding = {
         playerId,
         tileId,
-        availableCorps
+        availableCorps,
+        size: count
       };
       newState.logs.push(`${player.name} is founding a corporation...`);
       return newState; // Do not auto-end turn yet
@@ -243,7 +246,7 @@ export function playTile(state: GameState, playerId: string, tileId: TileId): Ga
         for (const h of majorityHolders) {
           const pIndex = newPlayers.findIndex(p => p.id === h.id);
           newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + majorityPayout };
-          newState.logs.push(`${newPlayers[pIndex].name} gets majority bonus for ${dCorp} ($${majorityPayout}).`);
+          newState.logs.push(`${newPlayers[pIndex].name} gets majority bonus for ${dCorp} ($${majorityPayout.toLocaleString()}).`);
         }
 
         if (majorityHolders.length === 1 && minorityHolders.length > 0) {
@@ -251,7 +254,7 @@ export function playTile(state: GameState, playerId: string, tileId: TileId): Ga
           for (const h of minorityHolders) {
             const pIndex = newPlayers.findIndex(p => p.id === h.id);
             newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + minorityPayout };
-            newState.logs.push(`${newPlayers[pIndex].name} gets minority bonus for ${dCorp} ($${minorityPayout}).`);
+            newState.logs.push(`${newPlayers[pIndex].name} gets minority bonus for ${dCorp} ($${minorityPayout.toLocaleString()}).`);
           }
         }
       }
@@ -492,7 +495,7 @@ function getAdjacentCells(board: BoardCell[][], row: number, col: number) {
   return neighbors;
 }
 
-function getStockPrice(corpName: Corporation, size: number): number {
+export function getStockPrice(corpName: Corporation, size: number): number {
   if (size < 2) return 0;
   
   let basePrice = 200;
@@ -612,7 +615,7 @@ export function endTurn(state: GameState): GameState {
     
     if (leader.id === cp.id) {
       newState.phase = 'GameOver';
-      newState.logs.push(`Game Over! ${cp.name} ends the game and wins with a net worth of $${getPlayerFinancials(newState, cp.id).netWorth}!`);
+      newState.logs.push(`Game Over! ${cp.name} ends the game and wins with a net worth of $${getPlayerFinancials(newState, cp.id).netWorth.toLocaleString()}!`);
       return newState;
     }
   }

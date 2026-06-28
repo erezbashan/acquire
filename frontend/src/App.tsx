@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSocket } from './SocketContext';
-import { calculateNetWorth, getPlayerFinancials } from '@acquire/shared';
+import { calculateNetWorth, getPlayerFinancials, getStockPrice } from '@acquire/shared';
 import './App.css';
 
 function App() {
@@ -171,11 +171,40 @@ function App() {
               <thead>
                 <tr>
                   <th>Category</th>
-                  {gameState.players.map(p => (
-                    <th key={p.id} className={p.id === me?.id ? 'me-col' : (p.id === activePlayerId ? 'active-player-col' : '')}>
-                      {p.name.substring(0, 5)} {p.id === me?.id ? '(Me)' : ''}
-                    </th>
-                  ))}
+                  {(() => {
+                    const playerFin = gameState.players.map(p => ({
+                      id: p.id,
+                      netWorth: getPlayerFinancials(gameState, p.id).netWorth
+                    }));
+                    
+                    playerFin.sort((a, b) => b.netWorth - a.netWorth);
+                    const ranks = new Map<string, number>();
+                    let currentRank = 1;
+                    let currentScore = -1;
+                    playerFin.forEach((p, index) => {
+                      if (p.netWorth !== currentScore) {
+                        currentRank = index + 1;
+                        currentScore = p.netWorth;
+                      }
+                      ranks.set(p.id, currentRank);
+                    });
+
+                    return gameState.players.map(p => {
+                      const netWorth = getPlayerFinancials(gameState, p.id).netWorth;
+                      const rank = netWorth > 6000 ? ranks.get(p.id) : null;
+                      
+                      let medal = '';
+                      if (rank === 1) medal = '🥇 ';
+                      else if (rank === 2 && gameState.players.length > 2) medal = '🥈 ';
+                      else if (rank === 3 && gameState.players.length > 3) medal = '🥉 ';
+
+                      return (
+                        <th key={p.id} className={p.id === me?.id ? 'me-col' : (p.id === activePlayerId ? 'active-player-col' : '')}>
+                          {medal}{p.name.substring(0, 5)} {p.id === me?.id ? '(Me)' : ''}
+                        </th>
+                      );
+                    });
+                  })()}
                   <th></th>
                   <th></th>
                 </tr>
@@ -185,7 +214,7 @@ function App() {
                   <td>Cash</td>
                   {gameState.players.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
-                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>${fin.cash}</td>;
+                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>${fin.cash.toLocaleString()}</td>;
                   })}
                   <td style={{ border: 'none' }}></td>
                   <td style={{ border: 'none' }}></td>
@@ -194,7 +223,7 @@ function App() {
                   <td>Bonus</td>
                   {gameState.players.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
-                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>${fin.bonusValue}</td>;
+                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>${fin.bonusValue.toLocaleString()}</td>;
                   })}
                   <td style={{ border: 'none' }}></td>
                   <td style={{ border: 'none' }}></td>
@@ -203,7 +232,7 @@ function App() {
                   <td>Stocks Val</td>
                   {gameState.players.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
-                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>${fin.stockValue}</td>;
+                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>${fin.stockValue.toLocaleString()}</td>;
                   })}
                   <td style={{ border: 'none' }}></td>
                   <td style={{ border: 'none' }}></td>
@@ -212,7 +241,7 @@ function App() {
                   <td>Net Worth</td>
                   {gameState.players.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
-                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right', fontWeight: 'bold' }}>${fin.netWorth}</td>;
+                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right', fontWeight: 'bold' }}>${fin.netWorth.toLocaleString()}</td>;
                   })}
                   <td style={{ border: 'none' }}></td>
                   <td style={{ border: 'none' }}></td>
@@ -251,7 +280,7 @@ function App() {
                       })}
                       <td style={{ textAlign: 'right' }}>{cState.isActive ? cState.availableStocks : '-'}</td>
                       <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-                        {cState.isActive ? `$${cState.stockPrice}` : '-'}
+                        {cState.isActive ? `$${cState.stockPrice.toLocaleString()}` : '-'}
                       </td>
                       <td>
                         <button 
@@ -278,14 +307,40 @@ function App() {
 
           {me && (
             <>
-              {isMyTurn && gameState.phase === 'FoundCorporation' && gameState.pendingFounding?.playerId === me.id && (
-                <div className="founding-panel glass" style={{ padding: '1rem' }}>
-                  <h4>Found a Corporation</h4>
-                  <p>Choose a corporation to found:</p>
-                  <div className="corp-list">
-                    {gameState.pendingFounding.availableCorps.map(c => (
-                      <button key={c} onClick={() => foundCorporation(gameState.id, c)}>{c}</button>
-                    ))}
+              {gameState.phase === 'FoundCorporation' && gameState.pendingFounding?.playerId === socket?.id && (
+                <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+                  <div className="modal-content glass" style={{ padding: '2rem', minWidth: '300px', textAlign: 'center' }}>
+                    <h3>Found a Corporation</h3>
+                    <p style={{ marginBottom: '1.5rem' }}>Choose a corporation to found:</p>
+                    <div className="corp-options">
+                      {(() => {
+                        const size = gameState.pendingFounding.size || 2;
+                        const prices = new Map<number, string[]>();
+                        
+                        gameState.pendingFounding.availableCorps.forEach(c => {
+                          const price = getStockPrice(c, size);
+                          if (!prices.has(price)) prices.set(price, []);
+                          prices.get(price)!.push(c);
+                        });
+
+                        return Array.from(prices.entries())
+                          .sort((a, b) => a[0] - b[0])
+                          .map(([price, corps]) => (
+                            <div key={price} style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                              <strong style={{ width: '60px', textAlign: 'right' }}>${price.toLocaleString()}:</strong>
+                              {corps.map(c => (
+                                <button 
+                                  key={c} 
+                                  className={`tile-btn ${c.toLowerCase()}`} 
+                                  onClick={() => socket.emit('foundCorporation', { gameId: gameState.id, corpName: c })}
+                                >
+                                  {c}
+                                </button>
+                              ))}
+                            </div>
+                          ));
+                      })()}
+                    </div>
                   </div>
                 </div>
               )}
@@ -301,7 +356,7 @@ function App() {
                       <table style={{ width: '100%', textAlign: 'center', borderSpacing: '0 10px' }}>
                         <tbody>
                           <tr>
-                            <td style={{ textAlign: 'left' }}>Trade 2 (${gameState.corporations[dCorp].stockPrice}) for 1 (${gameState.corporations[aCorp].stockPrice})</td>
+                            <td style={{ textAlign: 'left' }}>Trade 2 (${gameState.corporations[dCorp].stockPrice.toLocaleString()}) for 1 (${gameState.corporations[aCorp].stockPrice.toLocaleString()})</td>
                             <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                               <button disabled={tradeCount <= 0} onClick={() => setTradeCount(t => t - 2)} style={{ width: '30px' }}>-</button>
                               <span style={{ margin: '0 15px', display: 'inline-block', width: '20px', textAlign: 'center' }}>{tradeCount}</span>
@@ -313,7 +368,7 @@ function App() {
                             </td>
                           </tr>
                           <tr>
-                            <td style={{ textAlign: 'left' }}>Sell (@ ${gameState.corporations[dCorp].stockPrice})</td>
+                            <td style={{ textAlign: 'left' }}>Sell (@ ${gameState.corporations[dCorp].stockPrice.toLocaleString()})</td>
                             <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                               <button disabled={sellCount <= 0} onClick={() => setSellCount(s => s - 1)} style={{ width: '30px' }}>-</button>
                               <span style={{ margin: '0 15px', display: 'inline-block', width: '20px', textAlign: 'center' }}>{sellCount}</span>
@@ -362,9 +417,9 @@ function App() {
                     <tr><th>Size</th><td>{gameState.corporations[selectedCorp].size} tiles {gameState.corporations[selectedCorp].isSafe ? '🛡️ (Safe)' : ''}</td></tr>
                     {gameState.corporations[selectedCorp].isActive && (
                       <>
-                        <tr><th>Stock Price</th><td>${gameState.corporations[selectedCorp].stockPrice}</td></tr>
-                        <tr><th>Majority Bonus</th><td>${gameState.corporations[selectedCorp].majorityBonus}</td></tr>
-                        <tr><th>Minority Bonus</th><td>${gameState.corporations[selectedCorp].minorityBonus}</td></tr>
+                        <tr><th>Stock Price</th><td>${gameState.corporations[selectedCorp].stockPrice.toLocaleString()}</td></tr>
+                        <tr><th>Majority Bonus</th><td>${gameState.corporations[selectedCorp].majorityBonus.toLocaleString()}</td></tr>
+                        <tr><th>Minority Bonus</th><td>${gameState.corporations[selectedCorp].minorityBonus.toLocaleString()}</td></tr>
                         <tr><th>Available Stocks</th><td>{gameState.corporations[selectedCorp].availableStocks}</td></tr>
                       </>
                     )}
