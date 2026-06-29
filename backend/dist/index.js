@@ -17,7 +17,7 @@ const io = new socket_io_1.Server(httpServer, {
     }
 });
 const games = {};
-const PLAYER_COLORS = ['#f97316', '#9333ea', '#84cc16', '#14b8a6', '#d97706', '#475569'];
+const PLAYER_COLORS = ['#FF3366', '#33CCFF', '#FFCC00', '#00FF66', '#CC99FF', '#FF9933', '#FFFFFF', '#FF66B2', '#99CC00', '#6699FF'];
 function generateGameId() {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
