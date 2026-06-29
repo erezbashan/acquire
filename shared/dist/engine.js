@@ -160,7 +160,7 @@ function playTile(state, playerId, tileId) {
             ...newState.corporations[corp],
             size: newState.corporations[corp].size + count
         };
-        newState.logs.push(`${corp} grows by ${count} tile(s).`);
+        // Removed "grows by" log
     }
     else if (adjacentCorps.length > 1) {
         // Merger
@@ -248,12 +248,14 @@ function chooseMergeSurvivor(state, playerId, survivorName) {
 function applyMerger(state, tile, survivorName, defunctCorps) {
     let newState = { ...state };
     newState.pendingSurvivorChoice = undefined;
-    newState.logs.push(`Merger! ${survivorName} takes over ${defunctCorps.join(', ')}.`);
+    newState.logs.push(`Merger! ${survivorName} takes over ${defunctCorps.join(', ')}`);
     const newBoard = newState.board.map(row => [...row]);
+    const defunctTiles = [];
     // 1. Convert the played tile and all defunct tiles to survivor
     for (let r = 0; r < 9; r++) {
         for (let c = 0; c < 12; c++) {
             if (newBoard[r][c] !== null && defunctCorps.includes(newBoard[r][c])) {
+                defunctTiles.push({ row: r, col: c, corp: newBoard[r][c] });
                 newBoard[r][c] = 'Unincorporated'; // temporarily make them unincorporated
             }
         }
@@ -297,7 +299,7 @@ function applyMerger(state, tile, survivorName, defunctCorps) {
                         money: newPlayers[pIndex].money + totalPayout,
                         stats: { ...newPlayers[pIndex].stats, firstBonuses: newPlayers[pIndex].stats.firstBonuses + 1, secondBonuses: newPlayers[pIndex].stats.secondBonuses + 1 }
                     };
-                    newState.logs.push(`${newPlayers[pIndex].name} gets majority and minority bonus for ${dCorp} ($${totalPayout.toLocaleString()}).`);
+                    newState.logs.push(`${newPlayers[pIndex].name} gets bonus for ${dCorp} ($${totalPayout.toLocaleString()})`);
                 }
             }
             else {
@@ -309,7 +311,7 @@ function applyMerger(state, tile, survivorName, defunctCorps) {
                         money: newPlayers[pIndex].money + majorityPayout,
                         stats: { ...newPlayers[pIndex].stats, firstBonuses: newPlayers[pIndex].stats.firstBonuses + 1 }
                     };
-                    newState.logs.push(`${newPlayers[pIndex].name} gets majority bonus for ${dCorp} ($${majorityPayout.toLocaleString()}).`);
+                    newState.logs.push(`${newPlayers[pIndex].name} gets bonus for ${dCorp} ($${majorityPayout.toLocaleString()})`);
                 }
                 if (majorityHolders.length === 1 && minorityHolders.length > 0) {
                     const minorityPayout = Math.floor(corpState.minorityBonus / minorityHolders.length);
@@ -320,7 +322,7 @@ function applyMerger(state, tile, survivorName, defunctCorps) {
                             money: newPlayers[pIndex].money + minorityPayout,
                             stats: { ...newPlayers[pIndex].stats, secondBonuses: newPlayers[pIndex].stats.secondBonuses + 1 }
                         };
-                        newState.logs.push(`${newPlayers[pIndex].name} gets minority bonus for ${dCorp} ($${minorityPayout.toLocaleString()}).`);
+                        newState.logs.push(`${newPlayers[pIndex].name} gets bonus for ${dCorp} ($${minorityPayout.toLocaleString()})`);
                     }
                 }
             }
@@ -335,7 +337,8 @@ function applyMerger(state, tile, survivorName, defunctCorps) {
         defunct: defunctCorps,
         currentDefunctIndex: 0,
         playerResolutionIndex: newState.currentPlayerIndex,
-        playersResolved: []
+        playersResolved: [],
+        defunctTiles
     };
     return advanceMergeState(newState);
 }
@@ -357,12 +360,9 @@ function resolveMergeStocks(state, playerId, sellCount, tradeCount, keepCount) {
     let newState = { ...state, players: [...state.players], corporations: { ...state.corporations } };
     // Trade logic: 2 defunct for 1 acquirer
     const tradedAcquirerStocks = Math.floor(tradeCount / 2);
-    const actualTraded = tradedAcquirerStocks * 2;
     const acquirerAvailable = newState.corporations[aCorp].availableStocks;
     const finalTradedAcquirerStocks = Math.min(tradedAcquirerStocks, acquirerAvailable);
     const finalTradedDefunct = finalTradedAcquirerStocks * 2;
-    // What happens to leftover if they tried to trade but not enough acquirer stocks?
-    // Usually they have to just keep or sell. We'll enforce the UI to not allow invalid trades.
     // Sell logic
     const sellPayout = sellCount * newState.corporations[dCorp].stockPrice;
     newState.players[pIndex] = {
@@ -442,9 +442,6 @@ function foundCorporation(state, playerId, corpName) {
     if (state.phase !== 'FoundCorporation' || !state.pendingFounding || state.pendingFounding.playerId !== playerId) {
         return state;
     }
-    const tile = state.availableTiles.find(t => t.id === state.pendingFounding.tileId) ||
-        // hack to get row/col from tileId if not in availableTiles
-        { row: parseInt(state.pendingFounding.tileId[0]) - 1, col: state.pendingFounding.tileId.charCodeAt(1) - 65 };
     // Actually we can just find it on the board
     let row = -1, col = -1;
     for (let r = 0; r < BOARD_ROWS; r++) {
@@ -658,10 +655,10 @@ function endTurn(state) {
             ...cp,
             tiles: [...cp.tiles, drawnTile]
         };
-        newState.logs.push(`${cp.name} ends turn and draws a tile. ---`);
+        newState.logs.push(`---`);
     }
     else {
-        newState.logs.push(`${cp.name} ends turn (no tiles left). ---`);
+        newState.logs.push(`---`);
     }
     let nextPlayerIndex = (newState.currentPlayerIndex + 1) % newState.players.length;
     // Discard unplayable tiles for the next player
@@ -672,7 +669,7 @@ function endTurn(state) {
         if (unplayableIndex === -1)
             break;
         // Discard it
-        const discardedTile = np.tiles[unplayableIndex];
+        np.tiles.splice(unplayableIndex, 1);
         let newTiles = np.tiles.filter((_, i) => i !== unplayableIndex);
         // Draw a new one
         if (newState.availableTiles.length > 0) {
@@ -686,7 +683,7 @@ function endTurn(state) {
     }
     if (discardedCount > 0) {
         newState.players[nextPlayerIndex] = np;
-        newState.logs.push(`${np.name} automatically discarded ${discardedCount} unplayable tile(s) and drew replacements.`);
+        newState.logs.push(`${np.name} automatically discarded ${discardedCount} unplayable tile(s) and drew replacements`);
     }
     // Record history
     const netWorths = {};

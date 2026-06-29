@@ -1,4 +1,4 @@
-import { BoardCell, Corporation, GameState, Player, Tile, TileId } from './types';
+import type { BoardCell, Corporation, GameState, Player, Tile, TileId } from './types';
 export declare const CORPORATIONS: Corporation[];
 export declare function createInitialTiles(): Tile[];
 export declare function createInitialGameState(id: string): GameState;

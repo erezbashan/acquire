@@ -76,6 +76,7 @@ export interface GameState {
     currentDefunctIndex: number;
     playerResolutionIndex: number; // Which player is currently resolving their stocks
     playersResolved: string[]; // Players who have resolved this defunct corp
+    defunctTiles: { row: number, col: number, corp: Corporation }[];
   };
 
   // Pending state for survivor choice

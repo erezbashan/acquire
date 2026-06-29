@@ -264,11 +264,13 @@ function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, de
   newState.logs.push(`Merger! ${survivorName} takes over ${defunctCorps.join(', ')}`);
 
   const newBoard = newState.board.map(row => [...row]);
+  const defunctTiles: { row: number, col: number, corp: Corporation }[] = [];
 
   // 1. Convert the played tile and all defunct tiles to survivor
   for (let r = 0; r < 9; r++) {
     for (let c = 0; c < 12; c++) {
       if (newBoard[r][c] !== null && defunctCorps.includes(newBoard[r][c] as Corporation)) {
+        defunctTiles.push({ row: r, col: c, corp: newBoard[r][c] as Corporation });
         newBoard[r][c] = 'Unincorporated'; // temporarily make them unincorporated
       }
     }
@@ -360,7 +362,8 @@ function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, de
     defunct: defunctCorps,
     currentDefunctIndex: 0,
     playerResolutionIndex: newState.currentPlayerIndex,
-    playersResolved: []
+    playersResolved: [],
+    defunctTiles
   };
   
   return advanceMergeState(newState);

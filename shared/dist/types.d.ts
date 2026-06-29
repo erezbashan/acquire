@@ -55,6 +55,11 @@ export interface GameState {
         currentDefunctIndex: number;
         playerResolutionIndex: number;
         playersResolved: string[];
+        defunctTiles: {
+            row: number;
+            col: number;
+            corp: Corporation;
+        }[];
     };
     pendingSurvivorChoice?: {
         playerId: string;

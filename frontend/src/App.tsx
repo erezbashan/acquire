@@ -229,10 +229,22 @@ function App() {
                   }
                 }
                 
+                let renderedCell = cell;
+                let isDefunct = false;
+                
+                if (gameState.phase === 'MergeResolution' && gameState.pendingMerge?.defunctTiles) {
+                  const defunct = gameState.pendingMerge.defunctTiles.find(t => t.row === rIdx && t.col === cIdx);
+                  if (defunct) {
+                    renderedCell = defunct.corp;
+                    isDefunct = true;
+                  }
+                }
+                
                 return (
                   <div 
                     key={cIdx} 
-                    className={`board-cell ${cell ? cell.toLowerCase() : ''} ${isPlayable ? 'playable' : ''}`}
+                    className={`board-cell ${renderedCell ? renderedCell.toLowerCase() : ''} ${isPlayable ? 'playable' : ''}`}
+                    style={{ opacity: isDefunct ? 0.6 : 1, filter: isDefunct ? 'grayscale(0.3)' : 'none' }}
                     onClick={() => {
                       if (isPlayable && tileIcon !== '🚫' && isMyTurn && gameState.phase === 'PlayTile') {
                         playTile(gameState.id, cellId);
@@ -240,7 +252,7 @@ function App() {
                     }}
                   >
                     <span className="cell-label" style={{ zIndex: 1, position: 'relative' }}>{rIdx + 1}{String.fromCharCode(65 + cIdx)}</span>
-                    {cell && cell !== 'Unincorporated' && <span className="cell-corp">{cell}</span>}
+                    {renderedCell && renderedCell !== 'Unincorporated' && <span className="cell-corp">{renderedCell}</span>}
                     {isPlayable && tileIcon && (
                       <div className="tile-icon-bg" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '3rem', opacity: 0.25, zIndex: 0 }}>
                         {tileIcon}
