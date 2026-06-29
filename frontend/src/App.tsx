@@ -169,13 +169,12 @@ function App() {
     <div className="game-container">
       <header className="glass">
         <div className="status" style={{ display: 'flex', alignItems: 'center' }}>
-          Phase: {gameState.phase}
           {gameState.phase === 'GameOver' && !showGameOver && (
-            <button onClick={() => setShowGameOver(true)} style={{ marginLeft: '1rem', background: 'var(--primary)', color: 'white', padding: '4px 12px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+            <button onClick={() => setShowGameOver(true)} style={{ marginLeft: '1rem', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
               Show Final Results
             </button>
           )}
-          {gameState.phase !== 'Lobby' && (
+          {gameState.phase !== 'Lobby' && gameState.phase !== 'GameOver' && (
             <span style={{ 
               marginLeft: '1rem', 
               padding: '4px 12px',
