@@ -548,14 +548,6 @@ function App() {
                 >
                   &times;
                 </button>
-                <h1 style={{ fontSize: '2rem', margin: '0 0 0.5rem 0', color: 'var(--primary)' }}>Game Over!</h1>
-                <h2 style={{ fontSize: '1.5rem', margin: '0 0 1rem 0' }}>
-                  {(() => {
-                    const sorted = [...gameState.players].sort((a, b) => getPlayerFinancials(gameState, b.id).netWorth - getPlayerFinancials(gameState, a.id).netWorth);
-                    return `${sorted[0].name} Wins!`;
-                  })()}
-                </h2>
-                
                 <table style={{ width: 'auto', margin: '0 auto', textAlign: 'left', borderSpacing: '20px 5px', marginBottom: '1rem', fontSize: '1rem' }}>
                   <thead>
                     <tr style={{ color: 'var(--text-muted)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
@@ -613,10 +605,9 @@ function App() {
                 </table>
 
                 {gameState.history && gameState.history.length > 0 && (
-                  <div style={{ marginBottom: '2rem' }}>
-                    <h3 style={{ marginBottom: '1rem', color: 'var(--text-muted)', fontSize: '1.2rem' }}>Net Worth Over Time</h3>
-                    <div style={{ background: 'rgba(0,0,0,0.3)', padding: '20px 10px', borderRadius: '8px' }}>
-                      <svg width="100%" height="250" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ overflow: 'visible' }}>
+                  <div style={{ marginBottom: '1rem' }}>
+                    <div style={{ background: 'rgba(0,0,0,0.3)', padding: '5px 10px', borderRadius: '8px' }}>
+                      <svg width="100%" height="450" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ overflow: 'visible' }}>
                         {(() => {
                           const history = gameState.history;
                           const maxNW = Math.max(...history.flatMap(h => Object.values(h.netWorths)));
@@ -647,6 +638,8 @@ function App() {
                     </div>
                   </div>
                 )}
+
+
                 
               </div>
             </div>
