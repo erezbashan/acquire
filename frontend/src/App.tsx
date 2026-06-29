@@ -267,7 +267,6 @@ function App() {
 
         <div className="sidebar">
           <div className="players-list glass">
-            <h3>Scoreboard & Market</h3>
             <table className="scoreboard-table">
               <thead>
                 <tr>
