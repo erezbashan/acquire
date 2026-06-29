@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useSocket } from './SocketContext';
-import { calculateNetWorth, getPlayerFinancials, getStockPrice } from '@acquire/shared';
+import { type Corporation, getPlayerFinancials, getStockPrice } from '@acquire/shared';
 import './App.css';
 
 function App() {
-  const { connected, gameState, createGame, joinGame, addBot, startGame, playTile, foundCorporation, buyStock, endTurn, rejoinGame, playerId } = useSocket();
+  const { connected, gameState, createGame, joinGame, addBot, startGame, playTile, buyStock, endTurn, rejoinGame, playerId, socket } = useSocket();
   const [username, setUsername] = useState('');
   const [gameIdInput, setGameIdInput] = useState('');
   
@@ -13,7 +13,7 @@ function App() {
   const [tradeCount, setTradeCount] = useState(0);
 
   // Corp Details Modal State
-  const [selectedCorp, setSelectedCorp] = useState<string | null>(null);
+  const [selectedCorp, setSelectedCorp] = useState<Corporation | null>(null);
   const [showFullLogs, setShowFullLogs] = useState(false);
   const [showGameOver, setShowGameOver] = useState(true);
 
@@ -131,7 +131,6 @@ function App() {
         <div className="title-area">
           <h1>Acquire</h1>
         </div>
-        <div className="game-id-badge">Game ID: {gameState?.id}</div>
         <div className="lobby-card glass">
           <input 
             type="text" 
@@ -218,7 +217,7 @@ function App() {
                   
                   const adjCorps = new Set(neighbors.filter(n => n && n !== 'Unincorporated'));
                   const adjUnincorp = neighbors.filter(n => n === 'Unincorporated');
-                  const safeAdjCorps = Array.from(adjCorps).filter(c => gameState.corporations[c as string]?.isSafe);
+                  const safeAdjCorps = Array.from(adjCorps).filter(c => gameState.corporations[c as Corporation]?.isSafe);
                   
                   const availableCorps = Object.values(gameState.corporations).filter(c => !c.isActive);
                   
@@ -350,7 +349,7 @@ function App() {
 
                   return (
                     <tr key={cName} className={!cState.isActive ? 'corp-inactive' : ''}>
-                      <td className={`corp-name ${cName.toLowerCase()}`} style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setSelectedCorp(cName)}>
+                      <td className={`corp-name ${cName.toLowerCase()}`} style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setSelectedCorp(cName as Corporation)}>
                         {cName} {cState.isSafe && '🛡️'} {!cState.isActive && '💤'}
                       </td>
                       {gameState.players.map(p => {
@@ -422,7 +421,7 @@ function App() {
                                 <button 
                                   key={c} 
                                   className={`tile-btn ${c.toLowerCase()}`} 
-                                  onClick={() => socket.emit('foundCorporation', { gameId: gameState.id, corpName: c })}
+                                  onClick={() => socket?.emit('foundCorporation', { gameId: gameState.id, corpName: c })}
                                 >
                                   {c}
                                 </button>
@@ -446,7 +445,7 @@ function App() {
                           <button 
                             key={corp}
                             className={`tile-btn ${corp.toLowerCase()}`}
-                            onClick={() => socket.emit('chooseMergeSurvivor', { gameId: gameState.id, survivorName: corp })}
+                            onClick={() => socket?.emit('chooseMergeSurvivor', { gameId: gameState.id, survivorName: corp })}
                           >
                             Merge {defunctCorps.join(', ')} into {corp}
                           </button>
@@ -505,14 +504,14 @@ function App() {
                       <button 
                         style={{ marginTop: '10px' }}
                         onClick={() => {
-                          socket.emit('resolveMergeStocks', { gameId: gameState.id, sellCount, tradeCount, keepCount });
+                          socket?.emit('resolveMergeStocks', { gameId: gameState.id, sellCount, tradeCount, keepCount });
                         }}
                       >
                         Confirm Resolution
                       </button>
                     </div>
                   ) : (
-                    <button onClick={() => socket.emit('resolveMergeStocks', { gameId: gameState.id, sellCount: 0, tradeCount: 0, keepCount: 0 })}>Continue</button>
+                    <button onClick={() => socket?.emit('resolveMergeStocks', { gameId: gameState.id, sellCount: 0, tradeCount: 0, keepCount: 0 })}>Continue</button>
                   )}
                 </div>
               )}

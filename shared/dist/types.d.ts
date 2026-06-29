@@ -9,10 +9,18 @@ export type BoardCell = Corporation | 'Unincorporated' | null;
 export interface Player {
     id: string;
     name: string;
+    color: string;
     money: number;
     tiles: Tile[];
     stocks: Record<Corporation, number>;
     isBot: boolean;
+    stats: {
+        chainsFounded: number;
+        mergesCaused: number;
+        firstBonuses: number;
+        secondBonuses: number;
+        sharesBought: number;
+    };
 }
 export interface CorporationState {
     name: Corporation;
@@ -24,7 +32,7 @@ export interface CorporationState {
     isSafe: boolean;
     isActive: boolean;
 }
-export type GamePhase = 'Lobby' | 'PlayTile' | 'FoundCorporation' | 'BuyStocks' | 'MergeResolution' | 'DrawTile' | 'GameOver';
+export type GamePhase = 'Lobby' | 'PlayTile' | 'FoundCorporation' | 'BuyStocks' | 'ChooseMergeSurvivor' | 'MergeResolution' | 'DrawTile' | 'GameOver';
 export interface GameState {
     id: string;
     players: Player[];
@@ -33,19 +41,32 @@ export interface GameState {
     corporations: Record<Corporation, CorporationState>;
     availableTiles: Tile[];
     phase: GamePhase;
+    sharesBoughtThisTurn: number;
     turnOrder: string[];
     logs: string[];
+    history: {
+        turn: number;
+        netWorths: Record<string, number>;
+    }[];
     pendingMerge?: {
         mergerId: string;
         acquirer: Corporation;
         defunct: Corporation[];
         currentDefunctIndex: number;
         playerResolutionIndex: number;
+        playersResolved: string[];
+    };
+    pendingSurvivorChoice?: {
+        playerId: string;
+        tileId: TileId;
+        tiedCorps: Corporation[];
+        allCorpsInvolved: Corporation[];
     };
     pendingFounding?: {
         playerId: string;
         tileId: TileId;
         availableCorps: Corporation[];
+        size: number;
     };
 }
 export interface GameAction {

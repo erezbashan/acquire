@@ -1,4 +1,4 @@
-import { BoardCell, Corporation, CorporationState, GameState, Player, Tile, TileId } from './types';
+import type { BoardCell, Corporation, CorporationState, GameState, Player, Tile, TileId } from './types';
 
 const BOARD_ROWS = 9;
 const BOARD_COLS = 12;
@@ -59,7 +59,8 @@ export function createInitialGameState(id: string): GameState {
     phase: 'Lobby',
     sharesBoughtThisTurn: 0,
     turnOrder: [],
-    logs: ['Game created. Waiting for players...']
+    logs: ['Game created. Waiting for players...'],
+    history: []
   };
 }
 
@@ -383,13 +384,9 @@ export function resolveMergeStocks(state: GameState, playerId: string, sellCount
   
   // Trade logic: 2 defunct for 1 acquirer
   const tradedAcquirerStocks = Math.floor(tradeCount / 2);
-  const actualTraded = tradedAcquirerStocks * 2;
   const acquirerAvailable = newState.corporations[aCorp].availableStocks;
   const finalTradedAcquirerStocks = Math.min(tradedAcquirerStocks, acquirerAvailable);
   const finalTradedDefunct = finalTradedAcquirerStocks * 2;
-  
-  // What happens to leftover if they tried to trade but not enough acquirer stocks?
-  // Usually they have to just keep or sell. We'll enforce the UI to not allow invalid trades.
   
   // Sell logic
   const sellPayout = sellCount * newState.corporations[dCorp].stockPrice;
@@ -484,10 +481,6 @@ export function foundCorporation(state: GameState, playerId: string, corpName: C
   if (state.phase !== 'FoundCorporation' || !state.pendingFounding || state.pendingFounding.playerId !== playerId) {
     return state;
   }
-
-  const tile = state.availableTiles.find(t => t.id === state.pendingFounding!.tileId) || 
-               // hack to get row/col from tileId if not in availableTiles
-               { row: parseInt(state.pendingFounding!.tileId[0]) - 1, col: state.pendingFounding!.tileId.charCodeAt(1) - 65 };
                
   // Actually we can just find it on the board
   let row = -1, col = -1;
@@ -731,7 +724,7 @@ export function endTurn(state: GameState): GameState {
     if (unplayableIndex === -1) break;
     
     // Discard it
-    const discardedTile = np.tiles[unplayableIndex];
+    np.tiles.splice(unplayableIndex, 1);
     let newTiles = np.tiles.filter((_, i) => i !== unplayableIndex);
     
     // Draw a new one

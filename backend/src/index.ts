@@ -2,8 +2,9 @@ import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { 
-  GameState, 
-  createInitialGameState, 
+  GameState,
+  Player,
+  createInitialGameState,
   addPlayer, 
   startGame, 
   playTile,
