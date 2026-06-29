@@ -527,15 +527,15 @@ function App() {
                 >
                   &times;
                 </button>
-                <h1 style={{ fontSize: '3rem', margin: '0 0 1rem 0', color: 'var(--primary)' }}>Game Over!</h1>
-                <h2 style={{ marginBottom: '2rem' }}>
+                <h1 style={{ fontSize: '2rem', margin: '0 0 0.5rem 0', color: 'var(--primary)' }}>Game Over!</h1>
+                <h2 style={{ fontSize: '1.5rem', margin: '0 0 1rem 0' }}>
                   {(() => {
                     const sorted = [...gameState.players].sort((a, b) => getPlayerFinancials(gameState, b.id).netWorth - getPlayerFinancials(gameState, a.id).netWorth);
                     return `${sorted[0].name} Wins!`;
                   })()}
                 </h2>
                 
-                <table style={{ width: 'auto', margin: '0 auto', textAlign: 'left', borderSpacing: '40px 15px', marginBottom: '2rem', fontSize: '1.2rem' }}>
+                <table style={{ width: 'auto', margin: '0 auto', textAlign: 'left', borderSpacing: '20px 5px', marginBottom: '1rem', fontSize: '1rem' }}>
                   <thead>
                     <tr style={{ color: 'var(--text-muted)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                       <th>Rank</th>
@@ -575,7 +575,7 @@ function App() {
                         });
 
                         return (
-                          <tr key={p.id} style={{ fontWeight: index === 0 ? 'bold' : 'normal', fontSize: index === 0 ? '1.2rem' : '1rem' }}>
+                          <tr key={p.id} style={{ fontWeight: index === 0 ? 'bold' : 'normal', fontSize: index === 0 ? '1.1rem' : '0.9rem' }}>
                             <td>
                               #{index + 1}
                             </td>
@@ -595,7 +595,7 @@ function App() {
                   <div style={{ marginBottom: '2rem' }}>
                     <h3 style={{ marginBottom: '1rem', color: 'var(--text-muted)', fontSize: '1.2rem' }}>Net Worth Over Time</h3>
                     <div style={{ background: 'rgba(0,0,0,0.3)', padding: '20px 10px', borderRadius: '8px' }}>
-                      <svg width="100%" height="150" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ overflow: 'visible' }}>
+                      <svg width="100%" height="250" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ overflow: 'visible' }}>
                         {(() => {
                           const history = gameState.history;
                           const maxNW = Math.max(...history.flatMap(h => Object.values(h.netWorths)));
@@ -627,16 +627,6 @@ function App() {
                   </div>
                 )}
                 
-                <button 
-                  className="tile-btn"
-                  style={{ width: '100%', padding: '15px', fontSize: '1.2rem', backgroundColor: 'var(--primary)', color: 'white', border: 'none' }}
-                  onClick={() => {
-                    window.history.replaceState(null, '', '/');
-                    window.location.reload();
-                  }}
-                >
-                  Return to Lobby
-                </button>
               </div>
             </div>
           )}
