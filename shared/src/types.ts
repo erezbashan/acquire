@@ -20,6 +20,7 @@ export type BoardCell = Corporation | 'Unincorporated' | null;
 export interface Player {
   id: string;
   name: string;
+  color: string;
   money: number;
   tiles: Tile[];
   stocks: Record<Corporation, number>;

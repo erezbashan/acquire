@@ -25,21 +25,28 @@ const io = new Server(httpServer, {
 });
 
 const games: Record<string, GameState> = {};
+const PLAYER_COLORS = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#c084fc', '#f472b6'];
+
+function generateGameId() {
+  return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
   socket.on('createGame', ({ username }, callback) => {
-    const gameId = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const gameId = generateGameId();
     const state = createInitialGameState(gameId);
-    const newState = addPlayer(state, {
+    const newPlayer: Player = {
       id: socket.id,
       name: username,
-      money: 0,
+      color: PLAYER_COLORS[0],
+      money: 6000,
       tiles: [],
       stocks: { Tower: 0, Luxor: 0, American: 0, Worldwide: 0, Festival: 0, Imperial: 0, Continental: 0 },
       isBot: false
-    });
+    };
+    const newState = addPlayer(state, newPlayer);
     
     games[gameId] = newState;
     socket.join(gameId);
@@ -56,10 +63,12 @@ io.on('connection', (socket) => {
       return callback({ error: 'Game already started' });
     }
 
+    const colorIndex = state.players.length % PLAYER_COLORS.length;
     const newState = addPlayer(state, {
       id: socket.id,
       name: username,
-      money: 0,
+      color: PLAYER_COLORS[colorIndex],
+      money: 6000,
       tiles: [],
       stocks: { Tower: 0, Luxor: 0, American: 0, Worldwide: 0, Festival: 0, Imperial: 0, Continental: 0 },
       isBot: false
@@ -82,14 +91,18 @@ io.on('connection', (socket) => {
         : `Bot${state.players.length}`;
 
       const botId = `bot-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
-      const newState = addPlayer(state, {
+      const colorIndex = state.players.length % PLAYER_COLORS.length;
+      
+      const newBot: Player = {
         id: botId,
         name: `🤖 ${botName}`,
-        money: 0,
+        color: PLAYER_COLORS[colorIndex],
+        money: 6000,
         tiles: [],
         stocks: { Tower: 0, Luxor: 0, American: 0, Worldwide: 0, Festival: 0, Imperial: 0, Continental: 0 },
         isBot: true
-      });
+      };
+      const newState = addPlayer(state, newBot);
       games[gameId] = newState;
       io.to(gameId).emit('gameState', newState);
     }

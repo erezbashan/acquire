@@ -722,6 +722,23 @@ export function endTurn(state: GameState): GameState {
   }
   newState.history = [...(newState.history || []), { turn: (newState.history?.length || 0) + 1, netWorths }];
 
+  // Check if next player should immediately end the game
+  if (canEndGame(newState)) {
+    const leader = newState.players.reduce((prev, current) => {
+      return (getPlayerFinancials(newState, prev.id).netWorth > getPlayerFinancials(newState, current.id).netWorth) ? prev : current;
+    });
+    
+    if (leader.id === np.id) {
+      newState.logs.push(`Game Over! ${np.name} starts their turn, sees they are in the lead, and ends the game with a net worth of $${getPlayerFinancials(newState, np.id).netWorth.toLocaleString()}!`);
+      return {
+        ...newState,
+        currentPlayerIndex: nextPlayerIndex,
+        phase: 'GameOver',
+        sharesBoughtThisTurn: 0
+      };
+    }
+  }
+
   return {
     ...newState,
     currentPlayerIndex: nextPlayerIndex,

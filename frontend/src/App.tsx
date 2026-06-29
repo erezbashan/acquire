@@ -16,6 +16,34 @@ function App() {
   const [selectedCorp, setSelectedCorp] = useState<string | null>(null);
   const [showFullLogs, setShowFullLogs] = useState(false);
 
+  const renderLogLine = (logStr: string, i: number) => {
+    if (!gameState) return null;
+    let cleanLog = logStr.replace('---', '').replace(/🤖 /g, '');
+    let elements = [];
+    
+    // Most logs start with the player's name
+    const player = gameState.players.find(p => cleanLog.startsWith(p.name.replace('🤖 ', '')));
+    
+    if (player) {
+      const name = player.name.replace('🤖 ', '');
+      elements.push(<span key="name" style={{ color: player.color, fontWeight: 'bold' }}>{name}</span>);
+      elements.push(<span key="rest">{cleanLog.substring(name.length)}</span>);
+    } else {
+      elements.push(<span key="rest">{cleanLog}</span>);
+    }
+
+    return (
+      <React.Fragment key={i}>
+        {logStr.endsWith('---') && i !== 0 && (
+          <hr style={{ margin: '8px 0', border: 'none', borderBottom: '1px dashed rgba(255,255,255,0.3)' }} />
+        )}
+        <div style={{ color: logStr.endsWith('---') ? 'var(--text-muted)' : 'inherit' }}>
+          {elements}
+        </div>
+      </React.Fragment>
+    );
+  };
+
   const me = gameState?.players.find(p => p.id === socket?.id);
   const pm = gameState?.pendingMerge;
   const dCorp = pm?.defunct[pm.currentDefunctIndex];
@@ -207,7 +235,7 @@ function App() {
                         <th key={p.id} className={p.id === me?.id ? 'me-col' : (p.id === activePlayerId ? 'active-player-col' : '')} style={{ textAlign: 'right' }}>
                           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px' }}>
                             {medal}
-                            <span>{p.name} {p.id === me?.id ? '(Me)' : ''}</span>
+                            <span style={{ color: p.color }}>{p.name} {p.id === me?.id ? '(Me)' : ''}</span>
                           </div>
                         </th>
                       );
@@ -263,7 +291,7 @@ function App() {
                   <td style={{ border: 'none' }}></td>
                 </tr>
 
-                {Object.entries(gameState.corporations).filter(([cName, c]) => c.isActive || gameState.players.some(p => p.stocks[cName as keyof typeof p.stocks] > 0)).map(([cName, cState]) => {
+                {Object.entries(gameState.corporations).map(([cName, cState]) => {
                   const holders = gameState.players.map(p => ({ id: p.id, count: p.stocks[cName as keyof typeof p.stocks] || 0 })).filter(h => h.count > 0).sort((a,b) => b.count - a.count);
                   const highest = holders.length > 0 ? holders[0].count : 0;
                   const majority = holders.filter(h => h.count === highest).map(h => h.id);
@@ -439,7 +467,7 @@ function App() {
 
           {gameState.phase === 'GameOver' && (
             <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 }}>
-              <div className="modal-content glass" style={{ padding: '3rem', minWidth: '400px', textAlign: 'center' }}>
+              <div className="modal-content glass" style={{ padding: '3rem', width: '90vw', maxWidth: '1200px', textAlign: 'center' }}>
                 <h1 style={{ fontSize: '3rem', margin: '0 0 1rem 0', color: 'var(--primary)' }}>Game Over!</h1>
                 <h2 style={{ marginBottom: '2rem' }}>
                   {(() => {
@@ -464,12 +492,9 @@ function App() {
                         return (
                           <tr key={p.id} style={{ fontWeight: index === 0 ? 'bold' : 'normal', fontSize: index === 0 ? '1.2rem' : '1rem' }}>
                             <td>
-                              {index === 0 && '🥇 '}
-                              {index === 1 && gameState.players.length > 2 && '🥈 '}
-                              {index === 2 && gameState.players.length > 3 && '🥉 '}
                               #{index + 1}
                             </td>
-                            <td>{p.name.replace('🤖 ', '')} {p.id === socket?.id && '(You)'}</td>
+                            <td style={{ color: p.color }}>{p.name.replace('🤖 ', '')} {p.id === socket?.id && '(You)'}</td>
                             <td style={{ color: 'var(--primary)' }}>${fin.netWorth.toLocaleString()}</td>
                           </tr>
                         );
@@ -487,9 +512,8 @@ function App() {
                           const maxNW = Math.max(...history.flatMap(h => Object.values(h.netWorths)));
                           const minNW = 6000;
                           const range = Math.max(maxNW - minNW, 1000);
-                          const colors = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#c084fc', '#f472b6'];
                           
-                          return gameState.players.map((p, i) => {
+                          return gameState.players.map(p => {
                             const points = history.map((h, step) => {
                               const x = (step / Math.max(1, history.length - 1)) * 100;
                               const nw = h.netWorths[p.id] || minNW;
@@ -502,7 +526,7 @@ function App() {
                                 key={p.id}
                                 points={points}
                                 fill="none"
-                                stroke={colors[i % colors.length]}
+                                stroke={p.color}
                                 strokeWidth="2"
                                 vectorEffect="non-scaling-stroke"
                               />
@@ -510,17 +534,6 @@ function App() {
                           });
                         })()}
                       </svg>
-                      <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '15px', flexWrap: 'wrap', fontSize: '0.9rem' }}>
-                        {gameState.players.map((p, i) => {
-                           const colors = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#c084fc', '#f472b6'];
-                           return (
-                             <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                               <div style={{ width: '12px', height: '12px', background: colors[i % colors.length], borderRadius: '50%' }}></div>
-                               {p.name.replace('🤖 ', '')}
-                             </div>
-                           );
-                        })}
-                      </div>
                     </div>
                   </div>
                 )}
@@ -572,16 +585,7 @@ function App() {
                   cutoffIndex = reversedLogs.findIndex(log => log.startsWith(`${me.name.replace('🤖 ', '')} played tile`));
                 }
                 const logsToShow = cutoffIndex >= 0 ? reversedLogs.slice(0, cutoffIndex + 1) : reversedLogs.slice(0, 10);
-                return logsToShow.map((log, i) => (
-                  <React.Fragment key={i}>
-                    {log.endsWith('---') && i !== 0 && (
-                      <hr style={{ margin: '8px 0', border: 'none', borderBottom: '1px dashed rgba(255,255,255,0.3)' }} />
-                    )}
-                    <div style={{ color: log.endsWith('---') ? 'var(--text-muted)' : 'inherit' }}>
-                      {log.replace('---', '').replace('🤖 ', '')}
-                    </div>
-                  </React.Fragment>
-                ));
+                return logsToShow.map((log, i) => renderLogLine(log, i));
               })()}
             </div>
             {gameState.logs.length > 0 && (
@@ -602,16 +606,7 @@ function App() {
           <div className="modal-content glass" style={{ padding: '2rem', minWidth: '400px', maxWidth: '600px', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
             <h3 style={{ marginTop: 0 }}>Full Game Log</h3>
             <div className="log-messages" style={{ overflowY: 'auto', flex: 1, paddingRight: '10px' }}>
-              {[...gameState.logs].reverse().map((log, i) => (
-                <React.Fragment key={i}>
-                  {log.endsWith('---') && i !== 0 && (
-                    <hr style={{ margin: '8px 0', border: 'none', borderBottom: '1px dashed rgba(255,255,255,0.3)' }} />
-                  )}
-                  <div style={{ color: log.endsWith('---') ? 'var(--text-muted)' : 'inherit' }}>
-                    {log.replace('---', '').replace('🤖 ', '')}
-                  </div>
-                </React.Fragment>
-              ))}
+              {[...gameState.logs].reverse().map((log, i) => renderLogLine(log, i))}
             </div>
             <button onClick={() => setShowFullLogs(false)} style={{ marginTop: '1rem' }}>Close</button>
           </div>
