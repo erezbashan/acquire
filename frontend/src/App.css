@@ -87,6 +87,7 @@ header h2 { margin: 0; }
   padding: 1rem;
   gap: 2px;
   overflow: auto;
+  position: relative;
 }
 
 .board-row {

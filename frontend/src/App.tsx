@@ -263,6 +263,131 @@ function App() {
               })}
             </div>
           ))}
+              {gameState.phase === 'FoundCorporation' && gameState.pendingFounding?.playerId === playerId && (
+                <div className="modal-backdrop" style={{ position: 'absolute', borderRadius: 'inherit', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+                  <div className="modal-content glass" style={{ padding: '2rem', minWidth: '300px', textAlign: 'center' }}>
+                    <h3>Found a Corporation</h3>
+                    <p style={{ marginBottom: '1.5rem' }}>Choose a corporation to found:</p>
+                    <div className="corp-options">
+                      {(() => {
+                        const size = gameState.pendingFounding.size || 2;
+                        const prices = new Map<number, string[]>();
+                        
+                        gameState.pendingFounding.availableCorps.forEach(c => {
+                          const price = getStockPrice(c, size);
+                          if (!prices.has(price)) prices.set(price, []);
+                          prices.get(price)!.push(c);
+                        });
+
+                        return Array.from(prices.entries())
+                          .sort((a, b) => a[0] - b[0])
+                          .map(([price, corps]) => (
+                            <div key={price} style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                              <strong style={{ width: '60px', textAlign: 'right' }}>${price.toLocaleString()}:</strong>
+                              {corps.map(c => (
+                                <button 
+                                  key={c} 
+                                  className={`tile-btn ${c.toLowerCase()}`} 
+                                  onClick={() => socket?.emit('foundCorporation', { gameId: gameState.id, corpName: c })}
+                                >
+                                  {c}
+                                </button>
+                              ))}
+                            </div>
+                          ));
+                      })()}
+                    </div>
+                  </div>
+                </div>
+              )}
+          {me && (
+            <>
+              {gameState.phase === 'ChooseMergeSurvivor' && gameState.pendingSurvivorChoice?.playerId === playerId && (
+                <div className="modal-backdrop" style={{ position: 'absolute', borderRadius: 'inherit', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+                  <div className="modal-content glass" style={{ padding: '2rem', minWidth: '300px', textAlign: 'center' }}>
+                    <h3>Choose Surviving Corporation</h3>
+                    <p>A merger occurred! Choose which corporation will survive:</p>
+                    <div className="corp-buttons" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                      {gameState.pendingSurvivorChoice.tiedCorps.map(corp => {
+                        const defunctCorps = gameState.pendingSurvivorChoice!.allCorpsInvolved.filter(c => c !== corp);
+                        return (
+                          <button 
+                            key={corp}
+                            className={`tile-btn ${corp.toLowerCase()}`}
+                            onClick={() => socket?.emit('chooseMergeSurvivor', { gameId: gameState.id, survivorName: corp })}
+                          >
+                            Merge {defunctCorps.join(', ')} into {corp}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {isMyTurn && gameState.phase === 'MergeResolution' && pm && dCorp && aCorp && (
+                <div className="modal-backdrop" style={{ position: 'absolute', borderRadius: 'inherit', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+                  <div className="merge-panel glass" style={{ padding: '1rem', border: '2px solid var(--accent)' }}>
+                    <h4>Resolve Merge Stocks</h4>
+                  <p><strong>{dCorp}</strong> is defunct. <strong>{aCorp}</strong> is the survivor.</p>
+                  <p>You have <strong>{myDefunctStocks}</strong> shares of {dCorp}.</p>
+                  
+                  {myDefunctStocks > 0 ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '10px' }}>
+                      <table style={{ width: '100%', textAlign: 'center', borderSpacing: '0 10px' }}>
+                        <tbody>
+                          <tr>
+                            <td style={{ textAlign: 'left' }}>Trade 2 (${gameState.corporations[dCorp].stockPrice.toLocaleString()}) for 1 (${gameState.corporations[aCorp].stockPrice.toLocaleString()})</td>
+                            <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              <button disabled={tradeCount <= 0} onClick={() => setTradeCount(t => t - 2)} style={{ width: '30px' }}>-</button>
+                              <span style={{ margin: '0 15px', display: 'inline-block', width: '20px', textAlign: 'center' }}>{tradeCount}</span>
+                              <button disabled={tradeCount + 2 > Math.min(Math.floor((myDefunctStocks - sellCount) / 2) * 2, gameState.corporations[aCorp].availableStocks * 2)} onClick={() => setTradeCount(t => t + 2)} style={{ width: '30px' }}>+</button>
+                              <button disabled={tradeCount + 2 > Math.min(Math.floor((myDefunctStocks - sellCount) / 2) * 2, gameState.corporations[aCorp].availableStocks * 2)} style={{ marginLeft: '10px', width: '40px', padding: '0' }} onClick={() => {
+                                const maxTrades = Math.min(Math.floor((myDefunctStocks - sellCount) / 2) * 2, gameState.corporations[aCorp].availableStocks * 2);
+                                setTradeCount(maxTrades);
+                              }}>All</button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ textAlign: 'left' }}>Sell (@ ${gameState.corporations[dCorp].stockPrice.toLocaleString()})</td>
+                            <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              <button disabled={sellCount <= 0} onClick={() => setSellCount(s => s - 1)} style={{ width: '30px' }}>-</button>
+                              <span style={{ margin: '0 15px', display: 'inline-block', width: '20px', textAlign: 'center' }}>{sellCount}</span>
+                              <button disabled={sellCount + tradeCount + 1 > myDefunctStocks} onClick={() => setSellCount(s => s + 1)} style={{ width: '30px' }}>+</button>
+                              <button disabled={sellCount + tradeCount + 1 > myDefunctStocks} style={{ marginLeft: '10px', width: '40px', padding: '0' }} onClick={() => {
+                                setSellCount(myDefunctStocks - tradeCount);
+                              }}>All</button>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style={{ textAlign: 'left' }}>Keep</td>
+                            <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                              <div style={{ width: '30px' }}></div>
+                              <span style={{ margin: '0 15px', display: 'inline-block', width: '20px', fontWeight: 'bold', textAlign: 'center' }}>{keepCount}</span>
+                              <div style={{ width: '30px' }}></div>
+                              <div style={{ marginLeft: '10px', width: '40px' }}></div>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
+                      <button 
+                        style={{ marginTop: '10px' }}
+                        onClick={() => {
+                          socket?.emit('resolveMergeStocks', { gameId: gameState.id, sellCount, tradeCount, keepCount });
+                        }}
+                      >
+                        Confirm Resolution
+                      </button>
+                    </div>
+                  ) : (
+                    <button onClick={() => socket?.emit('resolveMergeStocks', { gameId: gameState.id, sellCount: 0, tradeCount: 0, keepCount: 0 })}>Continue</button>
+                  )}
+                </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
 
         <div className="sidebar">
@@ -413,129 +538,6 @@ function App() {
             )}
           </div>
 
-          {me && (
-            <>
-              {gameState.phase === 'FoundCorporation' && gameState.pendingFounding?.playerId === playerId && (
-                <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-                  <div className="modal-content glass" style={{ padding: '2rem', minWidth: '300px', textAlign: 'center' }}>
-                    <h3>Found a Corporation</h3>
-                    <p style={{ marginBottom: '1.5rem' }}>Choose a corporation to found:</p>
-                    <div className="corp-options">
-                      {(() => {
-                        const size = gameState.pendingFounding.size || 2;
-                        const prices = new Map<number, string[]>();
-                        
-                        gameState.pendingFounding.availableCorps.forEach(c => {
-                          const price = getStockPrice(c, size);
-                          if (!prices.has(price)) prices.set(price, []);
-                          prices.get(price)!.push(c);
-                        });
-
-                        return Array.from(prices.entries())
-                          .sort((a, b) => a[0] - b[0])
-                          .map(([price, corps]) => (
-                            <div key={price} style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
-                              <strong style={{ width: '60px', textAlign: 'right' }}>${price.toLocaleString()}:</strong>
-                              {corps.map(c => (
-                                <button 
-                                  key={c} 
-                                  className={`tile-btn ${c.toLowerCase()}`} 
-                                  onClick={() => socket?.emit('foundCorporation', { gameId: gameState.id, corpName: c })}
-                                >
-                                  {c}
-                                </button>
-                              ))}
-                            </div>
-                          ));
-                      })()}
-                    </div>
-                  </div>
-                </div>
-              )}
-              {gameState.phase === 'ChooseMergeSurvivor' && gameState.pendingSurvivorChoice?.playerId === playerId && (
-                <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-                  <div className="modal-content glass" style={{ padding: '2rem', minWidth: '300px', textAlign: 'center' }}>
-                    <h3>Choose Surviving Corporation</h3>
-                    <p>A merger occurred! Choose which corporation will survive:</p>
-                    <div className="corp-buttons" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                      {gameState.pendingSurvivorChoice.tiedCorps.map(corp => {
-                        const defunctCorps = gameState.pendingSurvivorChoice!.allCorpsInvolved.filter(c => c !== corp);
-                        return (
-                          <button 
-                            key={corp}
-                            className={`tile-btn ${corp.toLowerCase()}`}
-                            onClick={() => socket?.emit('chooseMergeSurvivor', { gameId: gameState.id, survivorName: corp })}
-                          >
-                            Merge {defunctCorps.join(', ')} into {corp}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {isMyTurn && gameState.phase === 'MergeResolution' && pm && dCorp && aCorp && (
-                <div className="merge-panel glass" style={{ padding: '1rem', border: '2px solid var(--accent)' }}>
-                  <h4>Resolve Merge Stocks</h4>
-                  <p><strong>{dCorp}</strong> is defunct. <strong>{aCorp}</strong> is the survivor.</p>
-                  <p>You have <strong>{myDefunctStocks}</strong> shares of {dCorp}.</p>
-                  
-                  {myDefunctStocks > 0 ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '10px' }}>
-                      <table style={{ width: '100%', textAlign: 'center', borderSpacing: '0 10px' }}>
-                        <tbody>
-                          <tr>
-                            <td style={{ textAlign: 'left' }}>Trade 2 (${gameState.corporations[dCorp].stockPrice.toLocaleString()}) for 1 (${gameState.corporations[aCorp].stockPrice.toLocaleString()})</td>
-                            <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                              <button disabled={tradeCount <= 0} onClick={() => setTradeCount(t => t - 2)} style={{ width: '30px' }}>-</button>
-                              <span style={{ margin: '0 15px', display: 'inline-block', width: '20px', textAlign: 'center' }}>{tradeCount}</span>
-                              <button disabled={tradeCount + 2 > Math.min(Math.floor((myDefunctStocks - sellCount) / 2) * 2, gameState.corporations[aCorp].availableStocks * 2)} onClick={() => setTradeCount(t => t + 2)} style={{ width: '30px' }}>+</button>
-                              <button disabled={tradeCount + 2 > Math.min(Math.floor((myDefunctStocks - sellCount) / 2) * 2, gameState.corporations[aCorp].availableStocks * 2)} style={{ marginLeft: '10px', width: '40px', padding: '0' }} onClick={() => {
-                                const maxTrades = Math.min(Math.floor((myDefunctStocks - sellCount) / 2) * 2, gameState.corporations[aCorp].availableStocks * 2);
-                                setTradeCount(maxTrades);
-                              }}>All</button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ textAlign: 'left' }}>Sell (@ ${gameState.corporations[dCorp].stockPrice.toLocaleString()})</td>
-                            <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                              <button disabled={sellCount <= 0} onClick={() => setSellCount(s => s - 1)} style={{ width: '30px' }}>-</button>
-                              <span style={{ margin: '0 15px', display: 'inline-block', width: '20px', textAlign: 'center' }}>{sellCount}</span>
-                              <button disabled={sellCount + tradeCount + 1 > myDefunctStocks} onClick={() => setSellCount(s => s + 1)} style={{ width: '30px' }}>+</button>
-                              <button disabled={sellCount + tradeCount + 1 > myDefunctStocks} style={{ marginLeft: '10px', width: '40px', padding: '0' }} onClick={() => {
-                                setSellCount(myDefunctStocks - tradeCount);
-                              }}>All</button>
-                            </td>
-                          </tr>
-                          <tr>
-                            <td style={{ textAlign: 'left' }}>Keep</td>
-                            <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                              <div style={{ width: '30px' }}></div>
-                              <span style={{ margin: '0 15px', display: 'inline-block', width: '20px', fontWeight: 'bold', textAlign: 'center' }}>{keepCount}</span>
-                              <div style={{ width: '30px' }}></div>
-                              <div style={{ marginLeft: '10px', width: '40px' }}></div>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      
-                      <button 
-                        style={{ marginTop: '10px' }}
-                        onClick={() => {
-                          socket?.emit('resolveMergeStocks', { gameId: gameState.id, sellCount, tradeCount, keepCount });
-                        }}
-                      >
-                        Confirm Resolution
-                      </button>
-                    </div>
-                  ) : (
-                    <button onClick={() => socket?.emit('resolveMergeStocks', { gameId: gameState.id, sellCount: 0, tradeCount: 0, keepCount: 0 })}>Continue</button>
-                  )}
-                </div>
-              )}
-            </>
-          )}
 
           {gameState.phase === 'GameOver' && showGameOver && (
             <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 }}>
