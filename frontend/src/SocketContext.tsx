@@ -40,7 +40,7 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   });
 
   useEffect(() => {
-    const newSocket = io(window.location.origin.replace('3000', '3001'), {
+    const newSocket = io('http://localhost:3001', {
       auth: { playerId }
     });
     setSocket(newSocket);
