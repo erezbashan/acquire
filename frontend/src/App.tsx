@@ -529,6 +529,11 @@ function App() {
                       <th>Rank</th>
                       <th>Player</th>
                       <th>Net Worth</th>
+                      <th style={{ textAlign: 'center' }}>Founded</th>
+                      <th style={{ textAlign: 'center' }}>Mergers</th>
+                      <th style={{ textAlign: 'center' }}>1st Bonus</th>
+                      <th style={{ textAlign: 'center' }}>2nd Bonus</th>
+                      <th style={{ textAlign: 'center' }}>Shares</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -536,6 +541,28 @@ function App() {
                       .sort((a, b) => getPlayerFinancials(gameState, b.id).netWorth - getPlayerFinancials(gameState, a.id).netWorth)
                       .map((p, index) => {
                         const fin = getPlayerFinancials(gameState, p.id);
+                        const stats = p.stats || { chainsFounded: 0, mergesCaused: 0, firstBonuses: 0, secondBonuses: 0, sharesBought: 0 };
+                        
+                        let extraFirst = 0;
+                        let extraSecond = 0;
+                        Object.entries(gameState.corporations).forEach(([cName, cState]) => {
+                          if (cState.isActive) {
+                            const stockHolders = gameState.players.map(p2 => ({ id: p2.id, count: p2.stocks[cName as keyof typeof p2.stocks] || 0 })).filter(p2 => p2.count > 0).sort((a, b) => b.count - a.count);
+                            if (stockHolders.length > 0) {
+                              const highestCount = stockHolders[0].count;
+                              const majorityHolders = stockHolders.filter(p2 => p2.count === highestCount);
+                              const secondHighestCount = stockHolders.find(p2 => p2.count < highestCount)?.count;
+                              const minorityHolders = secondHighestCount ? stockHolders.filter(p2 => p2.count === secondHighestCount) : [];
+
+                              if (majorityHolders.some(h => h.id === p.id)) extraFirst++;
+                              if (minorityHolders.some(h => h.id === p.id)) extraSecond++;
+                              if (majorityHolders.length === 1 && minorityHolders.length === 0 && majorityHolders[0].id === p.id) {
+                                extraSecond++; // sole shareholder gets both
+                              }
+                            }
+                          }
+                        });
+
                         return (
                           <tr key={p.id} style={{ fontWeight: index === 0 ? 'bold' : 'normal', fontSize: index === 0 ? '1.2rem' : '1rem' }}>
                             <td>
@@ -543,6 +570,11 @@ function App() {
                             </td>
                             <td style={{ color: p.color }}>{p.name.replace('🤖 ', '')}</td>
                             <td style={{ color: 'var(--primary)' }}>${fin.netWorth.toLocaleString()}</td>
+                            <td style={{ textAlign: 'center' }}>{stats.chainsFounded}</td>
+                            <td style={{ textAlign: 'center' }}>{stats.mergesCaused}</td>
+                            <td style={{ textAlign: 'center' }}>{stats.firstBonuses + extraFirst}</td>
+                            <td style={{ textAlign: 'center' }}>{stats.secondBonuses + extraSecond}</td>
+                            <td style={{ textAlign: 'center' }}>{stats.sharesBought}</td>
                           </tr>
                         );
                       })}

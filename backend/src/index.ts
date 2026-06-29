@@ -44,7 +44,8 @@ io.on('connection', (socket) => {
       money: 6000,
       tiles: [],
       stocks: { Tower: 0, Luxor: 0, American: 0, Worldwide: 0, Festival: 0, Imperial: 0, Continental: 0 },
-      isBot: false
+      isBot: false,
+      stats: { chainsFounded: 0, mergesCaused: 0, firstBonuses: 0, secondBonuses: 0, sharesBought: 0 }
     };
     const newState = addPlayer(state, newPlayer);
     
@@ -71,7 +72,8 @@ io.on('connection', (socket) => {
       money: 6000,
       tiles: [],
       stocks: { Tower: 0, Luxor: 0, American: 0, Worldwide: 0, Festival: 0, Imperial: 0, Continental: 0 },
-      isBot: false
+      isBot: false,
+      stats: { chainsFounded: 0, mergesCaused: 0, firstBonuses: 0, secondBonuses: 0, sharesBought: 0 }
     });
 
     games[gameId] = newState;
@@ -100,7 +102,8 @@ io.on('connection', (socket) => {
         money: 6000,
         tiles: [],
         stocks: { Tower: 0, Luxor: 0, American: 0, Worldwide: 0, Festival: 0, Imperial: 0, Continental: 0 },
-        isBot: true
+        isBot: true,
+        stats: { chainsFounded: 0, mergesCaused: 0, firstBonuses: 0, secondBonuses: 0, sharesBought: 0 }
       };
       const newState = addPlayer(state, newBot);
       games[gameId] = newState;

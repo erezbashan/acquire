@@ -205,6 +205,11 @@ export function playTile(state: GameState, playerId: string, tileId: TileId): Ga
     const survivorName = sortedCorps[0];
     const defunctCorps = sortedCorps.slice(1);
 
+    const newPlayersM = [...newState.players];
+    const pIdx = newPlayersM.findIndex(p => p.id === playerId);
+    newPlayersM[pIdx] = { ...newPlayersM[pIdx], stats: { ...newPlayersM[pIdx].stats, mergesCaused: newPlayersM[pIdx].stats.mergesCaused + 1 } };
+    newState.players = newPlayersM;
+
     return applyMerger(newState, tile, survivorName, defunctCorps);
   }
 
@@ -245,7 +250,12 @@ export function chooseMergeSurvivor(state: GameState, playerId: string, survivor
     return a.localeCompare(b);
   });
 
-  return applyMerger(state, tile, survivorName, defunctCorps);
+  const newPlayersM = [...state.players];
+  const pIdx = newPlayersM.findIndex(p => p.id === playerId);
+  newPlayersM[pIdx] = { ...newPlayersM[pIdx], stats: { ...newPlayersM[pIdx].stats, mergesCaused: newPlayersM[pIdx].stats.mergesCaused + 1 } };
+  const newState = { ...state, players: newPlayersM };
+
+  return applyMerger(newState, tile, survivorName, defunctCorps);
 }
 
 function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, defunctCorps: Corporation[]): GameState {
@@ -305,14 +315,22 @@ function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, de
           const totalPayout = corpState.majorityBonus + corpState.minorityBonus;
           for (const h of majorityHolders) {
             const pIndex = newPlayers.findIndex(p => p.id === h.id);
-            newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + totalPayout };
+            newPlayers[pIndex] = { 
+              ...newPlayers[pIndex], 
+              money: newPlayers[pIndex].money + totalPayout,
+              stats: { ...newPlayers[pIndex].stats, firstBonuses: newPlayers[pIndex].stats.firstBonuses + 1, secondBonuses: newPlayers[pIndex].stats.secondBonuses + 1 }
+            };
             newState.logs.push(`${newPlayers[pIndex].name} gets majority and minority bonus for ${dCorp} ($${totalPayout.toLocaleString()}).`);
           }
         } else {
           const majorityPayout = majorityHolders.length === 1 ? corpState.majorityBonus : Math.floor((corpState.majorityBonus + corpState.minorityBonus) / majorityHolders.length);
           for (const h of majorityHolders) {
             const pIndex = newPlayers.findIndex(p => p.id === h.id);
-            newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + majorityPayout };
+            newPlayers[pIndex] = { 
+              ...newPlayers[pIndex], 
+              money: newPlayers[pIndex].money + majorityPayout,
+              stats: { ...newPlayers[pIndex].stats, firstBonuses: newPlayers[pIndex].stats.firstBonuses + 1 }
+            };
             newState.logs.push(`${newPlayers[pIndex].name} gets majority bonus for ${dCorp} ($${majorityPayout.toLocaleString()}).`);
           }
 
@@ -320,7 +338,11 @@ function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, de
             const minorityPayout = Math.floor(corpState.minorityBonus / minorityHolders.length);
             for (const h of minorityHolders) {
               const pIndex = newPlayers.findIndex(p => p.id === h.id);
-              newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + minorityPayout };
+              newPlayers[pIndex] = { 
+                ...newPlayers[pIndex], 
+                money: newPlayers[pIndex].money + minorityPayout,
+                stats: { ...newPlayers[pIndex].stats, secondBonuses: newPlayers[pIndex].stats.secondBonuses + 1 }
+              };
               newState.logs.push(`${newPlayers[pIndex].name} gets minority bonus for ${dCorp} ($${minorityPayout.toLocaleString()}).`);
             }
           }
@@ -506,6 +528,10 @@ export function foundCorporation(state: GameState, playerId: string, corpName: C
       stocks: {
         ...newPlayers[playerIndex].stocks,
         [corpName]: newPlayers[playerIndex].stocks[corpName] + 1
+      },
+      stats: {
+        ...newPlayers[playerIndex].stats,
+        chainsFounded: (newPlayers[playerIndex].stats?.chainsFounded || 0) + 1
       }
     };
     newState.players = newPlayers;
@@ -635,7 +661,8 @@ export function buyStock(state: GameState, playerId: string, corpName: Corporati
   newPlayers[playerIndex] = {
     ...player,
     money: player.money - corp.stockPrice,
-    stocks: { ...player.stocks, [corpName]: player.stocks[corpName] + 1 }
+    stocks: { ...player.stocks, [corpName]: player.stocks[corpName] + 1 },
+    stats: { ...player.stats, sharesBought: player.stats.sharesBought + 1 }
   };
   newState.players = newPlayers;
   newState.sharesBoughtThisTurn += 1;

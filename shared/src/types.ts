@@ -25,6 +25,13 @@ export interface Player {
   tiles: Tile[];
   stocks: Record<Corporation, number>;
   isBot: boolean;
+  stats: {
+    chainsFounded: number;
+    mergesCaused: number;
+    firstBonuses: number;
+    secondBonuses: number;
+    sharesBought: number;
+  };
 }
 
 export interface CorporationState {
