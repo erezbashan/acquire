@@ -225,6 +225,7 @@ export function chooseMergeSurvivor(state: GameState, playerId: string, survivor
   if (state.phase !== 'ChooseMergeSurvivor' || !state.pendingSurvivorChoice) return state;
   if (state.pendingSurvivorChoice.playerId !== playerId) return state;
 
+  const tileId = state.pendingSurvivorChoice.tileId;
   const match = tileId.match(/^(\d+)([A-Z])$/);
   if (!match) return state;
   const row = parseInt(match[1]) - 1;
@@ -294,28 +295,37 @@ function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, de
       .filter(p => p.count > 0)
       .sort((a, b) => b.count - a.count);
 
-    if (stockHolders.length > 0) {
-      const highestCount = stockHolders[0].count;
-      const majorityHolders = stockHolders.filter(p => p.count === highestCount);
-      const secondHighestCount = stockHolders.find(p => p.count < highestCount)?.count;
-      const minorityHolders = secondHighestCount ? stockHolders.filter(p => p.count === secondHighestCount) : [];
+      if (stockHolders.length > 0) {
+        const highestCount = stockHolders[0].count;
+        const majorityHolders = stockHolders.filter(p => p.count === highestCount);
+        const secondHighestCount = stockHolders.find(p => p.count < highestCount)?.count;
+        const minorityHolders = secondHighestCount ? stockHolders.filter(p => p.count === secondHighestCount) : [];
 
-      const majorityPayout = majorityHolders.length === 1 ? corpState.majorityBonus : Math.floor((corpState.majorityBonus + corpState.minorityBonus) / majorityHolders.length);
-      for (const h of majorityHolders) {
-        const pIndex = newPlayers.findIndex(p => p.id === h.id);
-        newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + majorityPayout };
-        newState.logs.push(`${newPlayers[pIndex].name} gets majority bonus for ${dCorp} ($${majorityPayout.toLocaleString()}).`);
-      }
+        if (majorityHolders.length === 1 && minorityHolders.length === 0) {
+          const totalPayout = corpState.majorityBonus + corpState.minorityBonus;
+          for (const h of majorityHolders) {
+            const pIndex = newPlayers.findIndex(p => p.id === h.id);
+            newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + totalPayout };
+            newState.logs.push(`${newPlayers[pIndex].name} gets majority and minority bonus for ${dCorp} ($${totalPayout.toLocaleString()}).`);
+          }
+        } else {
+          const majorityPayout = majorityHolders.length === 1 ? corpState.majorityBonus : Math.floor((corpState.majorityBonus + corpState.minorityBonus) / majorityHolders.length);
+          for (const h of majorityHolders) {
+            const pIndex = newPlayers.findIndex(p => p.id === h.id);
+            newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + majorityPayout };
+            newState.logs.push(`${newPlayers[pIndex].name} gets majority bonus for ${dCorp} ($${majorityPayout.toLocaleString()}).`);
+          }
 
-      if (majorityHolders.length === 1 && minorityHolders.length > 0) {
-        const minorityPayout = Math.floor(corpState.minorityBonus / minorityHolders.length);
-        for (const h of minorityHolders) {
-          const pIndex = newPlayers.findIndex(p => p.id === h.id);
-          newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + minorityPayout };
-          newState.logs.push(`${newPlayers[pIndex].name} gets minority bonus for ${dCorp} ($${minorityPayout.toLocaleString()}).`);
+          if (majorityHolders.length === 1 && minorityHolders.length > 0) {
+            const minorityPayout = Math.floor(corpState.minorityBonus / minorityHolders.length);
+            for (const h of minorityHolders) {
+              const pIndex = newPlayers.findIndex(p => p.id === h.id);
+              newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + minorityPayout };
+              newState.logs.push(`${newPlayers[pIndex].name} gets minority bonus for ${dCorp} ($${minorityPayout.toLocaleString()}).`);
+            }
+          }
         }
       }
-    }
   }
   
   newState.players = newPlayers;

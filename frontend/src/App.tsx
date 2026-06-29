@@ -21,16 +21,39 @@ function App() {
     let cleanLog = logStr.replace('---', '').replace(/🤖 /g, '');
     let elements = [];
     
-    // Most logs start with the player's name
+    const corpColors: Record<string, string> = {
+      Tower: 'var(--corp-tower)',
+      Luxor: 'var(--corp-luxor)',
+      American: 'var(--corp-american)',
+      Worldwide: 'var(--corp-worldwide)',
+      Festival: 'var(--corp-festival)',
+      Imperial: 'var(--corp-imperial)',
+      Continental: 'var(--corp-continental)'
+    };
+    
+    // Check for player names
     const player = gameState.players.find(p => cleanLog.startsWith(p.name.replace('🤖 ', '')));
+    let namePart = '';
     
     if (player) {
-      const name = player.name.replace('🤖 ', '');
-      elements.push(<span key="name" style={{ color: player.color, fontWeight: 'bold' }}>{name}</span>);
-      elements.push(<span key="rest">{cleanLog.substring(name.length)}</span>);
-    } else {
-      elements.push(<span key="rest">{cleanLog}</span>);
+      namePart = player.name.replace('🤖 ', '');
+      elements.push(<span key="name" style={{ color: player.color, fontWeight: 'bold' }}>{namePart}</span>);
+      cleanLog = cleanLog.substring(namePart.length);
     }
+
+    // Now split the rest by corp names and colorize them
+    // We can do a simple regex or split
+    const corpNames = Object.keys(corpColors).join('|');
+    const regex = new RegExp(`(${corpNames})`, 'g');
+    
+    const parts = cleanLog.split(regex);
+    parts.forEach((part, idx) => {
+      if (corpColors[part]) {
+        elements.push(<span key={idx} style={{ color: corpColors[part], fontWeight: 'bold' }}>{part}</span>);
+      } else if (part) {
+        elements.push(<span key={idx}>{part}</span>);
+      }
+    });
 
     return (
       <React.Fragment key={i}>
@@ -235,14 +258,15 @@ function App() {
                         <th key={p.id} className={p.id === me?.id ? 'me-col' : (p.id === activePlayerId ? 'active-player-col' : '')} style={{ textAlign: 'right' }}>
                           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px' }}>
                             {medal}
-                            <span style={{ color: p.color }}>{p.name} {p.id === me?.id ? '(Me)' : ''}</span>
+                            <span style={{ color: p.color }}>{p.name.replace(' (Me)', '').replace(' (You)', '')}</span>
                           </div>
                         </th>
                       );
                     });
                   })()}
                   <th></th>
-                  <th></th>
+                  <th style={{ minWidth: '50px', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></th>
+                  <th style={{ minWidth: '60px' }}></th>
                 </tr>
               </thead>
               <tbody>
@@ -252,7 +276,7 @@ function App() {
                     const fin = getPlayerFinancials(gameState, p.id);
                     return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>${fin.cash.toLocaleString()}</td>;
                   })}
-                  <td style={{ border: 'none' }}></td>
+                  <td style={{ border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></td>
                   <td style={{ border: 'none' }}></td>
                 </tr>
                 <tr>
@@ -270,7 +294,7 @@ function App() {
                     const fin = getPlayerFinancials(gameState, p.id);
                     return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>${fin.stockValue.toLocaleString()}</td>;
                   })}
-                  <td style={{ border: 'none' }}></td>
+                  <td style={{ border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></td>
                   <td style={{ border: 'none' }}></td>
                 </tr>
                 <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.2)' }}>
@@ -279,14 +303,14 @@ function App() {
                     const fin = getPlayerFinancials(gameState, p.id);
                     return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right', fontWeight: 'bold' }}>${fin.netWorth.toLocaleString()}</td>;
                   })}
-                  <td style={{ border: 'none' }}></td>
+                  <td style={{ border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></td>
                   <td style={{ border: 'none' }}></td>
                 </tr>
                 
                 <tr>
                   <td style={{ padding: '10px 0', fontWeight: 'bold', border: 'none' }}>Corporations</td>
                   {gameState.players.map(p => <td key={p.id} style={{ border: 'none' }}></td>)}
-                  <td style={{ fontWeight: 'bold', border: 'none' }}>Avail</td>
+                  <td style={{ fontWeight: 'bold', border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)', paddingLeft: '8px' }}>Avail</td>
                   <td style={{ fontWeight: 'bold', border: 'none' }}>Price</td>
                   <td style={{ border: 'none' }}></td>
                 </tr>
@@ -314,7 +338,7 @@ function App() {
                           </td>
                         );
                       })}
-                      <td style={{ textAlign: 'right' }}>{cState.isActive ? cState.availableStocks : '-'}</td>
+                      <td style={{ textAlign: 'right', borderLeft: '2px solid rgba(255,255,255,0.2)', paddingLeft: '8px' }}>{cState.isActive ? cState.availableStocks : '-'}</td>
                       <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                         {cState.isActive ? `$${cState.stockPrice.toLocaleString()}` : '-'}
                       </td>
@@ -476,7 +500,7 @@ function App() {
                   })()}
                 </h2>
                 
-                <table style={{ width: '100%', textAlign: 'left', borderSpacing: '0 15px', marginBottom: '2rem' }}>
+                <table style={{ width: 'auto', margin: '0 auto', textAlign: 'left', borderSpacing: '40px 15px', marginBottom: '2rem', fontSize: '1.2rem' }}>
                   <thead>
                     <tr style={{ color: 'var(--text-muted)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                       <th>Rank</th>
@@ -494,7 +518,7 @@ function App() {
                             <td>
                               #{index + 1}
                             </td>
-                            <td style={{ color: p.color }}>{p.name.replace('🤖 ', '')} {p.id === socket?.id && '(You)'}</td>
+                            <td style={{ color: p.color }}>{p.name.replace('🤖 ', '')}</td>
                             <td style={{ color: 'var(--primary)' }}>${fin.netWorth.toLocaleString()}</td>
                           </tr>
                         );
