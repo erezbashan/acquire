@@ -60,8 +60,8 @@ function App() {
     if (logStr.includes('founded')) emoji = '🏢 ';
     else if (logStr.includes('bought')) emoji = '💰 ';
     else if (logStr.includes('discarded')) emoji = '🗑️ ';
-    else if (logStr.includes('gets majority') || logStr.includes('gets minority')) emoji = '💵 ';
-    else if (logStr.includes('played tile')) emoji = '🀄 ';
+    else if (logStr.includes('gets bonus')) emoji = '💵 ';
+    else if (logStr.includes('played tile')) emoji = '⬜ ';
     else if (logStr.includes('Merger!')) emoji = '💥 ';
     else if (logStr.includes('grows by')) emoji = '📈 ';
     else if (logStr.includes('resolved')) emoji = '⚖️ ';
@@ -345,7 +345,7 @@ function App() {
                   const highest = holders.length > 0 ? holders[0].count : 0;
                   const majority = holders.filter(h => h.count === highest).map(h => h.id);
                   const secondHighest = holders.find(h => h.count < highest)?.count;
-                  const minority = secondHighest ? holders.filter(h => h.count === secondHighest).map(h => h.id) : [];
+                  const minority = (majority.length > 1 || !secondHighest) ? [] : holders.filter(h => h.count === secondHighest).map(h => h.id);
 
                   return (
                     <tr key={cName} className={!cState.isActive ? 'corp-inactive' : ''}>
@@ -669,24 +669,17 @@ function App() {
             <div className="log-messages">
               {(() => {
                 const reversedLogs = [...gameState.logs].reverse();
+                let separatorCount = 0;
                 let cutoffIndex = -1;
-                if (me) {
-                  const isMyTurn = gameState.turnOrder[gameState.currentPlayerIndex] === me.id;
-                  const turns: number[] = [];
-                  reversedLogs.forEach((log, idx) => {
-                    if (log.startsWith(`${me.name.replace('🤖 ', '')} played tile`)) {
-                      turns.push(idx);
-                    }
-                  });
-
-                  if (isMyTurn) {
-                    const hasPlayedTileThisTurn = gameState.phase !== 'PlayTile';
-                    cutoffIndex = hasPlayedTileThisTurn ? (turns.length > 1 ? turns[1] : turns[0]) : (turns.length > 0 ? turns[0] : -1);
-                  } else {
-                    cutoffIndex = turns.length > 1 ? turns[1] : (turns.length > 0 ? turns[0] : -1);
+                for (let i = 0; i < reversedLogs.length; i++) {
+                  if (reversedLogs[i].endsWith('---')) separatorCount++;
+                  // Show the current active turn plus the last N full turns (one full round)
+                  if (separatorCount === gameState.players.length) {
+                    cutoffIndex = i;
+                    break;
                   }
                 }
-                const logsToShow = cutoffIndex >= 0 ? reversedLogs.slice(0, cutoffIndex + 1) : reversedLogs.slice(0, 15);
+                const logsToShow = cutoffIndex >= 0 ? reversedLogs.slice(0, cutoffIndex + 1) : reversedLogs;
                 return logsToShow.map((log, i) => renderLogLine(log, i));
               })()}
             </div>

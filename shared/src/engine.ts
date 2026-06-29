@@ -158,7 +158,7 @@ export function playTile(state: GameState, playerId: string, tileId: TileId): Ga
       ...newState.corporations[corp],
       size: newState.corporations[corp].size + count
     };
-    newState.logs.push(`${corp} grows by ${count} tile(s).`);
+    // Removed "grows by" log
   } else if (adjacentCorps.length > 1) {
     // Merger
     const safeCorps = adjacentCorps.filter(c => newState.corporations[c].isSafe);
@@ -261,7 +261,7 @@ export function chooseMergeSurvivor(state: GameState, playerId: string, survivor
 function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, defunctCorps: Corporation[]): GameState {
   let newState = { ...state };
   newState.pendingSurvivorChoice = undefined;
-  newState.logs.push(`Merger! ${survivorName} takes over ${defunctCorps.join(', ')}.`);
+  newState.logs.push(`Merger! ${survivorName} takes over ${defunctCorps.join(', ')}`);
 
   const newBoard = newState.board.map(row => [...row]);
 
@@ -320,7 +320,7 @@ function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, de
               money: newPlayers[pIndex].money + totalPayout,
               stats: { ...newPlayers[pIndex].stats, firstBonuses: newPlayers[pIndex].stats.firstBonuses + 1, secondBonuses: newPlayers[pIndex].stats.secondBonuses + 1 }
             };
-            newState.logs.push(`${newPlayers[pIndex].name} gets majority and minority bonus for ${dCorp} ($${totalPayout.toLocaleString()}).`);
+            newState.logs.push(`${newPlayers[pIndex].name} gets bonus for ${dCorp} ($${totalPayout.toLocaleString()})`);
           }
         } else {
           const majorityPayout = majorityHolders.length === 1 ? corpState.majorityBonus : Math.floor((corpState.majorityBonus + corpState.minorityBonus) / majorityHolders.length);
@@ -331,7 +331,7 @@ function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, de
               money: newPlayers[pIndex].money + majorityPayout,
               stats: { ...newPlayers[pIndex].stats, firstBonuses: newPlayers[pIndex].stats.firstBonuses + 1 }
             };
-            newState.logs.push(`${newPlayers[pIndex].name} gets majority bonus for ${dCorp} ($${majorityPayout.toLocaleString()}).`);
+            newState.logs.push(`${newPlayers[pIndex].name} gets bonus for ${dCorp} ($${majorityPayout.toLocaleString()})`);
           }
 
           if (majorityHolders.length === 1 && minorityHolders.length > 0) {
@@ -343,7 +343,7 @@ function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, de
                 money: newPlayers[pIndex].money + minorityPayout,
                 stats: { ...newPlayers[pIndex].stats, secondBonuses: newPlayers[pIndex].stats.secondBonuses + 1 }
               };
-              newState.logs.push(`${newPlayers[pIndex].name} gets minority bonus for ${dCorp} ($${minorityPayout.toLocaleString()}).`);
+              newState.logs.push(`${newPlayers[pIndex].name} gets bonus for ${dCorp} ($${minorityPayout.toLocaleString()})`);
             }
           }
         }
@@ -709,9 +709,9 @@ export function endTurn(state: GameState): GameState {
       ...cp,
       tiles: [...cp.tiles, drawnTile]
     };
-    newState.logs.push(`${cp.name} ends turn and draws a tile. ---`);
+    newState.logs.push(`---`);
   } else {
-    newState.logs.push(`${cp.name} ends turn (no tiles left). ---`);
+    newState.logs.push(`---`);
   }
   
   let nextPlayerIndex = (newState.currentPlayerIndex + 1) % newState.players.length;
@@ -741,7 +741,7 @@ export function endTurn(state: GameState): GameState {
   
   if (discardedCount > 0) {
     newState.players[nextPlayerIndex] = np;
-    newState.logs.push(`${np.name} automatically discarded ${discardedCount} unplayable tile(s) and drew replacements.`);
+    newState.logs.push(`${np.name} automatically discarded ${discardedCount} unplayable tile(s) and drew replacements`);
   }
 
   // Record history
