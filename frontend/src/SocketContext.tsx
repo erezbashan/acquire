@@ -14,6 +14,8 @@ interface SocketContextType {
   foundCorporation: (gameId: string, corpName: string) => void;
   buyStock: (gameId: string, corpName: string) => void;
   endTurn: (gameId: string) => void;
+  rejoinGame: (gameId: string) => void;
+  playerId: string;
 }
 
 const SocketContext = createContext<SocketContextType | null>(null);
@@ -28,9 +30,19 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [socket, setSocket] = useState<Socket | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
   const [connected, setConnected] = useState(false);
+  const [playerId] = useState(() => {
+    let localPlayerId = localStorage.getItem('acquire_player_id');
+    if (!localPlayerId) {
+      localPlayerId = `p-${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('acquire_player_id', localPlayerId);
+    }
+    return localPlayerId;
+  });
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3001'); // Ensure backend runs here
+    const newSocket = io(window.location.origin.replace('3000', '3001'), {
+      auth: { playerId }
+    });
     setSocket(newSocket);
 
     newSocket.on('connect', () => {
@@ -95,9 +107,13 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     socket?.emit('endTurn', { gameId });
   };
 
+  const rejoinGame = (gameId: string) => {
+    socket?.emit('rejoinGame', { gameId });
+  };
+
   return (
     <SocketContext.Provider value={{
-      socket, gameState, connected, createGame, joinGame, addBot, startGame, playTile, foundCorporation, buyStock, endTurn
+      socket, gameState, connected, createGame, joinGame, addBot, startGame, playTile, foundCorporation, buyStock, endTurn, rejoinGame, playerId
     }}>
       {children}
     </SocketContext.Provider>

@@ -33,12 +33,13 @@ function generateGameId() {
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
+  const playerId = socket.handshake.auth?.playerId || socket.id;
 
   socket.on('createGame', ({ username }, callback) => {
     const gameId = generateGameId();
     const state = createInitialGameState(gameId);
     const newPlayer: Player = {
-      id: socket.id,
+      id: playerId,
       name: username,
       color: PLAYER_COLORS[0],
       money: 6000,
@@ -66,7 +67,7 @@ io.on('connection', (socket) => {
 
     const colorIndex = state.players.length % PLAYER_COLORS.length;
     const newState = addPlayer(state, {
-      id: socket.id,
+      id: playerId,
       name: username,
       color: PLAYER_COLORS[colorIndex],
       money: 6000,
@@ -111,6 +112,14 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('rejoinGame', ({ gameId }) => {
+    const state = games[gameId];
+    if (state) {
+      socket.join(gameId);
+      socket.emit('gameState', state);
+    }
+  });
+
   socket.on('startGame', ({ gameId }) => {
     const state = games[gameId];
     if (state) {
@@ -124,7 +133,7 @@ io.on('connection', (socket) => {
   socket.on('playTile', ({ gameId, tileId }) => {
     const state = games[gameId];
     if (state) {
-      const newState = playTile(state, socket.id, tileId);
+      const newState = playTile(state, playerId, tileId);
       games[gameId] = newState;
       io.to(gameId).emit('gameState', newState);
       processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));
@@ -134,7 +143,7 @@ io.on('connection', (socket) => {
   socket.on('foundCorporation', ({ gameId, corpName }) => {
     const state = games[gameId];
     if (state) {
-      const newState = foundCorporation(state, socket.id, corpName);
+      const newState = foundCorporation(state, playerId, corpName);
       games[gameId] = newState;
       io.to(gameId).emit('gameState', newState);
       processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));
@@ -144,7 +153,7 @@ io.on('connection', (socket) => {
   socket.on('buyStock', ({ gameId, corpName }) => {
     const state = games[gameId];
     if (state) {
-      const newState = buyStock(state, socket.id, corpName);
+      const newState = buyStock(state, playerId, corpName);
       games[gameId] = newState;
       io.to(gameId).emit('gameState', newState);
       processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));
@@ -162,19 +171,19 @@ io.on('connection', (socket) => {
   });
 
   socket.on('chooseMergeSurvivor', ({ gameId, survivorName }) => {
-    let state = games[gameId];
+    const state = games[gameId];
     if (state) {
-      state = chooseMergeSurvivor(state, socket.id, survivorName);
-      games[gameId] = state;
-      io.to(gameId).emit('gameState', state);
-      processBotTurn(state, (s) => emitStateAndProcessBots(gameId, s));
+      const newState = chooseMergeSurvivor(state, playerId, survivorName);
+      games[gameId] = newState;
+      io.to(gameId).emit('gameState', newState);
+      processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));
     }
   });
 
   socket.on('resolveMergeStocks', ({ gameId, sellCount, tradeCount, keepCount }) => {
     const state = games[gameId];
     if (state) {
-      const newState = resolveMergeStocks(state, socket.id, sellCount, tradeCount, keepCount);
+      const newState = resolveMergeStocks(state, playerId, sellCount, tradeCount, keepCount);
       games[gameId] = newState;
       io.to(gameId).emit('gameState', newState);
       processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));

@@ -4,7 +4,7 @@ import { calculateNetWorth, getPlayerFinancials, getStockPrice } from '@acquire/
 import './App.css';
 
 function App() {
-  const { connected, gameState, createGame, joinGame, addBot, startGame, playTile, foundCorporation, buyStock, endTurn, socket } = useSocket();
+  const { connected, gameState, createGame, joinGame, addBot, startGame, playTile, foundCorporation, buyStock, endTurn, rejoinGame, playerId } = useSocket();
   const [username, setUsername] = useState('');
   const [gameIdInput, setGameIdInput] = useState('');
   
@@ -93,7 +93,7 @@ function App() {
     );
   };
 
-  const me = gameState?.players.find(p => p.id === socket?.id);
+  const me = gameState?.players.find(p => p.id === playerId);
   const pm = gameState?.pendingMerge;
   const dCorp = pm?.defunct[pm.currentDefunctIndex];
   const aCorp = pm?.acquirer;
@@ -111,6 +111,7 @@ function App() {
     const game = params.get('game');
     if (game && !gameIdInput) {
       setGameIdInput(game);
+      rejoinGame(game);
     }
   }, []);
 
@@ -161,7 +162,7 @@ function App() {
     : gameState.turnOrder[gameState.currentPlayerIndex];
     
   const activePlayerName = gameState.players.find(p => p.id === activePlayerId)?.name || 'Someone';
-  const isMyTurn = activePlayerId === socket?.id;
+  const isMyTurn = activePlayerId === playerId;
   
   const keepCount = myDefunctStocks - sellCount - tradeCount;
 
@@ -396,7 +397,7 @@ function App() {
 
           {me && (
             <>
-              {gameState.phase === 'FoundCorporation' && gameState.pendingFounding?.playerId === socket?.id && (
+              {gameState.phase === 'FoundCorporation' && gameState.pendingFounding?.playerId === playerId && (
                 <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
                   <div className="modal-content glass" style={{ padding: '2rem', minWidth: '300px', textAlign: 'center' }}>
                     <h3>Found a Corporation</h3>
@@ -433,7 +434,7 @@ function App() {
                   </div>
                 </div>
               )}
-              {gameState.phase === 'ChooseMergeSurvivor' && gameState.pendingSurvivorChoice?.playerId === socket?.id && (
+              {gameState.phase === 'ChooseMergeSurvivor' && gameState.pendingSurvivorChoice?.playerId === playerId && (
                 <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
                   <div className="modal-content glass" style={{ padding: '2rem', minWidth: '300px', textAlign: 'center' }}>
                     <h3>Choose Surviving Corporation</h3>
