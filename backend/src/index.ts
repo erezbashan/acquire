@@ -74,11 +74,17 @@ io.on('connection', (socket) => {
   socket.on('addBot', ({ gameId }) => {
     const state = games[gameId];
     if (state && state.phase === 'Lobby') {
-      const botNumber = state.players.filter(p => p.isBot).length + 1;
-      const botId = `bot-${botNumber}-${Math.random().toString(36).substr(2, 5)}`;
+      const botNames = ['HAL', 'EVE', 'ZIM', 'GIR', 'BOB', 'TOM', 'LEO', 'MAX', 'SAM', 'ROY', 'BEN', 'DAN', 'RAY', 'JON'];
+      const usedNames = state.players.map(p => p.name.replace('🤖 ', ''));
+      const availableNames = botNames.filter(n => !usedNames.includes(n));
+      const botName = availableNames.length > 0 
+        ? availableNames[Math.floor(Math.random() * availableNames.length)] 
+        : `Bot${state.players.length}`;
+
+      const botId = `bot-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
       const newState = addPlayer(state, {
         id: botId,
-        name: `Bot ${botNumber}`,
+        name: `🤖 ${botName}`,
         money: 0,
         tiles: [],
         stocks: { Tower: 0, Luxor: 0, American: 0, Worldwide: 0, Festival: 0, Imperial: 0, Continental: 0 },

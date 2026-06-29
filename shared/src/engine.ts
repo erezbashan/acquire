@@ -281,6 +281,9 @@ function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, de
     size: finalSurvivorSize
   };
 
+  // Immediately update stats so the UI reflects the new size and safety
+  newState = updateCorporationStats(newState);
+
   // 2. Pay out bonuses
   const newPlayers = [...newState.players];
   for (const dCorp of defunctCorps) {
@@ -635,6 +638,13 @@ export function buyStock(state: GameState, playerId: string, corpName: Corporati
   return newState;
 }
 
+export function isTileUnplayable(state: GameState, tile: Tile): boolean {
+  const neighbors = getAdjacentCells(state.board, tile.row, tile.col);
+  const adjacentCorps = Array.from(new Set(neighbors.filter(n => n.val !== 'Unincorporated').map(n => n.val as Corporation)));
+  const safeCorps = adjacentCorps.filter(c => state.corporations[c].isSafe);
+  return safeCorps.length >= 2;
+}
+
 function canEndGame(state: GameState): boolean {
   const activeCorps = Object.values(state.corporations).filter(c => c.isActive);
   if (activeCorps.length === 0) return false;
@@ -675,7 +685,42 @@ export function endTurn(state: GameState): GameState {
     newState.logs.push(`${cp.name} ends turn (no tiles left). ---`);
   }
   
-  const nextPlayerIndex = (newState.currentPlayerIndex + 1) % newState.players.length;
+  let nextPlayerIndex = (newState.currentPlayerIndex + 1) % newState.players.length;
+
+  // Discard unplayable tiles for the next player
+  let np = newState.players[nextPlayerIndex];
+  let discardedCount = 0;
+  while (true) {
+    const unplayableIndex = np.tiles.findIndex(t => isTileUnplayable(newState, t));
+    if (unplayableIndex === -1) break;
+    
+    // Discard it
+    const discardedTile = np.tiles[unplayableIndex];
+    let newTiles = np.tiles.filter((_, i) => i !== unplayableIndex);
+    
+    // Draw a new one
+    if (newState.availableTiles.length > 0) {
+      const tileIndex = Math.floor(Math.random() * newState.availableTiles.length);
+      const drawnTile = newState.availableTiles[tileIndex];
+      newState.availableTiles = newState.availableTiles.filter((_, i) => i !== tileIndex);
+      newTiles.push(drawnTile);
+    }
+    
+    np = { ...np, tiles: newTiles };
+    discardedCount++;
+  }
+  
+  if (discardedCount > 0) {
+    newState.players[nextPlayerIndex] = np;
+    newState.logs.push(`${np.name} automatically discarded ${discardedCount} unplayable tile(s) and drew replacements.`);
+  }
+
+  // Record history
+  const netWorths: Record<string, number> = {};
+  for (const p of newState.players) {
+    netWorths[p.id] = getPlayerFinancials(newState, p.id).netWorth;
+  }
+  newState.history = [...(newState.history || []), { turn: (newState.history?.length || 0) + 1, netWorths }];
 
   return {
     ...newState,

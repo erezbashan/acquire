@@ -58,6 +58,7 @@ export interface GameState {
   sharesBoughtThisTurn: number; // Max 3
   turnOrder: string[]; // Player IDs
   logs: string[];
+  history: { turn: number, netWorths: Record<string, number> }[];
   
   // Pending state for merges
   pendingMerge?: {

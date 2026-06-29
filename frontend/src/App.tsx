@@ -14,6 +14,7 @@ function App() {
 
   // Corp Details Modal State
   const [selectedCorp, setSelectedCorp] = useState<string | null>(null);
+  const [showFullLogs, setShowFullLogs] = useState(false);
 
   const me = gameState?.players.find(p => p.id === socket?.id);
   const pm = gameState?.pendingMerge;
@@ -54,6 +55,7 @@ function App() {
           <input 
             type="text" 
             placeholder="Enter Username" 
+            maxLength={3}
             value={username} 
             onChange={e => setUsername(e.target.value)} 
           />
@@ -130,10 +132,13 @@ function App() {
                   
                   const adjCorps = new Set(neighbors.filter(n => n && n !== 'Unincorporated'));
                   const adjUnincorp = neighbors.filter(n => n === 'Unincorporated');
+                  const safeAdjCorps = Array.from(adjCorps).filter(c => gameState.corporations[c as string]?.isSafe);
                   
                   const availableCorps = Object.values(gameState.corporations).filter(c => !c.isActive);
                   
-                  if (adjCorps.size > 1) {
+                  if (safeAdjCorps.length >= 2) {
+                    tileIcon = '🚫';
+                  } else if (adjCorps.size > 1) {
                     tileIcon = '💥';
                   } else if (adjCorps.size === 0 && adjUnincorp.length > 0 && availableCorps.length > 0) {
                     tileIcon = '✨';
@@ -145,7 +150,7 @@ function App() {
                     key={cIdx} 
                     className={`board-cell ${cell ? cell.toLowerCase() : ''} ${isPlayable ? 'playable' : ''}`}
                     onClick={() => {
-                      if (isPlayable && isMyTurn && gameState.phase === 'PlayTile') {
+                      if (isPlayable && tileIcon !== '🚫' && isMyTurn && gameState.phase === 'PlayTile') {
                         playTile(gameState.id, cellId);
                       }
                     }}
@@ -266,9 +271,9 @@ function App() {
                   const minority = secondHighest ? holders.filter(h => h.count === secondHighest).map(h => h.id) : [];
 
                   return (
-                    <tr key={cName}>
+                    <tr key={cName} className={!cState.isActive ? 'corp-inactive' : ''}>
                       <td className={`corp-name ${cName.toLowerCase()}`} style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setSelectedCorp(cName)}>
-                        {cName} {cState.isSafe && '🛡️'} {!cState.isActive && '(Inactive)'}
+                        {cName} {cState.isSafe && '🛡️'} {!cState.isActive && '💤'}
                       </td>
                       {gameState.players.map(p => {
                         const isMajority = highest > 0 && majority.includes(p.id);
@@ -448,7 +453,6 @@ function App() {
                     <tr style={{ color: 'var(--text-muted)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                       <th>Rank</th>
                       <th>Player</th>
-                      <th>Cash</th>
                       <th>Net Worth</th>
                     </tr>
                   </thead>
@@ -465,14 +469,61 @@ function App() {
                               {index === 2 && gameState.players.length > 3 && '🥉 '}
                               #{index + 1}
                             </td>
-                            <td>{p.name} {p.id === socket?.id && '(You)'}</td>
-                            <td>${fin.cash.toLocaleString()}</td>
+                            <td>{p.name.replace('🤖 ', '')} {p.id === socket?.id && '(You)'}</td>
                             <td style={{ color: 'var(--primary)' }}>${fin.netWorth.toLocaleString()}</td>
                           </tr>
                         );
                       })}
                   </tbody>
                 </table>
+
+                {gameState.history && gameState.history.length > 0 && (
+                  <div style={{ marginBottom: '2rem' }}>
+                    <h3 style={{ marginBottom: '1rem', color: 'var(--text-muted)', fontSize: '1.2rem' }}>Net Worth Over Time</h3>
+                    <div style={{ background: 'rgba(0,0,0,0.3)', padding: '20px 10px', borderRadius: '8px' }}>
+                      <svg width="100%" height="150" viewBox="0 0 100 100" preserveAspectRatio="none" style={{ overflow: 'visible' }}>
+                        {(() => {
+                          const history = gameState.history;
+                          const maxNW = Math.max(...history.flatMap(h => Object.values(h.netWorths)));
+                          const minNW = 6000;
+                          const range = Math.max(maxNW - minNW, 1000);
+                          const colors = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#c084fc', '#f472b6'];
+                          
+                          return gameState.players.map((p, i) => {
+                            const points = history.map((h, step) => {
+                              const x = (step / Math.max(1, history.length - 1)) * 100;
+                              const nw = h.netWorths[p.id] || minNW;
+                              const y = 100 - ((nw - minNW) / range) * 100;
+                              return `${x},${y}`;
+                            }).join(' ');
+                            
+                            return (
+                              <polyline 
+                                key={p.id}
+                                points={points}
+                                fill="none"
+                                stroke={colors[i % colors.length]}
+                                strokeWidth="2"
+                                vectorEffect="non-scaling-stroke"
+                              />
+                            );
+                          });
+                        })()}
+                      </svg>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', marginTop: '15px', flexWrap: 'wrap', fontSize: '0.9rem' }}>
+                        {gameState.players.map((p, i) => {
+                           const colors = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#c084fc', '#f472b6'];
+                           return (
+                             <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                               <div style={{ width: '12px', height: '12px', background: colors[i % colors.length], borderRadius: '50%' }}></div>
+                               {p.name.replace('🤖 ', '')}
+                             </div>
+                           );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
                 
                 <button 
                   className="tile-btn"
@@ -514,20 +565,58 @@ function App() {
           <div className="logs glass">
             <h3>Game Logs</h3>
             <div className="log-messages">
+              {(() => {
+                const reversedLogs = [...gameState.logs].reverse();
+                let cutoffIndex = -1;
+                if (me) {
+                  cutoffIndex = reversedLogs.findIndex(log => log.startsWith(`${me.name.replace('🤖 ', '')} played tile`));
+                }
+                const logsToShow = cutoffIndex >= 0 ? reversedLogs.slice(0, cutoffIndex + 1) : reversedLogs.slice(0, 10);
+                return logsToShow.map((log, i) => (
+                  <React.Fragment key={i}>
+                    {log.endsWith('---') && i !== 0 && (
+                      <hr style={{ margin: '8px 0', border: 'none', borderBottom: '1px dashed rgba(255,255,255,0.3)' }} />
+                    )}
+                    <div style={{ color: log.endsWith('---') ? 'var(--text-muted)' : 'inherit' }}>
+                      {log.replace('---', '').replace('🤖 ', '')}
+                    </div>
+                  </React.Fragment>
+                ));
+              })()}
+            </div>
+            {gameState.logs.length > 0 && (
+              <button 
+                className="action-btn" 
+                style={{ marginTop: '0.5rem', width: '100%', fontSize: '0.8rem', padding: '0.4rem' }}
+                onClick={() => setShowFullLogs(true)}
+              >
+                View Full Game Log
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {showFullLogs && (
+        <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }} onClick={() => setShowFullLogs(false)}>
+          <div className="modal-content glass" style={{ padding: '2rem', minWidth: '400px', maxWidth: '600px', maxHeight: '80vh', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ marginTop: 0 }}>Full Game Log</h3>
+            <div className="log-messages" style={{ overflowY: 'auto', flex: 1, paddingRight: '10px' }}>
               {[...gameState.logs].reverse().map((log, i) => (
                 <React.Fragment key={i}>
                   {log.endsWith('---') && i !== 0 && (
                     <hr style={{ margin: '8px 0', border: 'none', borderBottom: '1px dashed rgba(255,255,255,0.3)' }} />
                   )}
                   <div style={{ color: log.endsWith('---') ? 'var(--text-muted)' : 'inherit' }}>
-                    {log.replace('---', '')}
+                    {log.replace('---', '').replace('🤖 ', '')}
                   </div>
                 </React.Fragment>
               ))}
             </div>
+            <button onClick={() => setShowFullLogs(false)} style={{ marginTop: '1rem' }}>Close</button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
