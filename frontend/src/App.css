@@ -203,15 +203,15 @@ header h2 { margin: 0; }
   font-weight: normal;
 }
 
-.scoreboard-table th.active-player-col {
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 6px 6px 0 0;
-}
-
 .scoreboard-table .me-col {
   background-color: rgba(255, 255, 255, 0.1);
   border-left: 1px solid rgba(255, 255, 255, 0.2);
   border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.scoreboard-table th.active-player-col {
+  background-color: rgba(59, 130, 246, 0.4);
+  border-radius: 6px 6px 0 0;
 }
 
 .medal {
