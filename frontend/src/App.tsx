@@ -314,8 +314,8 @@ function App() {
                       <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ 
                         textAlign: 'right', 
                         fontWeight: 'bold',
-                        color: isFirst ? '#fbbf24' : (isSecond ? '#94a3b8' : 'inherit'),
-                        textShadow: isFirst ? '0 0 8px rgba(251, 191, 36, 0.5)' : (isSecond ? '0 0 8px rgba(148, 163, 184, 0.3)' : 'none')
+                        color: isFirst ? '#fbbf24' : (isSecond ? '#d97706' : 'inherit'),
+                        textShadow: isFirst ? '0 0 8px rgba(251, 191, 36, 0.5)' : (isSecond ? '0 0 8px rgba(217, 119, 6, 0.3)' : 'none')
                       }}>
                         ${fin.netWorth.toLocaleString()}
                       </td>
@@ -354,8 +354,8 @@ function App() {
                           <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ 
                             textAlign: 'right',
                             fontWeight: isMajority || isMinority ? 'bold' : 'normal',
-                            color: isMajority ? '#fbbf24' : (isMinority ? '#94a3b8' : 'inherit'),
-                            textShadow: isMajority ? '0 0 8px rgba(251, 191, 36, 0.5)' : (isMinority ? '0 0 8px rgba(148, 163, 184, 0.3)' : 'none')
+                            color: isMajority ? '#fbbf24' : (isMinority ? '#d97706' : 'inherit'),
+                            textShadow: isMajority ? '0 0 8px rgba(251, 191, 36, 0.5)' : (isMinority ? '0 0 8px rgba(217, 119, 6, 0.3)' : 'none')
                           }}>
                             {numStocks}
                           </td>
