@@ -86,7 +86,7 @@ function App() {
           gap: '4px',
           alignItems: 'flex-start'
         }}>
-          {emoji && <span>{emoji}</span>}
+          {emoji && <span style={{ fontSize: '1em', lineHeight: 1, display: 'flex', alignItems: 'center' }}>{emoji}</span>}
           <div style={{ flex: 1 }}>{elements}</div>
         </div>
       </React.Fragment>

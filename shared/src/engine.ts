@@ -145,7 +145,6 @@ export function playTile(state: GameState, playerId: string, tileId: TileId): Ga
         availableCorps,
         size: count
       };
-      newState.logs.push(`${player.name} is founding a corporation...`);
       return newState; // Do not auto-end turn yet
     }
   } else if (adjacentCorps.length === 1) {
