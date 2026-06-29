@@ -727,7 +727,6 @@ export function endTurn(state: GameState): GameState {
     if (unplayableIndex === -1) break;
     
     // Discard it
-    np.tiles.splice(unplayableIndex, 1);
     let newTiles = np.tiles.filter((_, i) => i !== unplayableIndex);
     
     // Draw a new one
