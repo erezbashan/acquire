@@ -264,9 +264,9 @@ function App() {
                       );
                     });
                   })()}
-                  <th></th>
                   <th style={{ minWidth: '50px', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></th>
                   <th style={{ minWidth: '60px' }}></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -278,6 +278,7 @@ function App() {
                   })}
                   <td style={{ border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></td>
                   <td style={{ border: 'none' }}></td>
+                  <td style={{ border: 'none' }}></td>
                 </tr>
                 <tr>
                   <td>Bonus</td>
@@ -285,6 +286,7 @@ function App() {
                     const fin = getPlayerFinancials(gameState, p.id);
                     return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>${fin.bonusValue.toLocaleString()}</td>;
                   })}
+                  <td style={{ border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></td>
                   <td style={{ border: 'none' }}></td>
                   <td style={{ border: 'none' }}></td>
                 </tr>
@@ -296,6 +298,7 @@ function App() {
                   })}
                   <td style={{ border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></td>
                   <td style={{ border: 'none' }}></td>
+                  <td style={{ border: 'none' }}></td>
                 </tr>
                 <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.2)' }}>
                   <td>Net Worth</td>
@@ -304,6 +307,7 @@ function App() {
                     return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right', fontWeight: 'bold' }}>${fin.netWorth.toLocaleString()}</td>;
                   })}
                   <td style={{ border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></td>
+                  <td style={{ border: 'none' }}></td>
                   <td style={{ border: 'none' }}></td>
                 </tr>
                 
