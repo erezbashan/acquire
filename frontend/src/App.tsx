@@ -270,7 +270,7 @@ function App() {
             <table className="scoreboard-table">
               <thead>
                 <tr>
-                  <th>Category</th>
+                  <th></th>
                   {gameState.players.map(p => {
                       return (
                         <th key={p.id} className={` ${p.id === me?.id ? 'me-col' : ''} ${p.id === activePlayerId ? 'active-player-col' : ''}`} style={{ textAlign: 'right', minWidth: '75px' }}>
@@ -344,7 +344,7 @@ function App() {
                 </tr>
                 
                 <tr>
-                  <td style={{ padding: '10px 0', fontWeight: 'bold', border: 'none' }}>Corporations</td>
+                  <td style={{ padding: '10px 0', border: 'none' }}></td>
                   {gameState.players.map(p => <td key={p.id} style={{ border: 'none' }}></td>)}
                   <td style={{ fontWeight: 'bold', border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)', paddingLeft: '8px' }}>Avail</td>
                   <td style={{ fontWeight: 'bold', border: 'none' }}>Price</td>
