@@ -225,11 +225,10 @@ export function chooseMergeSurvivor(state: GameState, playerId: string, survivor
   if (state.phase !== 'ChooseMergeSurvivor' || !state.pendingSurvivorChoice) return state;
   if (state.pendingSurvivorChoice.playerId !== playerId) return state;
 
-  const tileId = state.pendingSurvivorChoice.tileId;
   const match = tileId.match(/^(\d+)([A-Z])$/);
   if (!match) return state;
-  const col = parseInt(match[1]) - 1;
-  const row = match[2].charCodeAt(0) - 65;
+  const row = parseInt(match[1]) - 1;
+  const col = match[2].charCodeAt(0) - 65;
   const tile: Tile = { id: tileId, row, col };
 
   const allCorpsInvolved = state.pendingSurvivorChoice.allCorpsInvolved;
@@ -248,15 +247,16 @@ export function chooseMergeSurvivor(state: GameState, playerId: string, survivor
   return applyMerger(state, tile, survivorName, defunctCorps);
 }
 
-function applyMerger(newState: GameState, tile: Tile, survivorName: Corporation, defunctCorps: Corporation[]): GameState {
+function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, defunctCorps: Corporation[]): GameState {
+  let newState = { ...state };
   newState.pendingSurvivorChoice = undefined;
   newState.logs.push(`Merger! ${survivorName} takes over ${defunctCorps.join(', ')}.`);
 
   const newBoard = newState.board.map(row => [...row]);
 
   // 1. Convert the played tile and all defunct tiles to survivor
-  for (let r = 0; r < BOARD_ROWS; r++) {
-    for (let c = 0; c < BOARD_COLS; c++) {
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 12; c++) {
       if (newBoard[r][c] !== null && defunctCorps.includes(newBoard[r][c] as Corporation)) {
         newBoard[r][c] = 'Unincorporated'; // temporarily make them unincorporated
       }
@@ -266,8 +266,8 @@ function applyMerger(newState: GameState, tile: Tile, survivorName: Corporation,
   const { board: fullyUpdatedBoard } = fillCorporation(newBoard, tile.row, tile.col, survivorName);
   
   let finalSurvivorSize = 0;
-  for (let r = 0; r < BOARD_ROWS; r++) {
-    for (let c = 0; c < BOARD_COLS; c++) {
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 12; c++) {
       if (fullyUpdatedBoard[r][c] === survivorName) {
         finalSurvivorSize++;
       }

@@ -350,18 +350,21 @@ function App() {
               {gameState.phase === 'ChooseMergeSurvivor' && gameState.pendingSurvivorChoice?.playerId === socket?.id && (
                 <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
                   <div className="modal-content glass" style={{ padding: '2rem', minWidth: '300px', textAlign: 'center' }}>
-                    <h3>Tied Merger</h3>
-                    <p style={{ marginBottom: '1.5rem' }}>Choose which corporation survives the merger:</p>
-                    <div className="corp-options" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                      {gameState.pendingSurvivorChoice.tiedCorps.map(c => (
-                        <button 
-                          key={c} 
-                          className={`tile-btn ${c.toLowerCase()}`} 
-                          onClick={() => socket.emit('chooseMergeSurvivor', { gameId: gameState.id, survivorName: c })}
-                        >
-                          {c}
-                        </button>
-                      ))}
+                    <h3>Choose Surviving Corporation</h3>
+                    <p>A merger occurred! Choose which corporation will survive:</p>
+                    <div className="corp-buttons" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                      {gameState.pendingSurvivorChoice.tiedCorps.map(corp => {
+                        const defunctCorps = gameState.pendingSurvivorChoice!.allCorpsInvolved.filter(c => c !== corp);
+                        return (
+                          <button 
+                            key={corp}
+                            className={`tile-btn ${corp.toLowerCase()}`}
+                            onClick={() => socket.emit('chooseMergeSurvivor', { gameId: gameState.id, survivorName: corp })}
+                          >
+                            Merge {defunctCorps.join(', ')} into {corp}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
