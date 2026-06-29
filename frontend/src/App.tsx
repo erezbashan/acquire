@@ -666,7 +666,6 @@ function App() {
           )}
 
           <div className="logs glass">
-            <h3>Game Logs</h3>
             <div className="log-messages">
               {(() => {
                 const reversedLogs = [...gameState.logs].reverse();
