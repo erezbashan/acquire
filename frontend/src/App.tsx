@@ -345,7 +345,7 @@ function App() {
                 
                 <tr>
                   <td style={{ padding: '10px 0', border: 'none' }}></td>
-                  {gameState.players.map(p => <td key={p.id} style={{ border: 'none' }}></td>)}
+                  <td colSpan={gameState.players.length} style={{ textAlign: 'center', border: '1px solid rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.6)', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Shares</td>
                   <td style={{ fontWeight: 'bold', border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)', paddingLeft: '8px' }}>Avail</td>
                   <td style={{ fontWeight: 'bold', border: 'none' }}>Price</td>
                   <td style={{ border: 'none' }}></td>
