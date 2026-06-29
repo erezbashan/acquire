@@ -274,7 +274,7 @@ function App() {
                   <th>Category</th>
                   {gameState.players.map(p => {
                       return (
-                        <th key={p.id} className={` ${p.id === me?.id ? 'me-col' : ''} ${p.id === activePlayerId ? 'active-player-col' : ''}`} style={{ textAlign: 'right' }}>
+                        <th key={p.id} className={` ${p.id === me?.id ? 'me-col' : ''} ${p.id === activePlayerId ? 'active-player-col' : ''}`} style={{ textAlign: 'right', minWidth: '75px' }}>
                           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px' }}>
                             <span style={{ color: p.color }}>{p.name.replace(' (Me)', '').replace(' (You)', '')}</span>
                           </div>
@@ -291,7 +291,7 @@ function App() {
                   <td>Cash</td>
                   {gameState.players.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
-                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>${fin.cash.toLocaleString()}</td>;
+                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right', minWidth: '75px' }}>${fin.cash.toLocaleString()}</td>;
                   })}
                   <td style={{ border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></td>
                   <td style={{ border: 'none' }}></td>
@@ -301,7 +301,7 @@ function App() {
                   <td>Bonus</td>
                   {gameState.players.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
-                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>${fin.bonusValue.toLocaleString()}</td>;
+                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right', minWidth: '75px' }}>${fin.bonusValue.toLocaleString()}</td>;
                   })}
                   <td style={{ border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></td>
                   <td style={{ border: 'none' }}></td>
@@ -311,7 +311,7 @@ function App() {
                   <td>Stocks Val</td>
                   {gameState.players.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
-                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>${fin.stockValue.toLocaleString()}</td>;
+                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right', minWidth: '75px' }}>${fin.stockValue.toLocaleString()}</td>;
                   })}
                   <td style={{ border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></td>
                   <td style={{ border: 'none' }}></td>
@@ -330,6 +330,7 @@ function App() {
                     return (
                       <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ 
                         textAlign: 'right', 
+                        minWidth: '75px',
                         fontWeight: 'bold',
                         color: isFirst ? '#fbbf24' : (isSecond ? '#d97706' : 'inherit'),
                         textShadow: isFirst ? '0 0 8px rgba(251, 191, 36, 0.5)' : (isSecond ? '0 0 8px rgba(217, 119, 6, 0.3)' : 'none')
