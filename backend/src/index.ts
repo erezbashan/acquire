@@ -25,7 +25,7 @@ const io = new Server(httpServer, {
 });
 
 const games: Record<string, GameState> = {};
-const PLAYER_COLORS = ['#8b5cf6', '#f97316', '#14b8a6', '#6366f1', '#84cc16', '#f43f5e'];
+const PLAYER_COLORS = ['#f97316', '#9333ea', '#84cc16', '#14b8a6', '#d97706', '#475569'];
 
 function generateGameId() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();

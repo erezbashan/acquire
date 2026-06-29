@@ -15,6 +15,7 @@ function App() {
   // Corp Details Modal State
   const [selectedCorp, setSelectedCorp] = useState<string | null>(null);
   const [showFullLogs, setShowFullLogs] = useState(false);
+  const [showGameOver, setShowGameOver] = useState(true);
 
   const renderLogLine = (logStr: string, i: number) => {
     if (!gameState) return null;
@@ -55,13 +56,38 @@ function App() {
       }
     });
 
+    let emoji = '';
+    if (logStr.includes('founded')) emoji = '🏢 ';
+    else if (logStr.includes('bought')) emoji = '💰 ';
+    else if (logStr.includes('discarded')) emoji = '🗑️ ';
+    else if (logStr.includes('gets majority') || logStr.includes('gets minority')) emoji = '💵 ';
+    else if (logStr.includes('played tile')) emoji = '🀄 ';
+    else if (logStr.includes('Merger!')) emoji = '💥 ';
+    else if (logStr.includes('grows by')) emoji = '📈 ';
+    else if (logStr.includes('resolved')) emoji = '⚖️ ';
+    else if (logStr.includes('caused a merger')) emoji = '⚠️ ';
+
+    let bg = 'transparent';
+    if (logStr.includes('founded')) bg = 'rgba(255, 255, 255, 0.1)';
+    if (logStr.includes('Merger!')) bg = 'rgba(239, 68, 68, 0.2)';
+
     return (
       <React.Fragment key={i}>
         {logStr.endsWith('---') && i !== 0 && (
           <hr style={{ margin: '8px 0', border: 'none', borderBottom: '1px dashed rgba(255,255,255,0.3)' }} />
         )}
-        <div style={{ color: logStr.endsWith('---') ? 'var(--text-muted)' : 'inherit' }}>
-          {elements}
+        <div style={{ 
+          color: logStr.endsWith('---') ? 'var(--text-muted)' : 'inherit',
+          backgroundColor: bg,
+          padding: bg !== 'transparent' ? '4px 8px' : '2px 0',
+          borderRadius: '4px',
+          fontWeight: logStr.includes('founded') || logStr.includes('Merger!') ? 'bold' : 'normal',
+          display: 'flex',
+          gap: '4px',
+          alignItems: 'flex-start'
+        }}>
+          {emoji && <span>{emoji}</span>}
+          <div style={{ flex: 1 }}>{elements}</div>
         </div>
       </React.Fragment>
     );
@@ -101,7 +127,10 @@ function App() {
   if (!gameState) {
     return (
       <div className="lobby-container">
-        <h1>Acquire</h1>
+        <div className="title-area">
+          <h1>Acquire</h1>
+        </div>
+        <div className="game-id-badge">Game ID: {gameState?.id}</div>
         <div className="lobby-card glass">
           <input 
             type="text" 
@@ -139,8 +168,13 @@ function App() {
   return (
     <div className="game-container">
       <header className="glass">
-        <div className="status">
+        <div className="status" style={{ display: 'flex', alignItems: 'center' }}>
           Phase: {gameState.phase}
+          {gameState.phase === 'GameOver' && !showGameOver && (
+            <button onClick={() => setShowGameOver(true)} style={{ marginLeft: '1rem', background: 'var(--primary)', color: 'white', padding: '4px 12px', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+              Show Final Results
+            </button>
+          )}
           {gameState.phase !== 'Lobby' && (
             <span style={{ 
               marginLeft: '1rem', 
@@ -484,9 +518,15 @@ function App() {
             </>
           )}
 
-          {gameState.phase === 'GameOver' && (
+          {gameState.phase === 'GameOver' && showGameOver && (
             <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 }}>
-              <div className="modal-content glass" style={{ padding: '3rem', width: '90vw', maxWidth: '1200px', textAlign: 'center' }}>
+              <div className="modal-content glass" style={{ padding: '3rem', width: '90vw', maxWidth: '1200px', textAlign: 'center', position: 'relative' }}>
+                <button 
+                  onClick={() => setShowGameOver(false)} 
+                  style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '2rem', cursor: 'pointer' }}
+                >
+                  &times;
+                </button>
                 <h1 style={{ fontSize: '3rem', margin: '0 0 1rem 0', color: 'var(--primary)' }}>Game Over!</h1>
                 <h2 style={{ marginBottom: '2rem' }}>
                   {(() => {
@@ -505,7 +545,6 @@ function App() {
                       <th style={{ textAlign: 'center' }}>Mergers</th>
                       <th style={{ textAlign: 'center' }}>1st Bonus</th>
                       <th style={{ textAlign: 'center' }}>2nd Bonus</th>
-                      <th style={{ textAlign: 'center' }}>Shares</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -546,7 +585,6 @@ function App() {
                             <td style={{ textAlign: 'center' }}>{stats.mergesCaused}</td>
                             <td style={{ textAlign: 'center' }}>{stats.firstBonuses + extraFirst}</td>
                             <td style={{ textAlign: 'center' }}>{stats.secondBonuses + extraSecond}</td>
-                            <td style={{ textAlign: 'center' }}>{stats.sharesBought}</td>
                           </tr>
                         );
                       })}
@@ -642,7 +680,8 @@ function App() {
                   });
 
                   if (isMyTurn) {
-                    cutoffIndex = turns.length > 0 ? turns[0] : -1;
+                    const hasPlayedTileThisTurn = gameState.phase !== 'PlayTile';
+                    cutoffIndex = hasPlayedTileThisTurn ? (turns.length > 1 ? turns[1] : turns[0]) : (turns.length > 0 ? turns[0] : -1);
                   } else {
                     cutoffIndex = turns.length > 1 ? turns[1] : (turns.length > 0 ? turns[0] : -1);
                   }
