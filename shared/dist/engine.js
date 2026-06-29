@@ -379,6 +379,10 @@ function resolveMergeStocks(state, playerId, sellCount, tradeCount, keepCount) {
         ...newState.corporations[aCorp],
         availableStocks: newState.corporations[aCorp].availableStocks - finalTradedAcquirerStocks
     };
+    newState.corporations[dCorp] = {
+        ...newState.corporations[dCorp],
+        availableStocks: newState.corporations[dCorp].availableStocks + sellCount + finalTradedDefunct
+    };
     newState.logs = [...newState.logs, `${player.name} resolved ${dCorp}: Sold ${sellCount}, Traded ${finalTradedDefunct} for ${finalTradedAcquirerStocks} ${aCorp}, Kept ${keepCount}.`];
     // Advance to next player
     newState.pendingMerge = {
