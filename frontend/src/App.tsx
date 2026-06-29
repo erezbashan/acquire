@@ -274,7 +274,7 @@ function App() {
                   <th>Category</th>
                   {gameState.players.map(p => {
                       return (
-                        <th key={p.id} className={p.id === me?.id ? 'me-col' : (p.id === activePlayerId ? 'active-player-col' : '')} style={{ textAlign: 'right' }}>
+                        <th key={p.id} className={` ${p.id === me?.id ? 'me-col' : ''} ${p.id === activePlayerId ? 'active-player-col' : ''}`} style={{ textAlign: 'right' }}>
                           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px' }}>
                             <span style={{ color: p.color }}>{p.name.replace(' (Me)', '').replace(' (You)', '')}</span>
                           </div>

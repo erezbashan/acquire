@@ -203,11 +203,9 @@ header h2 { margin: 0; }
   font-weight: normal;
 }
 
-.scoreboard-table tr.active-player td,
-.scoreboard-table th.active-player-col,
-.scoreboard-table td.active-player-col {
-  color: var(--accent);
-  font-weight: bold;
+.scoreboard-table th.active-player-col {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 6px 6px 0 0;
 }
 
 .scoreboard-table .me-col {
