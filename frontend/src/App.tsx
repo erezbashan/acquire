@@ -227,43 +227,15 @@ function App() {
               <thead>
                 <tr>
                   <th>Category</th>
-                  {(() => {
-                    const playerFin = gameState.players.map(p => ({
-                      id: p.id,
-                      netWorth: getPlayerFinancials(gameState, p.id).netWorth
-                    }));
-                    
-                    playerFin.sort((a, b) => b.netWorth - a.netWorth);
-                    const ranks = new Map<string, number>();
-                    let currentRank = 1;
-                    let currentScore = -1;
-                    playerFin.forEach((p, index) => {
-                      if (p.netWorth !== currentScore) {
-                        currentRank = index + 1;
-                        currentScore = p.netWorth;
-                      }
-                      ranks.set(p.id, currentRank);
-                    });
-
-                    return gameState.players.map(p => {
-                      const netWorth = getPlayerFinancials(gameState, p.id).netWorth;
-                      const rank = netWorth > 6000 ? ranks.get(p.id) : null;
-                      
-                      let medal = null;
-                      if (rank === 1) medal = <span className="medal medal-1">1</span>;
-                      else if (rank === 2 && gameState.players.length > 2) medal = <span className="medal medal-2">2</span>;
-                      else if (rank === 3 && gameState.players.length > 3) medal = <span className="medal medal-3">3</span>;
-
+                  {gameState.players.map(p => {
                       return (
                         <th key={p.id} className={p.id === me?.id ? 'me-col' : (p.id === activePlayerId ? 'active-player-col' : '')} style={{ textAlign: 'right' }}>
                           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px' }}>
-                            {medal}
                             <span style={{ color: p.color }}>{p.name.replace(' (Me)', '').replace(' (You)', '')}</span>
                           </div>
                         </th>
                       );
-                    });
-                  })()}
+                    })}
                   <th style={{ minWidth: '50px', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></th>
                   <th style={{ minWidth: '60px' }}></th>
                   <th></th>
