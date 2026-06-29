@@ -16,5 +16,7 @@ export {
   getAdjacentCells,
   fillCorporation,
   CORPORATIONS,
-  type PlayerFinancials
+  type PlayerFinancials,
+  isTileUnplayable,
+  verifyShares
 } from './engine';

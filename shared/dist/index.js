@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CORPORATIONS = exports.fillCorporation = exports.getAdjacentCells = exports.getStockPrice = exports.chooseMergeSurvivor = exports.resolveMergeStocks = exports.getPlayerFinancials = exports.calculateNetWorth = exports.endTurn = exports.buyStock = exports.foundCorporation = exports.playTile = exports.startGame = exports.addPlayer = exports.createInitialTiles = exports.createInitialGameState = void 0;
+exports.verifyShares = exports.isTileUnplayable = exports.CORPORATIONS = exports.fillCorporation = exports.getAdjacentCells = exports.getStockPrice = exports.chooseMergeSurvivor = exports.resolveMergeStocks = exports.getPlayerFinancials = exports.calculateNetWorth = exports.endTurn = exports.buyStock = exports.foundCorporation = exports.playTile = exports.startGame = exports.addPlayer = exports.createInitialTiles = exports.createInitialGameState = void 0;
 var engine_1 = require("./engine");
 Object.defineProperty(exports, "createInitialGameState", { enumerable: true, get: function () { return engine_1.createInitialGameState; } });
 Object.defineProperty(exports, "createInitialTiles", { enumerable: true, get: function () { return engine_1.createInitialTiles; } });
@@ -18,3 +18,5 @@ Object.defineProperty(exports, "getStockPrice", { enumerable: true, get: functio
 Object.defineProperty(exports, "getAdjacentCells", { enumerable: true, get: function () { return engine_1.getAdjacentCells; } });
 Object.defineProperty(exports, "fillCorporation", { enumerable: true, get: function () { return engine_1.fillCorporation; } });
 Object.defineProperty(exports, "CORPORATIONS", { enumerable: true, get: function () { return engine_1.CORPORATIONS; } });
+Object.defineProperty(exports, "isTileUnplayable", { enumerable: true, get: function () { return engine_1.isTileUnplayable; } });
+Object.defineProperty(exports, "verifyShares", { enumerable: true, get: function () { return engine_1.verifyShares; } });

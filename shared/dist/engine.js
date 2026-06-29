@@ -17,6 +17,7 @@ exports.isTileUnplayable = isTileUnplayable;
 exports.endTurn = endTurn;
 exports.getPlayerFinancials = getPlayerFinancials;
 exports.calculateNetWorth = calculateNetWorth;
+exports.verifyShares = verifyShares;
 const BOARD_ROWS = 9;
 const BOARD_COLS = 12;
 exports.CORPORATIONS = [
@@ -772,4 +773,16 @@ function getPlayerFinancials(state, playerId) {
 }
 function calculateNetWorth(state, playerId) {
     return getPlayerFinancials(state, playerId).netWorth;
+}
+function verifyShares(state) {
+    for (const corpName of exports.CORPORATIONS) {
+        let totalShares = state.corporations[corpName].availableStocks;
+        for (const player of state.players) {
+            totalShares += player.stocks[corpName] || 0;
+        }
+        if (totalShares !== 25) {
+            console.error(`CRITICAL BUG: Total shares for ${corpName} is ${totalShares}. Should be exactly 25. State:`, JSON.stringify(state, null, 2));
+            throw new Error(`CRITICAL BUG: Total shares for ${corpName} is ${totalShares}. Should be exactly 25.`);
+        }
+    }
 }

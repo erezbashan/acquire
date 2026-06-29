@@ -12,7 +12,8 @@ import {
   buyStock,
   chooseMergeSurvivor,
   endTurn,
-  resolveMergeStocks
+  resolveMergeStocks,
+  verifyShares
 } from '@acquire/shared';
 import { processBotTurn } from './bot';
 
@@ -30,6 +31,16 @@ const PLAYER_COLORS = ['#FF3366', '#33CCFF', '#FFCC00', '#00FF66', '#CC99FF', '#
 
 function generateGameId() {
   return Math.random().toString(36).substring(2, 8).toUpperCase();
+}
+
+function updateGameState(gameId: string, newState: GameState) {
+  try {
+    verifyShares(newState);
+  } catch (err) {
+    console.error(`FATAL ERROR in game ${gameId}:`, err);
+    process.exit(1);
+  }
+  games[gameId] = newState;
 }
 
 io.on('connection', (socket) => {
@@ -125,7 +136,7 @@ io.on('connection', (socket) => {
     const state = games[gameId];
     if (state) {
       const newState = startGame(state);
-      games[gameId] = newState;
+      updateGameState(gameId, newState);
       io.to(gameId).emit('gameState', newState);
       processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));
     }
@@ -135,7 +146,7 @@ io.on('connection', (socket) => {
     const state = games[gameId];
     if (state) {
       const newState = playTile(state, playerId, tileId);
-      games[gameId] = newState;
+      updateGameState(gameId, newState);
       io.to(gameId).emit('gameState', newState);
       processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));
     }
@@ -145,7 +156,7 @@ io.on('connection', (socket) => {
     const state = games[gameId];
     if (state) {
       const newState = foundCorporation(state, playerId, corpName);
-      games[gameId] = newState;
+      updateGameState(gameId, newState);
       io.to(gameId).emit('gameState', newState);
       processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));
     }
@@ -155,7 +166,7 @@ io.on('connection', (socket) => {
     const state = games[gameId];
     if (state) {
       const newState = buyStock(state, playerId, corpName);
-      games[gameId] = newState;
+      updateGameState(gameId, newState);
       io.to(gameId).emit('gameState', newState);
       processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));
     }
@@ -165,7 +176,7 @@ io.on('connection', (socket) => {
     const state = games[gameId];
     if (state) {
       const newState = endTurn(state);
-      games[gameId] = newState;
+      updateGameState(gameId, newState);
       io.to(gameId).emit('gameState', newState);
       processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));
     }
@@ -175,7 +186,7 @@ io.on('connection', (socket) => {
     const state = games[gameId];
     if (state) {
       const newState = chooseMergeSurvivor(state, playerId, survivorName);
-      games[gameId] = newState;
+      updateGameState(gameId, newState);
       io.to(gameId).emit('gameState', newState);
       processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));
     }
@@ -185,14 +196,14 @@ io.on('connection', (socket) => {
     const state = games[gameId];
     if (state) {
       const newState = resolveMergeStocks(state, playerId, sellCount, tradeCount, keepCount);
-      games[gameId] = newState;
+      updateGameState(gameId, newState);
       io.to(gameId).emit('gameState', newState);
       processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));
     }
   });
 
   function emitStateAndProcessBots(gameId: string, state: GameState) {
-    games[gameId] = state;
+    updateGameState(gameId, state);
     io.to(gameId).emit('gameState', state);
     processBotTurn(state, (s) => emitStateAndProcessBots(gameId, s));
   }
