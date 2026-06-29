@@ -54,13 +54,13 @@ function App() {
         <div className="lobby-card glass">
           <input 
             type="text" 
-            placeholder="Enter Username" 
+            placeholder="3-Letter Name" 
             maxLength={3}
             value={username} 
-            onChange={e => setUsername(e.target.value)} 
+            onChange={e => setUsername(e.target.value.toUpperCase())} 
           />
           <div className="actions">
-            <button onClick={() => createGame(username)} disabled={!username}>Create Game</button>
+            <button onClick={() => createGame(username)} disabled={username.length !== 3}>Create Game</button>
             <div className="join-section">
               <input 
                 type="text" 
@@ -68,7 +68,7 @@ function App() {
                 value={gameIdInput} 
                 onChange={e => setGameIdInput(e.target.value.toUpperCase())} 
               />
-              <button onClick={() => joinGame(gameIdInput, username)} disabled={!username || !gameIdInput}>Join Game</button>
+              <button onClick={() => joinGame(gameIdInput, username)} disabled={username.length !== 3 || !gameIdInput}>Join Game</button>
             </div>
           </div>
         </div>
@@ -207,7 +207,7 @@ function App() {
                         <th key={p.id} className={p.id === me?.id ? 'me-col' : (p.id === activePlayerId ? 'active-player-col' : '')} style={{ textAlign: 'right' }}>
                           <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px' }}>
                             {medal}
-                            <span>{p.name.substring(0, 5)} {p.id === me?.id ? '(Me)' : ''}</span>
+                            <span>{p.name} {p.id === me?.id ? '(Me)' : ''}</span>
                           </div>
                         </th>
                       );

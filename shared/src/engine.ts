@@ -640,7 +640,7 @@ export function buyStock(state: GameState, playerId: string, corpName: Corporati
 
 export function isTileUnplayable(state: GameState, tile: Tile): boolean {
   const neighbors = getAdjacentCells(state.board, tile.row, tile.col);
-  const adjacentCorps = Array.from(new Set(neighbors.filter(n => n.val !== 'Unincorporated').map(n => n.val as Corporation)));
+  const adjacentCorps = Array.from(new Set(neighbors.filter(n => n.val !== 'Unincorporated' && n.val !== null).map(n => n.val as Corporation)));
   const safeCorps = adjacentCorps.filter(c => state.corporations[c].isSafe);
   return safeCorps.length >= 2;
 }
