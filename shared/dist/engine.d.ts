@@ -29,4 +29,3 @@ export interface PlayerFinancials {
 }
 export declare function getPlayerFinancials(state: GameState, playerId: string): PlayerFinancials;
 export declare function calculateNetWorth(state: GameState, playerId: string): number;
-export declare function verifyShares(state: GameState): void;

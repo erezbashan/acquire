@@ -378,7 +378,15 @@ function App() {
                           </td>
                         );
                       })}
-                      <td style={{ textAlign: 'right', borderLeft: '2px solid rgba(255,255,255,0.2)', paddingLeft: '8px' }}>{cState.isActive ? cState.availableStocks : '-'}</td>
+                      {(() => {
+                        const totalShares = cState.availableStocks + gameState.players.reduce((sum, p) => sum + (p.stocks[cName as keyof typeof p.stocks] || 0), 0);
+                        const isBugged = totalShares !== 25;
+                        return (
+                          <td style={{ textAlign: 'right', borderLeft: '2px solid rgba(255,255,255,0.2)', paddingLeft: '8px', color: isBugged ? '#ef4444' : 'inherit', fontWeight: isBugged ? 'bold' : 'normal' }}>
+                            {cState.isActive ? cState.availableStocks : '-'}
+                          </td>
+                        );
+                      })()}
                       <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
                         {cState.isActive ? `$${cState.stockPrice.toLocaleString()}` : '-'}
                       </td>

@@ -17,6 +17,5 @@ export {
   fillCorporation,
   CORPORATIONS,
   type PlayerFinancials,
-  isTileUnplayable,
-  verifyShares
+  isTileUnplayable
 } from './engine';

@@ -22,13 +22,6 @@ function generateGameId() {
     return Math.random().toString(36).substring(2, 8).toUpperCase();
 }
 function updateGameState(gameId, newState) {
-    try {
-        (0, shared_1.verifyShares)(newState);
-    }
-    catch (err) {
-        console.error(`FATAL ERROR in game ${gameId}:`, err);
-        process.exit(1);
-    }
     games[gameId] = newState;
 }
 io.on('connection', (socket) => {

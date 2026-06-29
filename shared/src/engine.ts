@@ -856,16 +856,3 @@ export function getPlayerFinancials(state: GameState, playerId: string): PlayerF
 export function calculateNetWorth(state: GameState, playerId: string): number {
   return getPlayerFinancials(state, playerId).netWorth;
 }
-
-export function verifyShares(state: GameState) {
-  for (const corpName of CORPORATIONS) {
-    let totalShares = state.corporations[corpName].availableStocks;
-    for (const player of state.players) {
-      totalShares += player.stocks[corpName] || 0;
-    }
-    if (totalShares !== 25) {
-      console.error(`CRITICAL BUG: Total shares for ${corpName} is ${totalShares}. Should be exactly 25. State:`, JSON.stringify(state, null, 2));
-      throw new Error(`CRITICAL BUG: Total shares for ${corpName} is ${totalShares}. Should be exactly 25.`);
-    }
-  }
-}

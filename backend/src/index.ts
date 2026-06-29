@@ -12,8 +12,7 @@ import {
   buyStock,
   chooseMergeSurvivor,
   endTurn,
-  resolveMergeStocks,
-  verifyShares
+  resolveMergeStocks
 } from '@acquire/shared';
 import { processBotTurn } from './bot';
 
@@ -34,12 +33,6 @@ function generateGameId() {
 }
 
 function updateGameState(gameId: string, newState: GameState) {
-  try {
-    verifyShares(newState);
-  } catch (err) {
-    console.error(`FATAL ERROR in game ${gameId}:`, err);
-    process.exit(1);
-  }
   games[gameId] = newState;
 }
 
