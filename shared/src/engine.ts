@@ -434,6 +434,11 @@ function advanceMergeState(state: GameState): GameState {
     // Every player is checked sequentially starting from mergerId.
     if (pm.playersResolved.length >= newState.players.length) {
       // Defunct corp fully resolved! Reset its stats to actually be dead.
+      let keptStocks = 0;
+      for (const p of newState.players) {
+        keptStocks += p.stocks[dCorp] || 0;
+      }
+
       const corpState = newState.corporations[dCorp];
       newState.corporations[dCorp] = {
         ...corpState,
@@ -441,7 +446,7 @@ function advanceMergeState(state: GameState): GameState {
         stockPrice: 0,
         majorityBonus: 0,
         minorityBonus: 0,
-        availableStocks: 25,
+        availableStocks: 25 - keptStocks,
         isActive: false,
         isSafe: false
       };
