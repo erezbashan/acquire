@@ -42,6 +42,7 @@ export type GamePhase =
   | 'PlayTile'
   | 'FoundCorporation'
   | 'BuyStocks'
+  | 'ChooseMergeSurvivor'
   | 'MergeResolution'
   | 'DrawTile'
   | 'GameOver';
@@ -68,7 +69,13 @@ export interface GameState {
     playersResolved: string[]; // Players who have resolved this defunct corp
   };
 
-  // Pending state for founding
+  // Pending state for survivor choice
+  pendingSurvivorChoice?: {
+    playerId: string;
+    tileId: TileId;
+    tiedCorps: Corporation[];
+    allCorpsInvolved: Corporation[];
+  };
   pendingFounding?: {
     playerId: string;
     tileId: TileId;

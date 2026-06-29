@@ -193,14 +193,17 @@ function App() {
                       const netWorth = getPlayerFinancials(gameState, p.id).netWorth;
                       const rank = netWorth > 6000 ? ranks.get(p.id) : null;
                       
-                      let medal = '';
-                      if (rank === 1) medal = '🥇 ';
-                      else if (rank === 2 && gameState.players.length > 2) medal = '🥈 ';
-                      else if (rank === 3 && gameState.players.length > 3) medal = '🥉 ';
+                      let medal = null;
+                      if (rank === 1) medal = <span className="medal medal-1">1</span>;
+                      else if (rank === 2 && gameState.players.length > 2) medal = <span className="medal medal-2">2</span>;
+                      else if (rank === 3 && gameState.players.length > 3) medal = <span className="medal medal-3">3</span>;
 
                       return (
-                        <th key={p.id} className={p.id === me?.id ? 'me-col' : (p.id === activePlayerId ? 'active-player-col' : '')}>
-                          {medal}{p.name.substring(0, 5)} {p.id === me?.id ? '(Me)' : ''}
+                        <th key={p.id} className={p.id === me?.id ? 'me-col' : (p.id === activePlayerId ? 'active-player-col' : '')} style={{ textAlign: 'right' }}>
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px' }}>
+                            {medal}
+                            <span>{p.name.substring(0, 5)} {p.id === me?.id ? '(Me)' : ''}</span>
+                          </div>
                         </th>
                       );
                     });
@@ -344,6 +347,25 @@ function App() {
                   </div>
                 </div>
               )}
+              {gameState.phase === 'ChooseMergeSurvivor' && gameState.pendingSurvivorChoice?.playerId === socket?.id && (
+                <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+                  <div className="modal-content glass" style={{ padding: '2rem', minWidth: '300px', textAlign: 'center' }}>
+                    <h3>Tied Merger</h3>
+                    <p style={{ marginBottom: '1.5rem' }}>Choose which corporation survives the merger:</p>
+                    <div className="corp-options" style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                      {gameState.pendingSurvivorChoice.tiedCorps.map(c => (
+                        <button 
+                          key={c} 
+                          className={`tile-btn ${c.toLowerCase()}`} 
+                          onClick={() => socket.emit('chooseMergeSurvivor', { gameId: gameState.id, survivorName: c })}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
               
               {isMyTurn && gameState.phase === 'MergeResolution' && pm && dCorp && aCorp && (
                 <div className="merge-panel glass" style={{ padding: '1rem', border: '2px solid var(--accent)' }}>
@@ -405,6 +427,62 @@ function App() {
                 </div>
               )}
             </>
+          )}
+
+          {gameState.phase === 'GameOver' && (
+            <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 2000 }}>
+              <div className="modal-content glass" style={{ padding: '3rem', minWidth: '400px', textAlign: 'center' }}>
+                <h1 style={{ fontSize: '3rem', margin: '0 0 1rem 0', color: 'var(--primary)' }}>Game Over!</h1>
+                <h2 style={{ marginBottom: '2rem' }}>
+                  {(() => {
+                    const sorted = [...gameState.players].sort((a, b) => getPlayerFinancials(gameState, b.id).netWorth - getPlayerFinancials(gameState, a.id).netWorth);
+                    return `${sorted[0].name} Wins!`;
+                  })()}
+                </h2>
+                
+                <table style={{ width: '100%', textAlign: 'left', borderSpacing: '0 15px', marginBottom: '2rem' }}>
+                  <thead>
+                    <tr style={{ color: 'var(--text-muted)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                      <th>Rank</th>
+                      <th>Player</th>
+                      <th>Cash</th>
+                      <th>Net Worth</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[...gameState.players]
+                      .sort((a, b) => getPlayerFinancials(gameState, b.id).netWorth - getPlayerFinancials(gameState, a.id).netWorth)
+                      .map((p, index) => {
+                        const fin = getPlayerFinancials(gameState, p.id);
+                        return (
+                          <tr key={p.id} style={{ fontWeight: index === 0 ? 'bold' : 'normal', fontSize: index === 0 ? '1.2rem' : '1rem' }}>
+                            <td>
+                              {index === 0 && '🥇 '}
+                              {index === 1 && gameState.players.length > 2 && '🥈 '}
+                              {index === 2 && gameState.players.length > 3 && '🥉 '}
+                              #{index + 1}
+                            </td>
+                            <td>{p.name} {p.id === socket?.id && '(You)'}</td>
+                            <td>${fin.cash.toLocaleString()}</td>
+                            <td style={{ color: 'var(--primary)' }}>${fin.netWorth.toLocaleString()}</td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+                
+                <button 
+                  className="tile-btn"
+                  style={{ width: '100%', padding: '15px', fontSize: '1.2rem', backgroundColor: 'var(--primary)', color: 'white', border: 'none' }}
+                  onClick={() => {
+                    window.history.replaceState(null, '', '/');
+                    window.location.reload();
+                  }}
+                >
+                  Return to Lobby
+                </button>
+              </div>
+            </div>
           )}
 
           {selectedCorp && (

@@ -9,6 +9,7 @@ import {
   playTile,
   foundCorporation,
   buyStock,
+  chooseMergeSurvivor,
   endTurn,
   resolveMergeStocks
 } from '@acquire/shared';
@@ -135,6 +136,16 @@ io.on('connection', (socket) => {
       games[gameId] = newState;
       io.to(gameId).emit('gameState', newState);
       processBotTurn(newState, (s) => emitStateAndProcessBots(gameId, s));
+    }
+  });
+
+  socket.on('chooseMergeSurvivor', ({ gameId, survivorName }) => {
+    let state = games[gameId];
+    if (state) {
+      state = chooseMergeSurvivor(state, socket.id, survivorName);
+      games[gameId] = state;
+      io.to(gameId).emit('gameState', state);
+      processBotTurn(state, (s) => emitStateAndProcessBots(gameId, s));
     }
   });
 

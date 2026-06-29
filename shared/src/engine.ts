@@ -3,7 +3,7 @@ import { BoardCell, Corporation, CorporationState, GameState, Player, Tile, Tile
 const BOARD_ROWS = 9;
 const BOARD_COLS = 12;
 
-const CORPORATIONS: Corporation[] = [
+export const CORPORATIONS: Corporation[] = [
   'Tower', 'Luxor', 'American', 'Worldwide', 'Festival', 'Imperial', 'Continental'
 ];
 
@@ -186,96 +186,26 @@ export function playTile(state: GameState, playerId: string, tileId: TileId): Ga
       };
     }
 
-    const sortedCorps = [...adjacentCorps].sort((a, b) => {
-      if (newState.corporations[b].size !== newState.corporations[a].size) {
-        return newState.corporations[b].size - newState.corporations[a].size;
-      }
-      return a.localeCompare(b);
-    });
+    const sortedCorps = [...adjacentCorps].sort((a, b) => newState.corporations[b].size - newState.corporations[a].size);
+    const largestSize = newState.corporations[sortedCorps[0]].size;
+    const tiedSurvivors = sortedCorps.filter(c => newState.corporations[c].size === largestSize);
+
+    if (tiedSurvivors.length > 1) {
+      newState.phase = 'ChooseMergeSurvivor';
+      newState.pendingSurvivorChoice = {
+        playerId,
+        tileId,
+        tiedCorps: tiedSurvivors,
+        allCorpsInvolved: adjacentCorps
+      };
+      newState.logs.push(`${player.name} caused a merger with tied sizes. Choose a survivor...`);
+      return newState;
+    }
 
     const survivorName = sortedCorps[0];
     const defunctCorps = sortedCorps.slice(1);
 
-    newState.logs.push(`Merger! ${survivorName} takes over ${defunctCorps.join(', ')}.`);
-
-    // 1. Convert the played tile and all defunct tiles to survivor
-    for (let r = 0; r < BOARD_ROWS; r++) {
-      for (let c = 0; c < BOARD_COLS; c++) {
-        if (newBoard[r][c] !== null && defunctCorps.includes(newBoard[r][c] as Corporation)) {
-          newBoard[r][c] = 'Unincorporated'; // temporarily make them unincorporated
-        }
-      }
-    }
-    
-    const { board: fullyUpdatedBoard } = fillCorporation(newBoard, tile.row, tile.col, survivorName);
-    
-    let finalSurvivorSize = 0;
-    for (let r = 0; r < BOARD_ROWS; r++) {
-      for (let c = 0; c < BOARD_COLS; c++) {
-        if (fullyUpdatedBoard[r][c] === survivorName) {
-          finalSurvivorSize++;
-        }
-      }
-    }
-
-    newState.board = fullyUpdatedBoard;
-    newState.corporations = { ...newState.corporations };
-    newState.corporations[survivorName] = {
-      ...newState.corporations[survivorName],
-      size: finalSurvivorSize
-    };
-
-    // 2. Pay out bonuses and auto-sell defunct stocks
-    const newPlayers = [...newState.players];
-    for (const dCorp of defunctCorps) {
-      const corpState = newState.corporations[dCorp];
-      const stockPrice = corpState.stockPrice;
-      
-      const stockHolders = newPlayers
-        .map(p => ({ id: p.id, count: p.stocks[dCorp] }))
-        .filter(p => p.count > 0)
-        .sort((a, b) => b.count - a.count);
-
-      if (stockHolders.length > 0) {
-        const highestCount = stockHolders[0].count;
-        const majorityHolders = stockHolders.filter(p => p.count === highestCount);
-        const secondHighestCount = stockHolders.find(p => p.count < highestCount)?.count;
-        const minorityHolders = secondHighestCount ? stockHolders.filter(p => p.count === secondHighestCount) : [];
-
-        const majorityPayout = majorityHolders.length === 1 ? corpState.majorityBonus : Math.floor((corpState.majorityBonus + corpState.minorityBonus) / majorityHolders.length);
-        for (const h of majorityHolders) {
-          const pIndex = newPlayers.findIndex(p => p.id === h.id);
-          newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + majorityPayout };
-          newState.logs.push(`${newPlayers[pIndex].name} gets majority bonus for ${dCorp} ($${majorityPayout.toLocaleString()}).`);
-        }
-
-        if (majorityHolders.length === 1 && minorityHolders.length > 0) {
-          const minorityPayout = Math.floor(corpState.minorityBonus / minorityHolders.length);
-          for (const h of minorityHolders) {
-            const pIndex = newPlayers.findIndex(p => p.id === h.id);
-            newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + minorityPayout };
-            newState.logs.push(`${newPlayers[pIndex].name} gets minority bonus for ${dCorp} ($${minorityPayout.toLocaleString()}).`);
-          }
-        }
-      }
-
-      // We do NOT auto-sell here. We rely on MergeResolution phase.
-    }
-    
-    newState.players = newPlayers;
-    
-    // Initialize MergeResolution
-    newState.phase = 'MergeResolution';
-    newState.pendingMerge = {
-      mergerId: newState.turnOrder[newState.currentPlayerIndex],
-      acquirer: survivorName,
-      defunct: defunctCorps,
-      currentDefunctIndex: 0,
-      playerResolutionIndex: newState.currentPlayerIndex,
-      playersResolved: []
-    };
-    
-    return advanceMergeState(newState);
+    return applyMerger(newState, tile, survivorName, defunctCorps);
   }
 
   // Go to BuyStocks
@@ -289,6 +219,116 @@ export function playTile(state: GameState, playerId: string, tileId: TileId): Ga
   }
 
   return newState;
+}
+
+export function chooseMergeSurvivor(state: GameState, playerId: string, survivorName: Corporation): GameState {
+  if (state.phase !== 'ChooseMergeSurvivor' || !state.pendingSurvivorChoice) return state;
+  if (state.pendingSurvivorChoice.playerId !== playerId) return state;
+
+  const tileId = state.pendingSurvivorChoice.tileId;
+  const match = tileId.match(/^(\d+)([A-Z])$/);
+  if (!match) return state;
+  const col = parseInt(match[1]) - 1;
+  const row = match[2].charCodeAt(0) - 65;
+  const tile: Tile = { id: tileId, row, col };
+
+  const allCorpsInvolved = state.pendingSurvivorChoice.allCorpsInvolved;
+  const defunctCorps = allCorpsInvolved.filter(c => c !== survivorName);
+
+  // Wait, if defunctCorps contains ties, the merging player chooses the order.
+  // The rules say they are resolved largest to smallest.
+  // We should sort defunct corps by size. If they tie, they can just be sorted arbitrarily or alphabetically for now to keep it simple.
+  defunctCorps.sort((a, b) => {
+    if (state.corporations[b].size !== state.corporations[a].size) {
+      return state.corporations[b].size - state.corporations[a].size;
+    }
+    return a.localeCompare(b);
+  });
+
+  return applyMerger(state, tile, survivorName, defunctCorps);
+}
+
+function applyMerger(newState: GameState, tile: Tile, survivorName: Corporation, defunctCorps: Corporation[]): GameState {
+  newState.pendingSurvivorChoice = undefined;
+  newState.logs.push(`Merger! ${survivorName} takes over ${defunctCorps.join(', ')}.`);
+
+  const newBoard = newState.board.map(row => [...row]);
+
+  // 1. Convert the played tile and all defunct tiles to survivor
+  for (let r = 0; r < BOARD_ROWS; r++) {
+    for (let c = 0; c < BOARD_COLS; c++) {
+      if (newBoard[r][c] !== null && defunctCorps.includes(newBoard[r][c] as Corporation)) {
+        newBoard[r][c] = 'Unincorporated'; // temporarily make them unincorporated
+      }
+    }
+  }
+  
+  const { board: fullyUpdatedBoard } = fillCorporation(newBoard, tile.row, tile.col, survivorName);
+  
+  let finalSurvivorSize = 0;
+  for (let r = 0; r < BOARD_ROWS; r++) {
+    for (let c = 0; c < BOARD_COLS; c++) {
+      if (fullyUpdatedBoard[r][c] === survivorName) {
+        finalSurvivorSize++;
+      }
+    }
+  }
+
+  newState.board = fullyUpdatedBoard;
+  newState.corporations = { ...newState.corporations };
+  newState.corporations[survivorName] = {
+    ...newState.corporations[survivorName],
+    size: finalSurvivorSize
+  };
+
+  // 2. Pay out bonuses
+  const newPlayers = [...newState.players];
+  for (const dCorp of defunctCorps) {
+    const corpState = newState.corporations[dCorp];
+    
+    const stockHolders = newPlayers
+      .map(p => ({ id: p.id, count: p.stocks[dCorp] }))
+      .filter(p => p.count > 0)
+      .sort((a, b) => b.count - a.count);
+
+    if (stockHolders.length > 0) {
+      const highestCount = stockHolders[0].count;
+      const majorityHolders = stockHolders.filter(p => p.count === highestCount);
+      const secondHighestCount = stockHolders.find(p => p.count < highestCount)?.count;
+      const minorityHolders = secondHighestCount ? stockHolders.filter(p => p.count === secondHighestCount) : [];
+
+      const majorityPayout = majorityHolders.length === 1 ? corpState.majorityBonus : Math.floor((corpState.majorityBonus + corpState.minorityBonus) / majorityHolders.length);
+      for (const h of majorityHolders) {
+        const pIndex = newPlayers.findIndex(p => p.id === h.id);
+        newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + majorityPayout };
+        newState.logs.push(`${newPlayers[pIndex].name} gets majority bonus for ${dCorp} ($${majorityPayout.toLocaleString()}).`);
+      }
+
+      if (majorityHolders.length === 1 && minorityHolders.length > 0) {
+        const minorityPayout = Math.floor(corpState.minorityBonus / minorityHolders.length);
+        for (const h of minorityHolders) {
+          const pIndex = newPlayers.findIndex(p => p.id === h.id);
+          newPlayers[pIndex] = { ...newPlayers[pIndex], money: newPlayers[pIndex].money + minorityPayout };
+          newState.logs.push(`${newPlayers[pIndex].name} gets minority bonus for ${dCorp} ($${minorityPayout.toLocaleString()}).`);
+        }
+      }
+    }
+  }
+  
+  newState.players = newPlayers;
+  
+  // Initialize MergeResolution
+  newState.phase = 'MergeResolution';
+  newState.pendingMerge = {
+    mergerId: newState.turnOrder[newState.currentPlayerIndex],
+    acquirer: survivorName,
+    defunct: defunctCorps,
+    currentDefunctIndex: 0,
+    playerResolutionIndex: newState.currentPlayerIndex,
+    playersResolved: []
+  };
+  
+  return advanceMergeState(newState);
 }
 
 export function resolveMergeStocks(state: GameState, playerId: string, sellCount: number, tradeCount: number, keepCount: number): GameState {
@@ -486,7 +526,7 @@ function shouldAutoEndTurn(state: GameState): boolean {
   return false;
 }
 
-function getAdjacentCells(board: BoardCell[][], row: number, col: number) {
+export function getAdjacentCells(board: BoardCell[][], row: number, col: number): { r: number, c: number, val: BoardCell }[] {
   const neighbors = [];
   if (row > 0) neighbors.push({ r: row - 1, c: col, val: board[row - 1][col] });
   if (row < BOARD_ROWS - 1) neighbors.push({ r: row + 1, c: col, val: board[row + 1][col] });
@@ -534,7 +574,7 @@ function updateCorporationStats(state: GameState): GameState {
   return newState;
 }
 
-function fillCorporation(board: BoardCell[][], row: number, col: number, corpName: Corporation): { board: BoardCell[][], count: number } {
+export function fillCorporation(board: BoardCell[][], row: number, col: number, corpName: Corporation): { board: BoardCell[][], count: number } {
   const newBoard = board.map(r => [...r]);
   let count = 0;
   

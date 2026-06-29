@@ -216,6 +216,22 @@ header h2 { margin: 0; }
   border-right: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.medal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #1e1e2f;
+}
+
+.medal-1 { background-color: #facc15; } /* Gold */
+.medal-2 { background-color: #e2e8f0; } /* Silver */
+.medal-3 { background-color: #cd7f32; } /* Bronze */
+
 .corp-name {
   font-weight: bold;
 }
