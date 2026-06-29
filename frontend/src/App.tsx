@@ -304,17 +304,20 @@ function App() {
                   <td>Net Worth</td>
                   {gameState.players.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
-                    const maxNW = Math.max(...gameState.players.map(p2 => getPlayerFinancials(gameState, p2.id).netWorth));
-                    const isMax = fin.netWorth === maxNW && maxNW > 6000;
+                    const allNW = Array.from(new Set(gameState.players.map(p2 => getPlayerFinancials(gameState, p2.id).netWorth))).sort((a, b) => b - a);
+                    const firstNW = allNW.length > 0 && allNW[0] > 6000 ? allNW[0] : -1;
+                    const secondNW = allNW.length > 1 && allNW[1] > 6000 ? allNW[1] : -1;
+                    const isFirst = fin.netWorth === firstNW;
+                    const isSecond = fin.netWorth === secondNW;
+                    
                     return (
                       <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ 
                         textAlign: 'right', 
                         fontWeight: 'bold',
-                        color: isMax ? '#fbbf24' : 'inherit',
-                        textShadow: isMax ? '0 0 8px rgba(251, 191, 36, 0.5)' : 'none'
+                        color: isFirst ? '#fbbf24' : (isSecond ? '#94a3b8' : 'inherit'),
+                        textShadow: isFirst ? '0 0 8px rgba(251, 191, 36, 0.5)' : (isSecond ? '0 0 8px rgba(148, 163, 184, 0.3)' : 'none')
                       }}>
                         ${fin.netWorth.toLocaleString()}
-                        {isMax && ' 👑'}
                       </td>
                     );
                   })}
@@ -348,8 +351,12 @@ function App() {
                         const isMinority = minority.includes(p.id);
                         const numStocks = p.stocks[cName as keyof typeof p.stocks] || 0;
                         return (
-                          <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right' }}>
-                            {isMajority ? '🥇 ' : (isMinority ? '🥈 ' : '')}
+                          <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ 
+                            textAlign: 'right',
+                            fontWeight: isMajority || isMinority ? 'bold' : 'normal',
+                            color: isMajority ? '#fbbf24' : (isMinority ? '#94a3b8' : 'inherit'),
+                            textShadow: isMajority ? '0 0 8px rgba(251, 191, 36, 0.5)' : (isMinority ? '0 0 8px rgba(148, 163, 184, 0.3)' : 'none')
+                          }}>
                             {numStocks}
                           </td>
                         );
