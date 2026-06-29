@@ -617,7 +617,17 @@ function buyStock(state, playerId, corpName) {
     };
     newState.players = newPlayers;
     newState.sharesBoughtThisTurn += 1;
-    newState.logs = [...newState.logs, `${player.name} bought 1 share of ${corpName}.`];
+    const lastLog = newState.logs.length > 0 ? newState.logs[newState.logs.length - 1] : '';
+    const multiBuyMatch = lastLog.match(new RegExp(`^${player.name} bought (\\d+) shares? of ${corpName}\\.?$`));
+    if (multiBuyMatch) {
+        const prevCount = parseInt(multiBuyMatch[1], 10);
+        const newLogs = [...newState.logs];
+        newLogs[newLogs.length - 1] = `${player.name} bought ${prevCount + 1} shares of ${corpName}`;
+        newState.logs = newLogs;
+    }
+    else {
+        newState.logs = [...newState.logs, `${player.name} bought 1 share of ${corpName}`];
+    }
     if (shouldAutoEndTurn(newState)) {
         return endTurn(newState);
     }
