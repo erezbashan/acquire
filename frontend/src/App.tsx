@@ -304,7 +304,19 @@ function App() {
                   <td>Net Worth</td>
                   {gameState.players.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
-                    return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right', fontWeight: 'bold' }}>${fin.netWorth.toLocaleString()}</td>;
+                    const maxNW = Math.max(...gameState.players.map(p2 => getPlayerFinancials(gameState, p2.id).netWorth));
+                    const isMax = fin.netWorth === maxNW && maxNW > 6000;
+                    return (
+                      <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ 
+                        textAlign: 'right', 
+                        fontWeight: 'bold',
+                        color: isMax ? '#fbbf24' : 'inherit',
+                        textShadow: isMax ? '0 0 8px rgba(251, 191, 36, 0.5)' : 'none'
+                      }}>
+                        ${fin.netWorth.toLocaleString()}
+                        {isMax && ' 👑'}
+                      </td>
+                    );
                   })}
                   <td style={{ border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></td>
                   <td style={{ border: 'none' }}></td>
@@ -610,9 +622,21 @@ function App() {
                 const reversedLogs = [...gameState.logs].reverse();
                 let cutoffIndex = -1;
                 if (me) {
-                  cutoffIndex = reversedLogs.findIndex(log => log.startsWith(`${me.name.replace('🤖 ', '')} played tile`));
+                  const isMyTurn = gameState.turnOrder[gameState.currentPlayerIndex] === me.id;
+                  const turns: number[] = [];
+                  reversedLogs.forEach((log, idx) => {
+                    if (log.startsWith(`${me.name.replace('🤖 ', '')} played tile`)) {
+                      turns.push(idx);
+                    }
+                  });
+
+                  if (isMyTurn) {
+                    cutoffIndex = turns.length > 0 ? turns[0] : -1;
+                  } else {
+                    cutoffIndex = turns.length > 1 ? turns[1] : (turns.length > 0 ? turns[0] : -1);
+                  }
                 }
-                const logsToShow = cutoffIndex >= 0 ? reversedLogs.slice(0, cutoffIndex + 1) : reversedLogs.slice(0, 10);
+                const logsToShow = cutoffIndex >= 0 ? reversedLogs.slice(0, cutoffIndex + 1) : reversedLogs.slice(0, 15);
                 return logsToShow.map((log, i) => renderLogLine(log, i));
               })()}
             </div>
