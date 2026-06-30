@@ -553,7 +553,7 @@ function App() {
                     <tr style={{ color: 'var(--text-muted)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                       <th>Rank</th>
                       <th>Player</th>
-                      <th>Net Worth</th>
+                      <th style={{ textAlign: 'right' }}>Net Worth</th>
                       <th style={{ textAlign: 'center' }}>Founded</th>
                       <th style={{ textAlign: 'center' }}>Mergers</th>
                       <th style={{ textAlign: 'center' }}>1st Bonus</th>
@@ -593,7 +593,7 @@ function App() {
                               #{index + 1}
                             </td>
                             <td style={{ color: p.color }}>{p.name.replace('🤖 ', '')}</td>
-                            <td style={{ color: 'var(--primary)' }}>${fin.netWorth.toLocaleString()}</td>
+                            <td style={{ color: 'var(--primary)', textAlign: 'right' }}>${fin.netWorth.toLocaleString()}</td>
                             <td style={{ textAlign: 'center' }}>{stats.chainsFounded}</td>
                             <td style={{ textAlign: 'center' }}>{stats.mergesCaused}</td>
                             <td style={{ textAlign: 'center' }}>{stats.firstBonuses + extraFirst}</td>
