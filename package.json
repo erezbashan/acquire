@@ -4,12 +4,14 @@
   "workspaces": [
     "frontend",
     "backend",
-    "shared"
+    "shared",
+    "functions"
   ],
   "scripts": {
     "dev:frontend": "npm run dev --workspace=frontend",
-    "dev:backend": "npm run dev --workspace=backend",
+    "dev:functions": "npm run build --watch --workspace=functions",
     "build:shared": "npm run build --workspace=shared",
-    "dev": "npm run dev:frontend & npm run dev:backend"
+    "emulators": "export PATH=\"/opt/homebrew/opt/openjdk@21/bin:$PATH\" && npx -y firebase-tools@latest emulators:start",
+    "dev": "npm run build:shared && (npm run dev:functions & npm run emulators & npm run dev:frontend)"
   }
 }

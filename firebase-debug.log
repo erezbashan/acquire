@@ -1,0 +1,222 @@
+[debug] [2026-07-03T07:25:12.924Z] ----------------------------------------------------------------------
+[debug] [2026-07-03T07:25:12.926Z] Command:       /Users/erezbashan/.nvm/versions/node/v24.13.0/bin/node /Users/erezbashan/.npm/_npx/ba4f1959e38407b5/node_modules/.bin/firebase emulators:start
+[debug] [2026-07-03T07:25:12.926Z] CLI Version:   15.22.4
+[debug] [2026-07-03T07:25:12.926Z] Platform:      darwin
+[debug] [2026-07-03T07:25:12.926Z] Node Version:  v24.13.0
+[debug] [2026-07-03T07:25:12.926Z] Detected Agent: antigravity
+[debug] [2026-07-03T07:25:12.927Z] Time:          Fri Jul 03 2026 10:25:12 GMT+0300 (Israel Daylight Time)
+[debug] [2026-07-03T07:25:12.927Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-07-03T07:25:13.690Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-07-03T07:25:13.690Z] > authorizing via signed-in user (erez.bashan@gmail.com)
+[debug] [2026-07-03T07:25:13.721Z] openjdk version "21.0.11" 2026-04-21
+OpenJDK Runtime Environment Homebrew (build 21.0.11)
+
+[debug] [2026-07-03T07:25:13.721Z] OpenJDK 64-Bit Server VM Homebrew (build 21.0.11, mixed mode, sharing)
+
+[debug] [2026-07-03T07:25:13.723Z] Parsed Java major version: 21
+[info] i  emulators: Starting emulators: functions, firestore, hosting, extensions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions, firestore, hosting, extensions"}}
+[debug] [2026-07-03T07:25:13.724Z] Checked if tokens are valid: true, expires at: 1783066452630
+[debug] [2026-07-03T07:25:13.724Z] Checked if tokens are valid: true, expires at: 1783066452630
+[debug] [2026-07-03T07:25:13.724Z] >>> [apiv2][query] GET https://cloudresourcemanager.googleapis.com/v1/projects/acquire-game-1782999027 [none]
+[debug] [2026-07-03T07:25:14.776Z] <<< [apiv2][status] GET https://cloudresourcemanager.googleapis.com/v1/projects/acquire-game-1782999027 200
+[debug] [2026-07-03T07:25:14.776Z] <<< [apiv2][body] GET https://cloudresourcemanager.googleapis.com/v1/projects/acquire-game-1782999027 {"projectNumber":"13397046224","projectId":"acquire-game-1782999027","lifecycleState":"ACTIVE","name":"Acquire Game","labels":{"firebase":"enabled","firebase-core":"disabled"},"createTime":"2026-07-02T13:30:29.216Z"}
+[debug] [2026-07-03T07:25:15.261Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-07-03T07:25:15.261Z] [firestore] Firestore Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-07-03T07:25:15.261Z] [firestore.websocket] websocket server for firestore only supports listening on one address (127.0.0.1). Not listening on ::1
+[warn] ⚠  hosting: Hosting Emulator unable to start on port 5000, starting on 5002 instead. {"metadata":{"emulator":{"name":"hosting"},"message":"Hosting Emulator unable to start on port 5000, starting on 5002 instead."}}
+[debug] [2026-07-03T07:25:15.261Z] [hosting] Hosting Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-07-03T07:25:15.261Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5002}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2026-07-03T07:25:15.263Z] Found emulator hub locator: {"version":"15.22.4","origins":["http://127.0.0.1:4400","http://[::1]:4400"],"pid":7878}
+[debug] [2026-07-03T07:25:15.264Z] Write emulator hub locator at /var/folders/yn/mvs6rcp16xnbljhpbjq8b36h0000gn/T/hub-acquire-game-1782999027.json
+[debug] [2026-07-03T07:25:15.265Z] [Extensions] Started Extensions emulator, this is a noop.
+[debug] [2026-07-03T07:25:15.473Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-07-03T07:25:15.473Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-07-03T07:25:15.473Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-07-03T07:25:15.473Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"firestore":[{"address":"127.0.0.1","family":"IPv4","port":8080}],"firestore.websocket":[{"address":"127.0.0.1","family":"IPv4","port":9150}],"hosting":[{"address":"127.0.0.1","family":"IPv4","port":5002}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] ⚠  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, auth, database, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, auth, database, pubsub, storage, dataconnect"}}
+[warn] ⚠  functions: Application Default Credentials detected. Non-emulated services will access production using these credentials. Be careful! {"metadata":{"emulator":{"name":"functions"},"message":"Application Default Credentials detected. Non-emulated services will access production using these credentials. Be careful!"}}
+[debug] [2026-07-03T07:25:15.974Z] Checked if tokens are valid: true, expires at: 1783066452630
+[debug] [2026-07-03T07:25:15.974Z] Checked if tokens are valid: true, expires at: 1783066452630
+[debug] [2026-07-03T07:25:15.974Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/acquire-game-1782999027/adminSdkConfig [none]
+[debug] [2026-07-03T07:25:17.031Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/acquire-game-1782999027/adminSdkConfig 200
+[debug] [2026-07-03T07:25:17.031Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/acquire-game-1782999027/adminSdkConfig {"projectId":"acquire-game-1782999027","storageBucket":"acquire-game-1782999027.firebasestorage.app"}
+[debug] [2026-07-03T07:25:17.049Z] Ignoring unsupported arg: auto_download {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: auto_download"}}
+[debug] [2026-07-03T07:25:17.049Z] Ignoring unsupported arg: single_project_mode_error {"metadata":{"emulator":{"name":"firestore"},"message":"Ignoring unsupported arg: single_project_mode_error"}}
+[debug] [2026-07-03T07:25:17.049Z] Starting Firestore Emulator with command {"binary":"java","args":["-Dgoogle.cloud_firestore.debug_log_level=FINE","-Duser.language=en","-jar","/Users/erezbashan/.cache/firebase/emulators/cloud-firestore-emulator-v1.21.0.jar","--host","127.0.0.1","--port",8080,"--websocket_port",9150,"--database-edition","standard","--project_id","acquire-game-1782999027","--rules","/Users/erezbashan/workspace/acquire/firestore.rules","--single_project_mode",true,"--functions_emulator","127.0.0.1:5001"],"optionalArgs":["port","webchannel_port","host","rules","websocket_port","database-edition","functions_emulator","seed_from_export","project_id","single_project_mode"],"joinArgs":false,"shell":false,"port":8080} {"metadata":{"emulator":{"name":"firestore"},"message":"Starting Firestore Emulator with command {\"binary\":\"java\",\"args\":[\"-Dgoogle.cloud_firestore.debug_log_level=FINE\",\"-Duser.language=en\",\"-jar\",\"/Users/erezbashan/.cache/firebase/emulators/cloud-firestore-emulator-v1.21.0.jar\",\"--host\",\"127.0.0.1\",\"--port\",8080,\"--websocket_port\",9150,\"--database-edition\",\"standard\",\"--project_id\",\"acquire-game-1782999027\",\"--rules\",\"/Users/erezbashan/workspace/acquire/firestore.rules\",\"--single_project_mode\",true,\"--functions_emulator\",\"127.0.0.1:5001\"],\"optionalArgs\":[\"port\",\"webchannel_port\",\"host\",\"rules\",\"websocket_port\",\"database-edition\",\"functions_emulator\",\"seed_from_export\",\"project_id\",\"single_project_mode\"],\"joinArgs\":false,\"shell\":false,\"port\":8080}"}}
+[info] i  firestore: Firestore Emulator logging to firestore-debug.log {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator logging to firestore-debug.log"}}
+[debug] [2026-07-03T07:25:17.721Z] Jul 03, 2026 10:25:17 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start
+INFO: Started WebSocket server on ws://127.0.0.1:9150
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 03, 2026 10:25:17 AM com.google.cloud.datastore.emulator.firestore.websocket.WebSocketServer start\nINFO: Started WebSocket server on ws://127.0.0.1:9150\n"}}
+[debug] [2026-07-03T07:25:17.735Z] 
+API endpoint: http:// {"metadata":{"emulator":{"name":"firestore"},"message":"\nAPI endpoint: http://"}}
+[debug] [2026-07-03T07:25:17.736Z] 127.0.0.1:8080
+Database Edition: STANDARD
+Database Mode: CLOUD_FIRESTORE
+
+If you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:
+
+   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080
+
+If you are running a Firestore in Datastore Mode project, run:
+
+   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080
+
+Note: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.
+Dev App Server is now running.
+
+ {"metadata":{"emulator":{"name":"firestore"},"message":"127.0.0.1:8080\nDatabase Edition: STANDARD\nDatabase Mode: CLOUD_FIRESTORE\n\nIf you are using a library that supports the FIRESTORE_EMULATOR_HOST environment variable, run:\n\n   export FIRESTORE_EMULATOR_HOST=127.0.0.1:8080\n\nIf you are running a Firestore in Datastore Mode project, run:\n\n   export DATASTORE_EMULATOR_HOST=127.0.0.1:8080\n\nNote: Support for Datastore Mode is in preview. If you encounter any bugs please file at https://github.com/firebase/firebase-tools/issues.\nDev App Server is now running.\n\n"}}
+[info] ✔  firestore: Firestore Emulator was started in standard edition. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator was started in standard edition."}}
+[info] ✔  firestore: Firestore Emulator UI websocket is running on 9150. {"metadata":{"emulator":{"name":"firestore"},"message":"Firestore Emulator UI websocket is running on 9150."}}
+[debug] [2026-07-03T07:25:17.861Z] Checked if tokens are valid: true, expires at: 1783066452630
+[debug] [2026-07-03T07:25:17.861Z] Checked if tokens are valid: true, expires at: 1783066452630
+[debug] [2026-07-03T07:25:17.862Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/acquire-game-1782999027/sites 
+[debug] [2026-07-03T07:25:19.379Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/acquire-game-1782999027/sites 200
+[debug] [2026-07-03T07:25:19.379Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/acquire-game-1782999027/sites {"sites":[{"name":"projects/acquire-game-1782999027/sites/acquire-game-1782999027","defaultUrl":"https://acquire-game-1782999027.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2026-07-03T07:25:19.379Z] Checked if tokens are valid: true, expires at: 1783066452630
+[debug] [2026-07-03T07:25:19.379Z] Checked if tokens are valid: true, expires at: 1783066452630
+[debug] [2026-07-03T07:25:19.379Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/acquire-game-1782999027/webApps/-/config [none]
+[debug] [2026-07-03T07:25:20.098Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/acquire-game-1782999027/webApps/-/config 200
+[debug] [2026-07-03T07:25:20.098Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/acquire-game-1782999027/webApps/-/config {"projectId":"acquire-game-1782999027","appId":"1:13397046224:web:cde4c3a9637972f464ffd5","storageBucket":"acquire-game-1782999027.firebasestorage.app","apiKey":"AIzaSyASeI7sudOZKb_jQnYGadix57m02STFUEo","authDomain":"acquire-game-1782999027.firebaseapp.com","messagingSenderId":"13397046224","projectNumber":"13397046224","version":"2"}
+[debug] [2026-07-03T07:25:20.106Z] Checked if tokens are valid: true, expires at: 1783066452630
+[debug] [2026-07-03T07:25:20.106Z] Checked if tokens are valid: true, expires at: 1783066452630
+[debug] [2026-07-03T07:25:20.107Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/acquire-game-1782999027 [none]
+[debug] [2026-07-03T07:25:20.417Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/acquire-game-1782999027 200
+[debug] [2026-07-03T07:25:20.417Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/acquire-game-1782999027 {"projectId":"acquire-game-1782999027","projectNumber":"13397046224","displayName":"Acquire Game","name":"projects/acquire-game-1782999027","resources":{"hostingSite":"acquire-game-1782999027"},"state":"ACTIVE","labels":{"firebase":"enabled"},"etag":"1_e62ed9fa-848d-4df8-a12e-3e5e77e0a28a"}
+[info] i  hosting[acquire-game-1782999027]: Serving hosting files from: frontend/dist {"metadata":{"emulator":{"name":"hosting"},"message":"Serving hosting files from: frontend/dist"}}
+[info] ✔  hosting[acquire-game-1782999027]: Local server: http://127.0.0.1:5002 {"metadata":{"emulator":{"name":"hosting"},"message":"Local server: http://127.0.0.1:5002"}}
+[debug] [2026-07-03T07:25:20.481Z] [Extensions] Connecting Extensions emulator, this is a noop.
+[info] i  functions: Watching "/Users/erezbashan/workspace/acquire/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/erezbashan/workspace/acquire/functions\" for Cloud Functions..."}}
+[debug] [2026-07-03T07:25:20.484Z] Validating nodejs source
+[warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
+[warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
+[debug] [2026-07-03T07:25:20.970Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "build": "tsc",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^12.0.0",
+    "firebase-functions": "^5.0.0",
+    "@acquire/shared": "*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "firebase-functions-test": "^3.1.0"
+  },
+  "private": true
+}
+[debug] [2026-07-03T07:25:20.970Z] Building nodejs source
+[debug] [2026-07-03T07:25:20.971Z] Failed to find version of module node: reached end of search path /Users/erezbashan/workspace/acquire/functions/node_modules
+[warn] ⚠  functions: Your requested "node" version "18" doesn't match your global version "24". Using node@24 from host. 
+[debug] [2026-07-03T07:25:21.006Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-07-03T07:25:21.012Z] Found firebase-functions binary at '/Users/erezbashan/workspace/acquire/node_modules/.bin/firebase-functions'
+[info] Serving at port 8203
+
+[debug] [2026-07-03T07:25:21.237Z] Got response from /__/functions.yaml {"endpoints":{"createGame":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"createGame"},"joinGame":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"joinGame"},"addBot":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"addBot"},"startGame":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"startGame"},"playTile":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"playTile"},"foundCorporation":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"foundCorporation"},"chooseMergeSurvivor":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"chooseMergeSurvivor"},"resolveMergeStocks":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"resolveMergeStocks"},"buyStock":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"buyStock"},"endTurn":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"endTurn"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[warn] ⚠  functions: Application Default Credentials detected. Non-emulated services will access production using these credentials. Be careful! {"metadata":{"emulator":{"name":"functions"},"message":"Application Default Credentials detected. Non-emulated services will access production using these credentials. Be careful!"}}
+[info] ✔  functions: Loaded functions definitions from source: createGame, joinGame, addBot, startGame, playTile, foundCorporation, chooseMergeSurvivor, resolveMergeStocks, buyStock, endTurn. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: createGame, joinGame, addBot, startGame, playTile, foundCorporation, chooseMergeSurvivor, resolveMergeStocks, buyStock, endTurn."}}
+[info] ✔  functions[us-central1-createGame]: http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/createGame). {"metadata":{"emulator":{"name":"functions"},"message":"http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/createGame)."}}
+[info] ✔  functions[us-central1-joinGame]: http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/joinGame). {"metadata":{"emulator":{"name":"functions"},"message":"http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/joinGame)."}}
+[info] ✔  functions[us-central1-addBot]: http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/addBot). {"metadata":{"emulator":{"name":"functions"},"message":"http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/addBot)."}}
+[info] ✔  functions[us-central1-startGame]: http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/startGame). {"metadata":{"emulator":{"name":"functions"},"message":"http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/startGame)."}}
+[info] ✔  functions[us-central1-playTile]: http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/playTile). {"metadata":{"emulator":{"name":"functions"},"message":"http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/playTile)."}}
+[info] ✔  functions[us-central1-foundCorporation]: http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/foundCorporation). {"metadata":{"emulator":{"name":"functions"},"message":"http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/foundCorporation)."}}
+[info] ✔  functions[us-central1-chooseMergeSurvivor]: http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/chooseMergeSurvivor). {"metadata":{"emulator":{"name":"functions"},"message":"http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/chooseMergeSurvivor)."}}
+[info] ✔  functions[us-central1-resolveMergeStocks]: http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/resolveMergeStocks). {"metadata":{"emulator":{"name":"functions"},"message":"http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/resolveMergeStocks)."}}
+[info] ✔  functions[us-central1-buyStock]: http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/buyStock). {"metadata":{"emulator":{"name":"functions"},"message":"http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/buyStock)."}}
+[info] ✔  functions[us-central1-endTurn]: http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/endTurn). {"metadata":{"emulator":{"name":"functions"},"message":"http function initialized (http://127.0.0.1:5001/acquire-game-1782999027/us-central1/endTurn)."}}
+[debug] [2026-07-03T07:25:25.271Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase SQL Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌────────────┬────────────────┬──────────────────────────────────┐
+│ Emulator   │ Host:Port      │ View in Emulator UI              │
+├────────────┼────────────────┼──────────────────────────────────┤
+│ Functions  │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions  │
+├────────────┼────────────────┼──────────────────────────────────┤
+│ Firestore  │ 127.0.0.1:8080 │ http://127.0.0.1:4000/firestore  │
+├────────────┼────────────────┼──────────────────────────────────┤
+│ Hosting    │ 127.0.0.1:5002 │ n/a                              │
+├────────────┼────────────────┼──────────────────────────────────┤
+│ Extensions │ 127.0.0.1:5001 │ http://127.0.0.1:4000/extensions │
+└────────────┴────────────────┴──────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500, 9150
+┌─────────────────────────┬───────────────┬─────────────────────┐
+│ Extension Instance Name │ Extension Ref │ View in Emulator UI │
+└─────────────────────────┴───────────────┴─────────────────────┘
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2026-07-03T07:25:51.107Z] [work-queue] {"queuedWork":["/acquire-game-1782999027/us-central1/createGame-2026-07-03T07:25:51.107Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-03T07:25:51.107Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/acquire-game-1782999027/us-central1/createGame-2026-07-03T07:25:51.107Z"],"workRunningCount":1}
+[debug] [2026-07-03T07:25:51.108Z] Accepted request OPTIONS /acquire-game-1782999027/us-central1/createGame --> us-central1-createGame
+[debug] [2026-07-03T07:25:51.108Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2026-07-03T07:25:51.109Z] [functions] Got req.url=/acquire-game-1782999027/us-central1/createGame, mapping to path=/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/acquire-game-1782999027/us-central1/createGame, mapping to path=/"}}
+[debug] [2026-07-03T07:25:51.115Z] [worker-pool] addWorker(us-central1-createGame) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] addWorker(us-central1-createGame)"}}
+[debug] [2026-07-03T07:25:51.115Z] [worker-pool] Adding worker with key us-central1-createGame, total=1 {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] Adding worker with key us-central1-createGame, total=1"}}
+[debug] [2026-07-03T07:25:51.553Z] [runtime-status] [8889] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"/Users/erezbashan/workspace/acquire/node_modules/firebase-admin/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[runtime-status] [8889] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"/Users/erezbashan/workspace/acquire/node_modules/firebase-admin/lib/index.js\"}"}}
+[debug] [2026-07-03T07:25:51.553Z] [runtime-status] [8889] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"/Users/erezbashan/workspace/acquire/node_modules/firebase-functions/lib/v1/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[runtime-status] [8889] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"/Users/erezbashan/workspace/acquire/node_modules/firebase-functions/lib/v1/index.js\"}"}}
+[debug] [2026-07-03T07:25:51.553Z] [runtime-status] [8889] Outgoing network have been stubbed. [{"name":"http","status":"mocked"},{"name":"http","status":"mocked"},{"name":"https","status":"mocked"},{"name":"https","status":"mocked"},{"name":"net","status":"mocked"}] {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[runtime-status] [8889] Outgoing network have been stubbed. [{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"http\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"https\",\"status\":\"mocked\"},{\"name\":\"net\",\"status\":\"mocked\"}]"}}
+[debug] [2026-07-03T07:25:51.554Z] [runtime-status] [8889] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"/Users/erezbashan/workspace/acquire/node_modules/firebase-functions/lib/v1/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[runtime-status] [8889] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"/Users/erezbashan/workspace/acquire/node_modules/firebase-functions/lib/v1/index.js\"}"}}
+[debug] [2026-07-03T07:25:51.588Z] [runtime-status] [8889] Resolved module firebase-admin {"declared":true,"installed":true,"version":"12.7.0","resolution":"/Users/erezbashan/workspace/acquire/node_modules/firebase-admin/lib/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[runtime-status] [8889] Resolved module firebase-admin {\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"/Users/erezbashan/workspace/acquire/node_modules/firebase-admin/lib/index.js\"}"}}
+[debug] [2026-07-03T07:25:51.589Z] [runtime-status] [8889] Resolved module firebase-functions {"declared":true,"installed":true,"version":"5.1.1","resolution":"/Users/erezbashan/workspace/acquire/node_modules/firebase-functions/lib/v1/index.js"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[runtime-status] [8889] Resolved module firebase-functions {\"declared\":true,\"installed\":true,\"version\":\"5.1.1\",\"resolution\":\"/Users/erezbashan/workspace/acquire/node_modules/firebase-functions/lib/v1/index.js\"}"}}
+[debug] [2026-07-03T07:25:51.640Z] [runtime-status] [8889] firebase-admin has been stubbed. {"adminResolution":{"declared":true,"installed":true,"version":"12.7.0","resolution":"/Users/erezbashan/workspace/acquire/node_modules/firebase-admin/lib/index.js"}} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[runtime-status] [8889] firebase-admin has been stubbed. {\"adminResolution\":{\"declared\":true,\"installed\":true,\"version\":\"12.7.0\",\"resolution\":\"/Users/erezbashan/workspace/acquire/node_modules/firebase-admin/lib/index.js\"}}"}}
+[debug] [2026-07-03T07:25:51.642Z] [runtime-status] [8889] initializeApp(DEFAULT) {"storageBucket":"acquire-game-1782999027.firebasestorage.app","projectId":"acquire-game-1782999027"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[runtime-status] [8889] initializeApp(DEFAULT) {\"storageBucket\":\"acquire-game-1782999027.firebasestorage.app\",\"projectId\":\"acquire-game-1782999027\"}"}}
+[debug] [2026-07-03T07:25:51.645Z] [runtime-status] [8889] Functions runtime initialized. {"cwd":"/Users/erezbashan/workspace/acquire/functions","node_version":"24.13.0"} {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[runtime-status] [8889] Functions runtime initialized. {\"cwd\":\"/Users/erezbashan/workspace/acquire/functions\",\"node_version\":\"24.13.0\"}"}}
+[debug] [2026-07-03T07:25:51.645Z] [runtime-status] [8889] Listening to port: /var/folders/yn/mvs6rcp16xnbljhpbjq8b36h0000gn/T/fire_emu_fa5f12ea813cf993.sock {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[runtime-status] [8889] Listening to port: /var/folders/yn/mvs6rcp16xnbljhpbjq8b36h0000gn/T/fire_emu_fa5f12ea813cf993.sock"}}
+[debug] [2026-07-03T07:25:51.727Z] [worker-us-central1-createGame-c31723b0-dbcc-459c-8422-b473ee939e46]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[worker-us-central1-createGame-c31723b0-dbcc-459c-8422-b473ee939e46]: IDLE"}}
+[debug] [2026-07-03T07:25:51.727Z] [worker-pool] submitRequest(triggerId=us-central1-createGame) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-createGame)"}}
+[info] i  functions: Beginning execution of "us-central1-createGame" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Beginning execution of \"us-central1-createGame\""}}
+[debug] [2026-07-03T07:25:51.728Z] [worker-us-central1-createGame-c31723b0-dbcc-459c-8422-b473ee939e46]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[worker-us-central1-createGame-c31723b0-dbcc-459c-8422-b473ee939e46]: BUSY"}}
+[debug] [2026-07-03T07:25:51.730Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-createGame" in 2.823375ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finished \"us-central1-createGame\" in 2.823375ms"}}
+[debug] [2026-07-03T07:25:51.730Z] [worker-us-central1-createGame-c31723b0-dbcc-459c-8422-b473ee939e46]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[worker-us-central1-createGame-c31723b0-dbcc-459c-8422-b473ee939e46]: IDLE"}}
+[debug] [2026-07-03T07:25:51.731Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2026-07-03T07:25:51.731Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2026-07-03T07:25:51.731Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-03T07:25:51.732Z] [work-queue] {"queuedWork":["/acquire-game-1782999027/us-central1/createGame-2026-07-03T07:25:51.732Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-03T07:25:51.732Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/acquire-game-1782999027/us-central1/createGame-2026-07-03T07:25:51.732Z"],"workRunningCount":1}
+[debug] [2026-07-03T07:25:51.732Z] Accepted request POST /acquire-game-1782999027/us-central1/createGame --> us-central1-createGame
+[debug] [2026-07-03T07:25:51.732Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2026-07-03T07:25:51.732Z] [functions] Got req.url=/acquire-game-1782999027/us-central1/createGame, mapping to path=/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/acquire-game-1782999027/us-central1/createGame, mapping to path=/"}}
+[debug] [2026-07-03T07:25:51.732Z] [worker-pool] submitRequest(triggerId=us-central1-createGame) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-createGame)"}}
+[info] i  functions: Beginning execution of "us-central1-createGame" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Beginning execution of \"us-central1-createGame\""}}
+[debug] [2026-07-03T07:25:51.732Z] [worker-us-central1-createGame-c31723b0-dbcc-459c-8422-b473ee939e46]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[worker-us-central1-createGame-c31723b0-dbcc-459c-8422-b473ee939e46]: BUSY"}}
+[info] >  {"verifications":{"app":"MISSING","auth":"MISSING"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"} {"user":{"verifications":{"app":"MISSING","auth":"MISSING"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"},"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":">  {\"verifications\":{\"app\":\"MISSING\",\"auth\":\"MISSING\"},\"logging.googleapis.com/labels\":{\"firebase-log-type\":\"callable-request-verification\"},\"severity\":\"DEBUG\",\"message\":\"Callable request verification passed\"}"}}
+[debug] [2026-07-03T07:25:51.892Z] Jul 03, 2026 10:25:51 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 03, 2026 10:25:51 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected HTTP/2 connection.\n"}}
+[debug] [2026-07-03T07:25:51.917Z] Jul 03, 2026 10:25:51 AM io.grpc.netty.TcpMetrics loadEpollInfo
+INFO: Epoll available during static init of TcpMetrics:false
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 03, 2026 10:25:51 AM io.grpc.netty.TcpMetrics loadEpollInfo\nINFO: Epoll available during static init of TcpMetrics:false\n"}}
+[debug] [2026-07-03T07:25:52.304Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-createGame" in 571.94ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finished \"us-central1-createGame\" in 571.94ms"}}
+[debug] [2026-07-03T07:25:52.304Z] [worker-us-central1-createGame-c31723b0-dbcc-459c-8422-b473ee939e46]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[worker-us-central1-createGame-c31723b0-dbcc-459c-8422-b473ee939e46]: IDLE"}}
+[debug] [2026-07-03T07:25:52.304Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2026-07-03T07:25:52.304Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2026-07-03T07:25:52.304Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-03T07:25:52.317Z] Jul 03, 2026 10:25:52 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 03, 2026 10:25:52 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-03T07:25:52.509Z] Jul 03, 2026 10:25:52 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 03, 2026 10:25:52 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-03T07:26:52.530Z] Jul 03, 2026 10:26:52 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 03, 2026 10:26:52 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-03T07:27:52.548Z] Jul 03, 2026 10:27:52 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 03, 2026 10:27:52 AM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}

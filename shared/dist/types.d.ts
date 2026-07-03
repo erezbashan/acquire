@@ -37,7 +37,7 @@ export interface GameState {
     id: string;
     players: Player[];
     currentPlayerIndex: number;
-    board: BoardCell[][];
+    board: Record<number, BoardCell[]>;
     corporations: Record<Corporation, CorporationState>;
     availableTiles: Tile[];
     phase: GamePhase;

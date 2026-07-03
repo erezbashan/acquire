@@ -1,9 +1,11 @@
 import React, { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { io, Socket } from 'socket.io-client';
+import { httpsCallable } from 'firebase/functions';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db, functions } from './firebase';
 import type { GameState } from '@acquire/shared';
 
 interface SocketContextType {
-  socket: Socket | null;
+  socket: null;
   gameState: GameState | null;
   connected: boolean;
   createGame: (username: string) => Promise<string>;
@@ -12,6 +14,8 @@ interface SocketContextType {
   startGame: (gameId: string) => void;
   playTile: (gameId: string, tileId: string) => void;
   foundCorporation: (gameId: string, corpName: string) => void;
+  chooseMergeSurvivor: (gameId: string, corpName: string) => void;
+  resolveMergeStocks: (gameId: string, sell: number, trade: number, keep: number) => void;
   buyStock: (gameId: string, corpName: string) => void;
   endTurn: (gameId: string) => void;
   rejoinGame: (gameId: string) => void;
@@ -27,9 +31,10 @@ export const useSocket = () => {
 };
 
 export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [socket, setSocket] = useState<Socket | null>(null);
   const [gameState, setGameState] = useState<GameState | null>(null);
-  const [connected, setConnected] = useState(false);
+  const [connected] = useState(true); // Always connected in serverless
+  const [activeGameId, setActiveGameId] = useState<string | null>(null);
+
   const [playerId] = useState(() => {
     let localPlayerId = localStorage.getItem('acquire_player_id');
     if (!localPlayerId) {
@@ -40,80 +45,85 @@ export const SocketProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   });
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3001', {
-      auth: { playerId }
-    });
-    setSocket(newSocket);
+    if (!activeGameId) return;
 
-    newSocket.on('connect', () => {
-      setConnected(true);
-    });
-
-    newSocket.on('disconnect', () => {
-      setConnected(false);
+    const unsub = onSnapshot(doc(db, 'games', activeGameId), (doc) => {
+      if (doc.exists()) {
+        setGameState(doc.data() as GameState);
+      }
     });
 
-    newSocket.on('gameState', (state: GameState) => {
-      setGameState(state);
-    });
+    return () => unsub();
+  }, [activeGameId]);
 
-    return () => {
-      newSocket.close();
-    };
-  }, []);
-
-  const createGame = (username: string): Promise<string> => {
-    return new Promise((resolve) => {
-      socket?.emit('createGame', { username }, (response: { gameId: string }) => {
-        resolve(response.gameId);
-      });
-    });
+  const createGame = async (username: string): Promise<string> => {
+    const fn = httpsCallable(functions, 'createGame');
+    const result = await fn({ username, playerId });
+    const data = result.data as { gameId: string };
+    setActiveGameId(data.gameId);
+    return data.gameId;
   };
 
-  const joinGame = (gameId: string, username: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      socket?.emit('joinGame', { gameId, username }, (response: { success?: boolean, error?: string }) => {
-        if (response.success) {
-          resolve(true);
-        } else {
-          alert(response.error);
-          resolve(false);
-        }
-      });
-    });
+  const joinGame = async (gameId: string, username: string): Promise<boolean> => {
+    try {
+      const fn = httpsCallable(functions, 'joinGame');
+      await fn({ gameId, username, playerId });
+      setActiveGameId(gameId);
+      return true;
+    } catch (e: any) {
+      alert(e.message);
+      return false;
+    }
   };
 
-  const addBot = (gameId: string) => {
-    socket?.emit('addBot', { gameId });
+  const addBot = async (gameId: string) => {
+    const fn = httpsCallable(functions, 'addBot');
+    await fn({ gameId });
   };
 
-  const startGame = (gameId: string) => {
-    socket?.emit('startGame', { gameId });
+  const startGame = async (gameId: string) => {
+    const fn = httpsCallable(functions, 'startGame');
+    await fn({ gameId });
   };
 
-  const playTile = (gameId: string, tileId: string) => {
-    socket?.emit('playTile', { gameId, tileId });
+  const playTile = async (gameId: string, tileId: string) => {
+    const fn = httpsCallable(functions, 'playTile');
+    await fn({ gameId, tileId, playerId });
   };
 
-  const foundCorporation = (gameId: string, corpName: string) => {
-    socket?.emit('foundCorporation', { gameId, corpName });
+  const foundCorporation = async (gameId: string, corpName: string) => {
+    const fn = httpsCallable(functions, 'foundCorporation');
+    await fn({ gameId, corpName, playerId });
   };
 
-  const buyStock = (gameId: string, corpName: string) => {
-    socket?.emit('buyStock', { gameId, corpName });
+  const chooseMergeSurvivor = async (gameId: string, corpName: string) => {
+    const fn = httpsCallable(functions, 'chooseMergeSurvivor');
+    await fn({ gameId, corpName, playerId });
   };
 
-  const endTurn = (gameId: string) => {
-    socket?.emit('endTurn', { gameId });
+  const resolveMergeStocks = async (gameId: string, sell: number, trade: number, keep: number) => {
+    const fn = httpsCallable(functions, 'resolveMergeStocks');
+    await fn({ gameId, sell, trade, keep, playerId });
+  };
+
+  const buyStock = async (gameId: string, corpName: string) => {
+    const fn = httpsCallable(functions, 'buyStock');
+    await fn({ gameId, corpName, playerId });
+  };
+
+  const endTurn = async (gameId: string) => {
+    const fn = httpsCallable(functions, 'endTurn');
+    await fn({ gameId, playerId });
   };
 
   const rejoinGame = (gameId: string) => {
-    socket?.emit('rejoinGame', { gameId });
+    setActiveGameId(gameId);
   };
 
   return (
     <SocketContext.Provider value={{
-      socket, gameState, connected, createGame, joinGame, addBot, startGame, playTile, foundCorporation, buyStock, endTurn, rejoinGame, playerId
+      socket: null, gameState, connected, createGame, joinGame, addBot, startGame, playTile, 
+      foundCorporation, chooseMergeSurvivor, resolveMergeStocks, buyStock, endTurn, rejoinGame, playerId
     }}>
       {children}
     </SocketContext.Provider>

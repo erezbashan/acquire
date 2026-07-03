@@ -59,7 +59,7 @@ export interface GameState {
   id: string;
   players: Player[];
   currentPlayerIndex: number;
-  board: BoardCell[][]; // 9x12 grid
+  board: Record<number, BoardCell[]>; // 9x12 grid
   corporations: Record<Corporation, CorporationState>;
   availableTiles: Tile[];
   phase: GamePhase;

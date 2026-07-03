@@ -8,14 +8,14 @@ export declare function playTile(state: GameState, playerId: string, tileId: Til
 export declare function chooseMergeSurvivor(state: GameState, playerId: string, survivorName: Corporation): GameState;
 export declare function resolveMergeStocks(state: GameState, playerId: string, sellCount: number, tradeCount: number, keepCount: number): GameState;
 export declare function foundCorporation(state: GameState, playerId: string, corpName: Corporation): GameState;
-export declare function getAdjacentCells(board: BoardCell[][], row: number, col: number): {
+export declare function getAdjacentCells(board: Record<number, BoardCell[]>, row: number, col: number): {
     r: number;
     c: number;
     val: BoardCell;
 }[];
 export declare function getStockPrice(corpName: Corporation, size: number): number;
-export declare function fillCorporation(board: BoardCell[][], row: number, col: number, corpName: Corporation): {
-    board: BoardCell[][];
+export declare function fillCorporation(board: Record<number, BoardCell[]>, row: number, col: number, corpName: Corporation): {
+    board: Record<number, BoardCell[]>;
     count: number;
 };
 export declare function buyStock(state: GameState, playerId: string, corpName: Corporation): GameState;

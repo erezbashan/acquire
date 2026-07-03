@@ -46,7 +46,10 @@ function shuffleArray(array) {
     return newArray;
 }
 function createInitialGameState(id) {
-    const emptyBoard = Array(BOARD_ROWS).fill(null).map(() => Array(BOARD_COLS).fill(null));
+    const emptyBoard = {};
+    for (let r = 0; r < BOARD_ROWS; r++) {
+        emptyBoard[r] = Array(BOARD_COLS).fill(null);
+    }
     const corporations = {};
     for (const corp of exports.CORPORATIONS) {
         corporations[corp] = {
@@ -118,7 +121,9 @@ function playTile(state, playerId, tileId) {
         return state;
     const tile = player.tiles[tileIndex];
     // Create new board
-    const newBoard = state.board.map(row => [...row]);
+    const newBoard = {};
+    for (let r = 0; r < BOARD_ROWS; r++)
+        newBoard[r] = [...state.board[r]];
     newBoard[tile.row][tile.col] = 'Unincorporated';
     // Update player tiles
     const newPlayerTiles = [...player.tiles];
@@ -139,7 +144,10 @@ function playTile(state, playerId, tileId) {
         // Founding a corporation
         const availableCorps = exports.CORPORATIONS.filter(c => !newState.corporations[c].isActive);
         if (availableCorps.length > 0) {
-            const { count } = fillCorporation(newBoard.map(r => [...r]), tile.row, tile.col, availableCorps[0]);
+            const tempBoard = {};
+            for (let r = 0; r < BOARD_ROWS; r++)
+                tempBoard[r] = [...newBoard[r]];
+            const { count } = fillCorporation(tempBoard, tile.row, tile.col, availableCorps[0]);
             newState.phase = 'FoundCorporation';
             newState.pendingFounding = {
                 playerId,
@@ -249,7 +257,9 @@ function applyMerger(state, tile, survivorName, defunctCorps) {
     let newState = { ...state };
     newState.pendingSurvivorChoice = undefined;
     newState.logs.push(`Merger! ${survivorName} takes over ${defunctCorps.join(', ')}`);
-    const newBoard = newState.board.map(row => [...row]);
+    const newBoard = {};
+    for (let r = 0; r < BOARD_ROWS; r++)
+        newBoard[r] = [...newState.board[r]];
     const defunctTiles = [];
     // 1. Convert the played tile and all defunct tiles to survivor
     for (let r = 0; r < 9; r++) {
@@ -465,7 +475,9 @@ function foundCorporation(state, playerId, corpName) {
         row = parseInt(match[1]) - 1;
         col = match[2].charCodeAt(0) - 65;
     }
-    const newBoard = state.board.map(r => [...r]);
+    const newBoard = {};
+    for (let r = 0; r < BOARD_ROWS; r++)
+        newBoard[r] = [...state.board[r]];
     const { board: updatedBoard, count } = fillCorporation(newBoard, row, col, corpName);
     const newState = { ...state, board: updatedBoard, phase: 'BuyStocks' };
     newState.corporations = { ...newState.corporations };
@@ -574,7 +586,9 @@ function updateCorporationStats(state) {
     return newState;
 }
 function fillCorporation(board, row, col, corpName) {
-    const newBoard = board.map(r => [...r]);
+    const newBoard = {};
+    for (let r = 0; r < BOARD_ROWS; r++)
+        newBoard[r] = [...board[r]];
     let count = 0;
     function dfs(r, c) {
         const neighbors = getAdjacentCells(newBoard, r, c);

@@ -4,7 +4,7 @@ import { type Corporation, getPlayerFinancials, getStockPrice } from '@acquire/s
 import './App.css';
 
 function App() {
-  const { connected, gameState, createGame, joinGame, addBot, startGame, playTile, buyStock, endTurn, rejoinGame, playerId, socket } = useSocket();
+  const { connected, gameState, createGame, joinGame, addBot, startGame, playTile, buyStock, endTurn, rejoinGame, playerId, foundCorporation, chooseMergeSurvivor, resolveMergeStocks } = useSocket();
   const [username, setUsername] = useState('');
   const [gameIdInput, setGameIdInput] = useState('');
   
@@ -200,7 +200,9 @@ function App() {
 
       <div className="main-content">
         <div className="board glass">
-          {gameState.board.map((row, rIdx) => (
+          {Array.from({length: 9}).map((_, rIdx) => {
+            const row = gameState.board[rIdx];
+            return (
             <div key={rIdx} className="board-row">
               {row.map((cell, cIdx) => {
                 const cellId = `${rIdx + 1}${String.fromCharCode(65 + cIdx)}`;
@@ -262,7 +264,8 @@ function App() {
                 );
               })}
             </div>
-          ))}
+            );
+          })}
               {gameState.phase === 'FoundCorporation' && gameState.pendingFounding?.playerId === playerId && (
                 <div className="modal-backdrop" style={{ position: 'absolute', borderRadius: 'inherit', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
                   <div className="modal-content glass" style={{ padding: '2rem', minWidth: '300px', textAlign: 'center' }}>
@@ -288,7 +291,7 @@ function App() {
                                 <button 
                                   key={c} 
                                   className={`tile-btn ${c.toLowerCase()}`} 
-                                  onClick={() => socket?.emit('foundCorporation', { gameId: gameState.id, corpName: c })}
+                                  onClick={() => foundCorporation(gameState.id, c)}
                                 >
                                   {c}
                                 </button>
@@ -314,7 +317,7 @@ function App() {
                           <button 
                             key={corp}
                             className={`tile-btn ${corp.toLowerCase()}`}
-                            onClick={() => socket?.emit('chooseMergeSurvivor', { gameId: gameState.id, survivorName: corp })}
+                            onClick={() => chooseMergeSurvivor(gameState.id, corp)}
                           >
                             Merge {defunctCorps.join(', ')} into {corp}
                           </button>
@@ -374,14 +377,14 @@ function App() {
                       <button 
                         style={{ marginTop: '10px' }}
                         onClick={() => {
-                          socket?.emit('resolveMergeStocks', { gameId: gameState.id, sellCount, tradeCount, keepCount });
+                          resolveMergeStocks(gameState.id, sellCount, tradeCount, keepCount);
                         }}
                       >
                         Confirm Resolution
                       </button>
                     </div>
                   ) : (
-                    <button onClick={() => socket?.emit('resolveMergeStocks', { gameId: gameState.id, sellCount: 0, tradeCount: 0, keepCount: 0 })}>Continue</button>
+                    <button onClick={() => resolveMergeStocks(gameState.id, 0, 0, 0)}>Continue</button>
                   )}
                 </div>
                 </div>
