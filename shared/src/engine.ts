@@ -266,7 +266,7 @@ export function chooseMergeSurvivor(state: GameState, playerId: string, survivor
 
 function applyMerger(state: GameState, tile: Tile, survivorName: Corporation, defunctCorps: Corporation[]): GameState {
   let newState = { ...state };
-  newState.pendingSurvivorChoice = undefined;
+  delete newState.pendingSurvivorChoice;
   newState.logs.push(`Merger! ${survivorName} takes over ${defunctCorps.join(', ')}`);
 
   const newBoard: Record<number, BoardCell[]> = {};

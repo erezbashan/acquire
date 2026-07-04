@@ -255,7 +255,7 @@ function chooseMergeSurvivor(state, playerId, survivorName) {
 }
 function applyMerger(state, tile, survivorName, defunctCorps) {
     let newState = { ...state };
-    newState.pendingSurvivorChoice = undefined;
+    delete newState.pendingSurvivorChoice;
     newState.logs.push(`Merger! ${survivorName} takes over ${defunctCorps.join(', ')}`);
     const newBoard = {};
     for (let r = 0; r < BOARD_ROWS; r++)

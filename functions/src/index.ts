@@ -49,6 +49,11 @@ async function emitStateAndProcessBots(gameId: string, state: GameState) {
       currentState = newState;
       isBotTurnPending = true; // Loop will continue and save this new state, then process the next turn
     });
+    
+    if (isBotTurnPending) {
+      // Add a 1.5 second delay so the frontend has time to render the intermediate state
+      await new Promise(resolve => setTimeout(resolve, 1500));
+    }
   }
 }
 

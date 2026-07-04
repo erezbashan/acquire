@@ -3,12 +3,12 @@ import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
 
 const firebaseConfig = {
-  projectId: "acquire-game-1782999027",
-  appId: "1:13397046224:web:cde4c3a9637972f464ffd5",
-  storageBucket: "acquire-game-1782999027.firebasestorage.app",
-  apiKey: "AIzaSyASeI7sudOZKb_jQnYGadix57m02STFUEo",
-  authDomain: "acquire-game-1782999027.firebaseapp.com",
-  messagingSenderId: "13397046224",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
 };
 
 const app = initializeApp(firebaseConfig);
