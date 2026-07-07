@@ -15,6 +15,9 @@
         "*.local"
       ],
       "predeploy": [
+        "npm --prefix \"$RESOURCE_DIR/../shared\" run build",
+        "cd \"$RESOURCE_DIR/../shared\" && npm pack",
+        "mv \"$RESOURCE_DIR/../shared\"/acquire-shared-*.tgz \"$RESOURCE_DIR/acquire-shared.tgz\"",
         "npm --prefix \"$RESOURCE_DIR\" run build"
       ]
     }
@@ -30,6 +33,26 @@
       {
         "source": "**",
         "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache, no-store, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(js|css|webp|png|jpg|jpeg|svg|woff2)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
       }
     ]
   }

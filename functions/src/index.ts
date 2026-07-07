@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions/v2/https';
+import { onSchedule } from 'firebase-functions/v2/scheduler';
 import * as admin from 'firebase-admin';
 import { 
   GameState,
@@ -33,6 +34,7 @@ async function getGameState(gameId: string): Promise<GameState> {
 }
 
 async function saveGameState(gameId: string, state: GameState) {
+  state.updatedAt = Date.now();
   await db.collection('games').doc(gameId).set(state);
 }
 
@@ -65,6 +67,7 @@ export const createGame = functions.onCall(async (request) => {
   
   const gameId = generateGameId();
   const state = createInitialGameState(gameId);
+  state.hostId = playerId;
   const newPlayer: Player = {
     id: playerId,
     name: username,
@@ -85,6 +88,29 @@ export const joinGame = functions.onCall(async (request) => {
   const data = request.data as { gameId: string, username: string, playerId: string };
   const state = await getGameState(data.gameId);
   
+  const existingName = state.players.find(p => p.name.replace('🤖 ', '').toLowerCase() === data.username.trim().toLowerCase());
+
+  if (existingName) {
+    if (existingName.id === data.playerId || existingName.isBot) {
+      existingName.id = data.playerId;
+      existingName.isBot = false;
+      existingName.name = data.username;
+      
+      if (!state.chat) state.chat = [];
+      state.chat.push({
+        sender: 'System',
+        text: `${data.username} has rejoined the game!`,
+        timestamp: Date.now()
+      });
+      if (state.chat.length > 50) state.chat = state.chat.slice(state.chat.length - 50);
+
+      await saveGameState(data.gameId, state);
+      return { gameId: data.gameId };
+    } else {
+      throw new functions.HttpsError('already-exists', 'Username already taken in this game.');
+    }
+  }
+
   if (state.phase !== 'Lobby') {
     throw new functions.HttpsError('failed-precondition', 'Game already started');
   }
@@ -100,8 +126,49 @@ export const joinGame = functions.onCall(async (request) => {
     isBot: false,
     stats: { chainsFounded: 0, mergesCaused: 0, firstBonuses: 0, secondBonuses: 0, sharesBought: 0 }
   });
-
+  
   await saveGameState(data.gameId, newState);
+  return { gameId: data.gameId };
+});
+
+export const quitGame = functions.onCall(async (request) => {
+  const data = request.data as { gameId: string, playerId: string };
+  const state = await getGameState(data.gameId);
+  
+  if (state.phase === 'Lobby') {
+    state.players = state.players.filter(p => p.id !== data.playerId);
+    if (state.players.length === 0 || !state.players.some(p => !p.isBot)) {
+      state.phase = 'GameOver';
+    } else if (state.hostId === data.playerId) {
+      state.hostId = state.players.find(p => !p.isBot)?.id || state.players[0].id;
+    }
+    await saveGameState(data.gameId, state);
+  } else {
+    const playerIndex = state.players.findIndex(p => p.id === data.playerId);
+    if (playerIndex >= 0) {
+      const p = state.players[playerIndex];
+      const originalName = p.name;
+      p.isBot = true;
+      if (!p.name.startsWith('🤖')) {
+        p.name = `🤖 ${p.name}`;
+      }
+      
+      if (!state.chat) state.chat = [];
+      state.chat.push({
+        sender: 'System',
+        text: `${originalName.replace('🤖 ', '')} has left the game. A bot has taken over.`,
+        timestamp: Date.now()
+      });
+      if (state.chat.length > 50) state.chat = state.chat.slice(state.chat.length - 50);
+
+      if (!state.players.some(player => !player.isBot)) {
+        state.phase = 'GameOver';
+        await saveGameState(data.gameId, state);
+      } else {
+        await emitStateAndProcessBots(data.gameId, state);
+      }
+    }
+  }
   return { success: true };
 });
 
@@ -114,11 +181,22 @@ export const addBot = functions.onCall(async (request) => {
   }
 
   const botNames = ['HAL', 'EVE', 'ZIM', 'GIR', 'BOB', 'TOM', 'LEO', 'MAX', 'SAM', 'ROY', 'BEN', 'DAN', 'RAY', 'JON'];
-  const usedNames = state.players.map(p => p.name.replace('🤖 ', ''));
-  const availableNames = botNames.filter(n => !usedNames.includes(n));
-  const botName = availableNames.length > 0 
-    ? availableNames[Math.floor(Math.random() * availableNames.length)] 
-    : `Bot${state.players.length}`;
+  const usedNames = state.players.map(p => p.name.replace('🤖 ', '').toLowerCase());
+  const availableNames = botNames.filter(n => !usedNames.includes(n.toLowerCase()));
+  
+  let botName = '';
+  if (availableNames.length > 0) {
+    botName = availableNames[Math.floor(Math.random() * availableNames.length)];
+  } else {
+    let i = state.players.length;
+    while (true) {
+      if (!usedNames.includes(`bot${i}`)) {
+        botName = `Bot${i}`;
+        break;
+      }
+      i++;
+    }
+  }
 
   const botId = `bot-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
   const colorIndex = state.players.length % PLAYER_COLORS.length;
@@ -192,4 +270,51 @@ export const endTurn = functions.onCall(async (request) => {
   const newState = engineEndTurn(state);
   await emitStateAndProcessBots(data.gameId, newState);
   return { success: true };
+});
+
+export const addChatMessage = functions.onCall(async (request) => {
+  const data = request.data as { gameId: string, playerId: string, text: string };
+  const state = await getGameState(data.gameId);
+  const player = state.players.find(p => p.id === data.playerId);
+  if (!player || !data.text || data.text.trim() === '') return { success: false };
+  
+  if (!state.chat) state.chat = [];
+  state.chat.push({ sender: player.name.replace('🤖 ', ''), text: data.text.trim(), timestamp: Date.now() });
+  
+  if (state.chat.length > 50) {
+    state.chat = state.chat.slice(state.chat.length - 50);
+  }
+  
+  await saveGameState(data.gameId, state);
+  return { success: true };
+});
+
+export const cleanupInactiveGames = onSchedule('every 15 minutes', async (event) => {
+  const oneHourAgo = Date.now() - 60 * 60 * 1000;
+  
+  const snapshot = await db.collection('games')
+    .where('updatedAt', '<', oneHourAgo)
+    .get();
+    
+  if (snapshot.empty) return;
+  
+  const batch = db.batch();
+  let count = 0;
+
+  snapshot.docs.forEach((doc) => {
+    const state = doc.data() as GameState;
+    if (state.phase !== 'GameOver') {
+      state.phase = 'GameOver';
+      state.logs.push('---');
+      state.logs.push('Game ended due to inactivity.');
+      state.updatedAt = Date.now();
+      batch.set(doc.ref, state);
+      count++;
+    }
+  });
+  
+  if (count > 0) {
+    await batch.commit();
+    console.log(`Cleaned up ${count} inactive games.`);
+  }
 });

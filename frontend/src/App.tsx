@@ -4,13 +4,34 @@ import { type Corporation, getPlayerFinancials, getStockPrice } from '@acquire/s
 import './App.css';
 
 function App() {
-  const { connected, gameState, createGame, joinGame, addBot, startGame, playTile, buyStock, endTurn, rejoinGame, playerId, foundCorporation, chooseMergeSurvivor, resolveMergeStocks } = useSocket();
-  const [username, setUsername] = useState('');
+  const { connected, gameState, createGame, joinGame, quitGame, addBot, startGame, playTile, buyStock, endTurn, rejoinGame, playerId, foundCorporation, chooseMergeSurvivor, resolveMergeStocks, openGames, addChatMessage } = useSocket();
+  const [username, setUsername] = useState(localStorage.getItem('acquire_username') || '');
   const [gameIdInput, setGameIdInput] = useState('');
+  const [chatInput, setChatInput] = useState('');
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showMobileWarning, setShowMobileWarning] = useState(() => window.innerWidth < 800);
+  const [showFullChat, setShowFullChat] = useState(false);
+  const [systemNotification, setSystemNotification] = useState('');
   
   // Merge Resolution State
   const [sellCount, setSellCount] = useState(0);
   const [tradeCount, setTradeCount] = useState(0);
+
+  const handleSendChat = () => {
+    if (chatInput.trim() && gameState) {
+      addChatMessage(gameState.id, chatInput.trim());
+      setChatInput('');
+    }
+  };
+
+  const handleQuitGame = async () => {
+    if (gameState) {
+      await quitGame(gameState.id);
+    }
+    window.location.href = '/';
+  };
 
   // Corp Details Modal State
   const [selectedCorp, setSelectedCorp] = useState<Corporation | null>(null);
@@ -38,7 +59,7 @@ function App() {
     
     if (player) {
       namePart = player.name.replace('🤖 ', '');
-      elements.push(<span key="name" style={{ color: player.color, fontWeight: 'bold' }}>{namePart}</span>);
+      elements.push(<span key="name" className="player-name" style={{ color: player.color }}>{namePart}</span>);
       cleanLog = cleanLog.substring(namePart.length);
     }
 
@@ -121,13 +142,55 @@ function App() {
     }
   }, [connected, gameState?.id]);
 
+  React.useEffect(() => {
+    if (gameState?.chat && gameState.chat.length > 0) {
+      const lastMsg = gameState.chat[gameState.chat.length - 1];
+      if (lastMsg.sender === 'System' && Date.now() - lastMsg.timestamp < 10000) {
+        setSystemNotification(lastMsg.text);
+        const timer = setTimeout(() => setSystemNotification(''), 5000);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [gameState?.chat]);
+
   if (!connected) {
     return <div className="loading">Connecting to server...</div>;
   }
 
-  if (!gameState) {
+  if (!gameState || !me) {
+    const isJoiningExisting = gameState && !me;
+    
     return (
       <div className="lobby-container">
+        <button 
+          onClick={() => setShowHelpModal(true)}
+          style={{ position: 'fixed', top: '20px', right: '20px', width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent)', color: 'white', border: 'none', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer', zIndex: 3000, boxShadow: '0 4px 10px rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+          title="Help & Feedback"
+        >
+          ?
+        </button>
+
+        {showHelpModal && (
+          <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 4000 }} onClick={() => setShowHelpModal(false)}>
+            <div className="modal-content glass" style={{ padding: '2rem', minWidth: '400px', maxWidth: '600px', textAlign: 'left', position: 'relative' }} onClick={e => e.stopPropagation()}>
+              <button 
+                onClick={() => setShowHelpModal(false)} 
+                style={{ position: 'absolute', top: '10px', right: '15px', background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.5rem', cursor: 'pointer' }}
+              >
+                &times;
+              </button>
+              <h2 style={{ marginTop: 0 }}>Help & Feedback</h2>
+              <p>
+                <strong>Acquire</strong> is a classic board game of strategy and finance. Players form, merge, and expand hotel chains while strategically buying stock to maximize their wealth. Use your tiles to manipulate the board and outsmart your opponents to become the wealthiest player!
+              </p>
+              <ul style={{ paddingLeft: '20px', lineHeight: '1.6' }}>
+                <li><a href="https://www.ultraboardgames.com/acquire/game-rules.php" target="_blank" rel="noreferrer" style={{ color: '#60a5fa' }}>Read Official Rules</a></li>
+                <li><a href="mailto:erez.bashan@gmail.com?subject=Acquire%20Game%20Feedback" target="_blank" rel="noreferrer" style={{ color: '#60a5fa' }}>Send Feedback or Report a Bug</a></li>
+              </ul>
+            </div>
+          </div>
+        )}
+        
         <div className="title-area">
           <h1>Acquire</h1>
         </div>
@@ -140,18 +203,48 @@ function App() {
             onChange={e => setUsername(e.target.value.toUpperCase())} 
           />
           <div className="actions">
-            <button onClick={() => createGame(username)} disabled={username.length !== 3}>Create Game</button>
-            <div className="join-section">
-              <input 
-                type="text" 
-                placeholder="Game ID" 
-                value={gameIdInput} 
-                onChange={e => setGameIdInput(e.target.value.toUpperCase())} 
-              />
-              <button onClick={() => joinGame(gameIdInput, username)} disabled={username.length !== 3 || !gameIdInput}>Join Game</button>
-            </div>
+            {!isJoiningExisting ? (
+              <>
+                <button onClick={() => createGame(username)} disabled={username.length !== 3}>Create Game</button>
+                <div className="join-section">
+                  <input 
+                    type="text" 
+                    placeholder="Game ID" 
+                    value={gameIdInput} 
+                    onChange={e => setGameIdInput(e.target.value.toUpperCase())} 
+                  />
+                  <button onClick={() => joinGame(gameIdInput, username)} disabled={username.length !== 3 || !gameIdInput}>Join Game</button>
+                </div>
+              </>
+            ) : (
+              <button onClick={() => joinGame(gameState.id, username)} disabled={username.length !== 3} style={{ width: '100%', marginTop: '1rem' }}>
+                Join Game {gameState.id}
+              </button>
+            )}
           </div>
         </div>
+        
+        {!isJoiningExisting && openGames.length > 0 && (
+          <div className="lobby-card glass" style={{ marginTop: '2rem' }}>
+            <h3>Ongoing Games</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '1rem' }}>
+              {[...openGames].sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).map(game => {
+                const idleMins = Math.floor((Date.now() - (game.updatedAt || Date.now())) / 60000);
+                return (
+                  <div key={game.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <span><strong>{game.id}</strong> ({game.players.length} players)</span>
+                      {idleMins >= 1 && <span style={{ fontSize: '0.85rem', color: '#fb923c', marginTop: '4px' }}>Idle for {idleMins} min{idleMins !== 1 ? 's' : ''}</span>}
+                    </div>
+                    <button onClick={() => { setGameIdInput(game.id); joinGame(game.id, username); }} disabled={username.length !== 3} style={{ padding: '5px 15px' }}>
+                      Join
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -164,6 +257,12 @@ function App() {
   const isMyTurn = activePlayerId === playerId;
   
   const keepCount = myDefunctStocks - sellCount - tradeCount;
+
+  const meIndexInTurnOrder = gameState.turnOrder?.indexOf(playerId) ?? -1;
+  const orderedPlayerIds = meIndexInTurnOrder >= 0 
+    ? [...gameState.turnOrder.slice(meIndexInTurnOrder), ...gameState.turnOrder.slice(0, meIndexInTurnOrder)]
+    : (gameState.turnOrder?.length > 0 ? gameState.turnOrder : gameState.players.map(p => p.id));
+  const orderedPlayers = orderedPlayerIds.map(id => gameState.players.find(p => p.id === id)!).filter(Boolean);
 
   return (
     <div className="game-container">
@@ -187,18 +286,129 @@ function App() {
             </span>
           )}
         </div>
-        {gameState.phase === 'Lobby' ? (
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button onClick={() => addBot(gameState.id)}>Add Bot</button>
-            <button onClick={() => startGame(gameState.id)} disabled={gameState.players.length < 2}>Start Game</button>
-            <button className="quit-btn" onClick={() => window.location.reload()}>Quit Game</button>
-          </div>
-        ) : (
-          <button className="quit-btn" onClick={() => window.location.reload()}>Quit Game</button>
-        )}
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          {gameState.phase === 'Lobby' && (
+            <>
+              {gameState.hostId === playerId && (
+                <>
+                  <button onClick={() => addBot(gameState.id)}>Add Bot</button>
+                  <button onClick={() => startGame(gameState.id)} disabled={gameState.players.length < 2}>Start Game</button>
+                </>
+              )}
+              {gameState.hostId !== playerId && (
+                <span style={{ padding: '4px 12px', color: '#ccc', alignSelf: 'center' }}>Waiting for host to start...</span>
+              )}
+            </>
+          )}
+          
+          <button className="quit-btn" onClick={handleQuitGame}>Quit Game</button>
+
+          <button 
+            onClick={() => {
+              const url = new URL(window.location.href);
+              url.searchParams.set('game', gameState.id);
+              navigator.clipboard.writeText(url.toString());
+              setCopiedLink(true);
+              setTimeout(() => setCopiedLink(false), 2000);
+              setShowShareModal(true);
+            }}
+            style={{ 
+              background: copiedLink ? '#059669' : '#10b981', 
+              transition: 'background 0.3s ease'
+            }}
+          >
+            {copiedLink ? 'Copied!' : 'Share'}
+          </button>
+
+          <button 
+            onClick={() => setShowHelpModal(true)}
+            style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--accent)', color: 'white', border: 'none', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
+            title="Help & Feedback"
+          >
+            ?
+          </button>
+        </div>
       </header>
 
       <div className="main-content">
+        {systemNotification && (
+          <div className="system-toast" style={{ position: 'fixed', top: '20px', left: '50%', transform: 'translateX(-50%)', background: 'rgba(239, 68, 68, 0.9)', color: 'white', padding: '12px 24px', borderRadius: '8px', zIndex: 4000, boxShadow: '0 10px 25px rgba(0,0,0,0.5)', fontWeight: 'bold' }}>
+            {systemNotification}
+          </div>
+        )}
+        
+        {showHelpModal && (
+          <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 4000 }} onClick={() => setShowHelpModal(false)}>
+            <div className="modal-content glass" style={{ padding: '2rem', minWidth: '400px', maxWidth: '600px', textAlign: 'left', position: 'relative' }} onClick={e => e.stopPropagation()}>
+              <button 
+                onClick={() => setShowHelpModal(false)} 
+                style={{ position: 'absolute', top: '10px', right: '15px', background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.5rem', cursor: 'pointer' }}
+              >
+                &times;
+              </button>
+              <h2 style={{ marginTop: 0 }}>Help & Feedback</h2>
+              <p>
+                <strong>Acquire</strong> is a classic board game of strategy and finance. Players form, merge, and expand hotel chains while strategically buying stock to maximize their wealth. Use your tiles to manipulate the board and outsmart your opponents to become the wealthiest player!
+              </p>
+              <ul style={{ paddingLeft: '20px', lineHeight: '1.6' }}>
+                <li><a href="https://www.ultraboardgames.com/acquire/game-rules.php" target="_blank" rel="noreferrer" style={{ color: '#60a5fa' }}>Read Official Rules</a></li>
+                <li><a href="mailto:erez.bashan@gmail.com?subject=Acquire%20Game%20Feedback" target="_blank" rel="noreferrer" style={{ color: '#60a5fa' }}>Send Feedback or Report a Bug</a></li>
+              </ul>
+            </div>
+          </div>
+        )}
+        
+        {showShareModal && (
+          <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.8)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 3000 }}>
+            <div className="modal-content glass" style={{ padding: '2rem', minWidth: '400px', textAlign: 'center', position: 'relative' }}>
+              <button 
+                onClick={() => setShowShareModal(false)} 
+                style={{ position: 'absolute', top: '10px', right: '15px', background: 'none', border: 'none', color: 'var(--text-muted)', fontSize: '1.5rem', cursor: 'pointer' }}
+              >
+                &times;
+              </button>
+              <h2 style={{ marginTop: 0 }}>Invite Friends</h2>
+              <p style={{ color: 'var(--text-muted)' }}>Send this link to your friends so they can join the game directly!</p>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <input 
+                  type="text" 
+                  readOnly 
+                  value={`${window.location.origin}/?game=${gameState.id}`}
+                  style={{ flex: 1, padding: '10px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.2)', color: 'white' }}
+                />
+                <button onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/?game=${gameState.id}`);
+                  setCopiedLink(true);
+                  setTimeout(() => setCopiedLink(false), 2000);
+                }} style={{ background: copiedLink ? '#10b981' : 'var(--accent)' }}>
+                  {copiedLink ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {showMobileWarning && (
+          <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15,20,30,0.95)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 9999 }}>
+            <div className="modal-content glass" style={{ padding: '2rem', minWidth: '300px', maxWidth: '80%', textAlign: 'center', position: 'relative', border: '1px solid rgba(239, 68, 68, 0.5)' }}>
+              <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📱</div>
+              <h2 style={{ marginTop: 0, color: '#ef4444' }}>Screen Too Small</h2>
+              <p style={{ lineHeight: '1.5' }}>
+                Acquire requires a lot of screen real estate to display the board and player information properly. 
+              </p>
+              <p style={{ lineHeight: '1.5', fontWeight: 'bold' }}>
+                For the best experience, please play on a desktop, laptop, or tablet.
+              </p>
+              <button 
+                onClick={() => setShowMobileWarning(false)}
+                style={{ marginTop: '1.5rem', width: '100%' }}
+              >
+                I Understand, Continue Anyway
+              </button>
+            </div>
+          </div>
+        )}
+        
         <div className="board glass">
           {Array.from({length: 9}).map((_, rIdx) => {
             const row = gameState.board[rIdx];
@@ -206,10 +416,11 @@ function App() {
             <div key={rIdx} className="board-row">
               {row.map((cell, cIdx) => {
                 const cellId = `${rIdx + 1}${String.fromCharCode(65 + cIdx)}`;
-                const isPlayable = me?.tiles.some(t => t.id === cellId);
+                const isInHand = me?.tiles.some(t => t.id === cellId);
+                const isPlayable = isInHand && gameState.phase === 'PlayTile' && isMyTurn;
                 let tileIcon = null;
                 
-                if (isPlayable) {
+                if (isInHand) {
                   const neighbors = [];
                   if (rIdx > 0) neighbors.push(gameState.board[rIdx - 1][cIdx]);
                   if (rIdx < 8) neighbors.push(gameState.board[rIdx + 1][cIdx]);
@@ -245,7 +456,7 @@ function App() {
                 return (
                   <div 
                     key={cIdx} 
-                    className={`board-cell ${renderedCell ? renderedCell.toLowerCase() : ''} ${isPlayable ? 'playable' : ''}`}
+                    className={`board-cell ${renderedCell ? renderedCell.toLowerCase() : ''} ${isInHand ? 'in-hand' : ''} ${isPlayable ? 'playable' : ''}`}
                     style={{ opacity: isDefunct ? 0.6 : 1, filter: isDefunct ? 'grayscale(0.3)' : 'none' }}
                     onClick={() => {
                       if (isPlayable && tileIcon !== '🚫' && isMyTurn && gameState.phase === 'PlayTile') {
@@ -255,7 +466,7 @@ function App() {
                   >
                     <span className="cell-label" style={{ zIndex: 1, position: 'relative' }}>{rIdx + 1}{String.fromCharCode(65 + cIdx)}</span>
                     {renderedCell && renderedCell !== 'Unincorporated' && <span className="cell-corp">{renderedCell}</span>}
-                    {isPlayable && tileIcon && (
+                    {isInHand && tileIcon && (
                       <div className="tile-icon-bg" style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', fontSize: '3rem', opacity: 0.25, zIndex: 0 }}>
                         {tileIcon}
                       </div>
@@ -399,15 +610,20 @@ function App() {
               <thead>
                 <tr>
                   <th></th>
-                  {gameState.players.map(p => {
-                      return (
-                        <th key={p.id} className={` ${p.id === me?.id ? 'me-col' : ''} ${p.id === activePlayerId ? 'active-player-col' : ''}`} style={{ textAlign: 'right', minWidth: '75px' }}>
-                          <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: '6px' }}>
-                            <span style={{ color: p.color }}>{p.name.replace(' (Me)', '').replace(' (You)', '')}</span>
-                          </div>
-                        </th>
-                      );
-                    })}
+                  {orderedPlayers.map(p => {
+                    return (
+                      <th key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ minWidth: '75px', textAlign: 'right' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px' }}>
+                          <span className="player-name" style={{ color: p.color, position: 'relative' }}>
+                            {p.name.replace(' (Me)', '').replace(' (You)', '')}
+                            {p.id === activePlayerId && gameState.phase !== 'GameOver' && (
+                              <span style={{ marginLeft: '6px' }}>▼</span>
+                            )}
+                          </span>
+                        </div>
+                      </th>
+                    );
+                  })}
                   <th style={{ minWidth: '50px', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></th>
                   <th style={{ minWidth: '60px' }}></th>
                   <th></th>
@@ -416,7 +632,7 @@ function App() {
               <tbody>
                 <tr>
                   <td>Cash</td>
-                  {gameState.players.map(p => {
+                  {orderedPlayers.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
                     return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right', minWidth: '75px' }}>${fin.cash.toLocaleString()}</td>;
                   })}
@@ -426,7 +642,7 @@ function App() {
                 </tr>
                 <tr>
                   <td>Bonus</td>
-                  {gameState.players.map(p => {
+                  {orderedPlayers.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
                     return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right', minWidth: '75px' }}>${fin.bonusValue.toLocaleString()}</td>;
                   })}
@@ -436,7 +652,7 @@ function App() {
                 </tr>
                 <tr>
                   <td>Stocks Val</td>
-                  {gameState.players.map(p => {
+                  {orderedPlayers.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
                     return <td key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ textAlign: 'right', minWidth: '75px' }}>${fin.stockValue.toLocaleString()}</td>;
                   })}
@@ -446,9 +662,9 @@ function App() {
                 </tr>
                 <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.2)' }}>
                   <td>Net Worth</td>
-                  {gameState.players.map(p => {
+                  {orderedPlayers.map(p => {
                     const fin = getPlayerFinancials(gameState, p.id);
-                    const allNW = Array.from(new Set(gameState.players.map(p2 => getPlayerFinancials(gameState, p2.id).netWorth))).sort((a, b) => b - a);
+                    const allNW = Array.from(new Set(orderedPlayers.map(p2 => getPlayerFinancials(gameState, p2.id).netWorth))).sort((a, b) => b - a);
                     const firstNW = allNW.length > 0 && allNW[0] > 6000 ? allNW[0] : -1;
                     const secondNW = allNW.length > 1 && allNW[1] > 6000 ? allNW[1] : -1;
                     const isFirst = fin.netWorth === firstNW;
@@ -479,8 +695,11 @@ function App() {
                   <td style={{ border: 'none' }}></td>
                 </tr>
 
-                {Object.entries(gameState.corporations).map(([cName, cState]) => {
-                  const holders = gameState.players.map(p => ({ id: p.id, count: p.stocks[cName as keyof typeof p.stocks] || 0 })).filter(h => h.count > 0).sort((a,b) => b.count - a.count);
+                {Object.entries(gameState.corporations).sort((a, b) => {
+                  const corpOrder = ['Tower', 'Luxor', 'American', 'Worldwide', 'Festival', 'Imperial', 'Continental'];
+                  return corpOrder.indexOf(a[0]) - corpOrder.indexOf(b[0]);
+                }).map(([cName, cState]) => {
+                  const holders = orderedPlayers.map(p => ({ id: p.id, count: p.stocks[cName as keyof typeof p.stocks] || 0 })).filter(h => h.count > 0).sort((a,b) => b.count - a.count);
                   const highest = holders.length > 0 ? holders[0].count : 0;
                   const majority = holders.filter(h => h.count === highest).map(h => h.id);
                   const secondHighest = holders.find(h => h.count < highest)?.count;
@@ -491,7 +710,7 @@ function App() {
                       <td className={`corp-name ${cName.toLowerCase()}`} style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setSelectedCorp(cName as Corporation)}>
                         {cName} {cState.isSafe && '🛡️'} {!cState.isActive && '💤'}
                       </td>
-                      {gameState.players.map(p => {
+                      {orderedPlayers.map(p => {
                         const isMajority = highest > 0 && majority.includes(p.id);
                         const isMinority = minority.includes(p.id);
                         const numStocks = p.stocks[cName as keyof typeof p.stocks] || 0;
@@ -520,6 +739,7 @@ function App() {
                       </td>
                       <td>
                         <button 
+                          className={isMyTurn && gameState.phase === 'BuyStocks' && me!.money >= cState.stockPrice && gameState.sharesBoughtThisTurn < 3 && cState.availableStocks > 0 && cState.isActive ? 'action-required-buy' : ''}
                           disabled={!isMyTurn || gameState.phase !== 'BuyStocks' || me!.money < cState.stockPrice || gameState.sharesBoughtThisTurn >= 3 || cState.availableStocks <= 0 || !cState.isActive}
                           onClick={() => buyStock(gameState.id, cName)}
                           style={{ padding: '2px 8px', fontSize: '0.8rem', marginLeft: '10px' }}
@@ -536,7 +756,7 @@ function App() {
             {gameState.phase === 'BuyStocks' && isMyTurn && (
               <div style={{ marginTop: '1rem', textAlign: 'right' }}>
                  <span>Shares bought: {gameState.sharesBoughtThisTurn}/3</span>
-                 <button className="end-turn-btn" style={{ width: 'auto', marginLeft: '10px', padding: '5px 15px' }} onClick={() => endTurn(gameState.id)}>End Turn</button>
+                 <button className="end-turn-btn action-required-buy" style={{ width: 'auto', marginLeft: '10px', padding: '5px 15px' }} onClick={() => endTurn(gameState.id)}>End Turn</button>
               </div>
             )}
           </div>
@@ -595,7 +815,7 @@ function App() {
                             <td>
                               #{index + 1}
                             </td>
-                            <td style={{ color: p.color }}>{p.name.replace('🤖 ', '')}</td>
+                            <td className="player-name" style={{ color: p.color }}>{p.name.replace('🤖 ', '')}</td>
                             <td style={{ color: 'var(--primary)', textAlign: 'right' }}>${fin.netWorth.toLocaleString()}</td>
                             <td style={{ textAlign: 'center' }}>{stats.chainsFounded}</td>
                             <td style={{ textAlign: 'center' }}>{stats.mergesCaused}</td>
@@ -671,6 +891,32 @@ function App() {
             </div>
           )}
 
+          <div className="chat glass" style={{ padding: '1rem', display: 'flex', flexDirection: 'column' }}>
+            <div className="chat-messages" style={{ display: 'flex', flexDirection: 'column-reverse', gap: '4px', minHeight: '50px', flex: 1, overflow: 'hidden' }}>
+              {[...(gameState.chat || [])].reverse().slice(0, 3).map((msg, i) => {
+                const senderPlayer = gameState.players.find(p => p.name.replace('🤖 ', '') === msg.sender);
+                const senderColor = senderPlayer ? senderPlayer.color : 'var(--accent)';
+                return (
+                  <div key={i} style={{ fontSize: '0.85rem' }}>
+                    <span className="player-name" style={{ color: senderColor }}>{msg.sender}:</span> <span style={{ color: '#e2e8f0' }}>{msg.text}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ display: 'flex', gap: '8px', marginTop: '0.5rem' }}>
+              <input 
+                type="text" 
+                value={chatInput} 
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSendChat(); }}
+                placeholder="Say something..."
+                style={{ flex: 1, padding: '4px 8px', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.3)', color: 'white' }}
+              />
+              <button onClick={handleSendChat} style={{ padding: '4px 12px', fontSize: '0.85rem' }}>Send</button>
+              <button onClick={() => setShowFullChat(true)} className="action-btn" style={{ padding: '4px 12px', fontSize: '0.85rem' }}>View Full Chat</button>
+            </div>
+          </div>
+
           <div className="logs glass">
             <div className="log-messages">
               {(() => {
@@ -710,6 +956,36 @@ function App() {
               {[...gameState.logs].reverse().map((log, i) => renderLogLine(log, i))}
             </div>
             <button onClick={() => setShowFullLogs(false)} style={{ marginTop: '1rem' }}>Close</button>
+          </div>
+        </div>
+      )}
+
+      {showFullChat && (
+        <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }} onClick={() => setShowFullChat(false)}>
+          <div className="modal-content glass" style={{ padding: '2rem', minWidth: '600px', width: '80vw', maxWidth: '1000px', height: '80vh', display: 'flex', flexDirection: 'column' }} onClick={e => e.stopPropagation()}>
+            <div className="chat-messages" style={{ display: 'flex', flexDirection: 'column-reverse', gap: '4px', overflowY: 'auto', flex: 1, paddingRight: '10px', marginBottom: '1rem' }}>
+              {[...(gameState.chat || [])].reverse().map((msg, i) => {
+                const senderPlayer = gameState.players.find(p => p.name.replace('🤖 ', '') === msg.sender);
+                const senderColor = senderPlayer ? senderPlayer.color : 'var(--accent)';
+                return (
+                  <div key={i} style={{ fontSize: '0.85rem' }}>
+                    <span className="player-name" style={{ color: senderColor }}>{msg.sender}:</span> <span style={{ color: '#e2e8f0' }}>{msg.text}</span>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <input 
+                type="text" 
+                value={chatInput} 
+                onChange={(e) => setChatInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSendChat(); }}
+                placeholder="Say something..."
+                style={{ flex: 1, padding: '4px 8px', fontSize: '0.85rem', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(0,0,0,0.3)', color: 'white' }}
+              />
+              <button onClick={handleSendChat} style={{ padding: '8px 16px' }}>Send</button>
+              <button onClick={() => setShowFullChat(false)} className="action-btn" style={{ padding: '8px 16px' }}>Close</button>
+            </div>
           </div>
         </div>
       )}

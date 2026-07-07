@@ -1,0 +1,14 @@
+{
+  "name": "@acquire/shared",
+  "version": "1.0.0",
+  "description": "Shared game logic for Acquire",
+  "main": "dist/index.js",
+  "module": "src/index.ts",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const engine_1 = require("./engine");
+let state = (0, engine_1.createInitialGameState)('test');
+state = (0, engine_1.addPlayer)(state, { id: 'p1', name: 'p1', money: 6000, tiles: [], stocks: { Tower: 0, Luxor: 0, American: 0, Worldwide: 0, Festival: 0, Imperial: 0, Continental: 0 } });
+state = (0, engine_1.addPlayer)(state, { id: 'p2', name: 'p2', money: 6000, tiles: [], stocks: { Tower: 0, Luxor: 0, American: 0, Worldwide: 0, Festival: 0, Imperial: 0, Continental: 0 } });
+state = (0, engine_1.startGame)(state);
+state.players[0].tiles = [{ id: '9F', row: 8, col: 5 }, { id: '9G', row: 8, col: 6 }];
+state = (0, engine_1.playTile)(state, 'p1', '9F');
+console.log('After 9F:', state.board[8][5]);
+state.phase = 'PlayTile';
+state.turnOrder = ['p1', 'p2'];
+state.currentPlayerIndex = 0;
+state = (0, engine_1.playTile)(state, 'p1', '9G');
+console.log('After 9G, phase:', state.phase);
+state = (0, engine_1.foundCorporation)(state, 'p1', 'Tower');
+console.log('After found, 9F:', state.board[8][5], '9G:', state.board[8][6], 'size:', state.corporations.Tower.size);
