@@ -1,4 +1,7 @@
 export type * from './types';
+export * from './bots/Bot';
+export * from './bots/HeuristicBot';
+export * from './bots/RandomBot';
 export { 
   createInitialGameState, 
   createInitialTiles, 
@@ -18,4 +21,5 @@ export {
   CORPORATIONS,
   type PlayerFinancials,
   isTileUnplayable
+
 } from './engine';
