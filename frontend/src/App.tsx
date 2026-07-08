@@ -283,6 +283,15 @@ function App() {
               }}>
                 Game Over
               </span>
+              {(() => {
+                const sortedPlayers = [...gameState.players].sort((a, b) => getPlayerFinancials(gameState, b.id).netWorth - getPlayerFinancials(gameState, a.id).netWorth);
+                const winner = sortedPlayers[0];
+                return winner && (
+                  <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: '#fbbf24', textShadow: '0 0 10px rgba(251, 191, 36, 0.5)' }}>
+                    🏆 Winner: <span style={{ color: winner.color }}>{winner.name.replace('🤖 ', '')}</span>
+                  </span>
+                );
+              })()}
               {!showGameOver && (
                 <button onClick={() => setShowGameOver(true)} style={{ padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
                   Show Final Results
@@ -755,7 +764,7 @@ function App() {
 
                   return (
                     <tr key={cName} className={!cState.isActive ? 'corp-inactive' : ''}>
-                      <td className={`corp-name ${cName.toLowerCase()}`} style={{ cursor: 'pointer', textDecoration: 'underline' }} onClick={() => setSelectedCorp(cName as Corporation)}>
+                      <td className={`corp-name ${cName.toLowerCase()}`} style={{ cursor: 'pointer', textDecoration: 'underline', maxWidth: '80px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} onClick={() => setSelectedCorp(cName as Corporation)} title={`${cName} ${cState.isSafe ? '🛡️' : ''} ${!cState.isActive ? '💤' : ''}`.trim()}>
                         {cName} {cState.isSafe && '🛡️'} {!cState.isActive && '💤'}
                       </td>
                       {orderedPlayers.map(p => {
