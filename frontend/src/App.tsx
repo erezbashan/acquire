@@ -268,10 +268,27 @@ function App() {
     <div className="game-container">
       <header className="glass">
         <div className="status" style={{ display: 'flex', alignItems: 'center' }}>
-          {gameState.phase === 'GameOver' && !showGameOver && (
-            <button onClick={() => setShowGameOver(true)} style={{ marginLeft: '1rem', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
-              Show Final Results
-            </button>
+          {gameState.phase === 'GameOver' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: '1rem' }}>
+              <span style={{ 
+                padding: '8px 24px', 
+                backgroundColor: '#ef4444', 
+                color: 'white', 
+                fontWeight: '900', 
+                fontSize: '1.5rem', 
+                borderRadius: '8px',
+                textTransform: 'uppercase',
+                letterSpacing: '2px',
+                boxShadow: '0 0 15px rgba(239,68,68,0.5)',
+              }}>
+                Game Over
+              </span>
+              {!showGameOver && (
+                <button onClick={() => setShowGameOver(true)} style={{ padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  Show Final Results
+                </button>
+              )}
+            </div>
           )}
           {gameState.phase !== 'Lobby' && gameState.phase !== 'GameOver' && (
             <span style={{ 
@@ -301,7 +318,9 @@ function App() {
             </>
           )}
           
-          <button className="quit-btn" onClick={handleQuitGame}>Quit Game</button>
+          <button className="quit-btn" onClick={handleQuitGame}>
+            {gameState.phase === 'GameOver' ? 'Back to Lobby' : 'Quit Game'}
+          </button>
 
           <button 
             onClick={() => {
@@ -618,7 +637,7 @@ function App() {
                             <span style={{ 
                               position: 'absolute', 
                               top: '-18px',
-                              left: '1.5ch',
+                              left: '50%',
                               transform: 'translateX(-50%) scaleX(3)',
                               fontSize: '1.2rem', 
                               color: 'var(--accent)',
