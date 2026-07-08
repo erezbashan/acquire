@@ -141,6 +141,10 @@ function App() {
       window.history.replaceState(null, '', `/?game=${gameState.id}`);
     }
   }, [connected, gameState?.id]);
+  React.useEffect(() => {
+    setSystemNotification('');
+  }, [gameState?.id]);
+
 
   React.useEffect(() => {
     if (gameState?.chat && gameState.chat.length > 0) {
@@ -328,8 +332,36 @@ function App() {
             <>
               {gameState.hostId === playerId && (
                 <>
-                  <button onClick={() => addBot(gameState.id)}>Add Bot</button>
-                  <button onClick={() => startGame(gameState.id)} disabled={gameState.players.length < 2}>Start Game</button>
+                  <button 
+                    onClick={() => addBot(gameState.id)}
+                    style={{
+                      background: 'rgba(255,255,255,0.1)',
+                      border: '1px solid rgba(255,255,255,0.2)',
+                      color: 'white',
+                      padding: '10px 20px',
+                      borderRadius: '8px',
+                      fontWeight: 'bold',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Add Bot
+                  </button>
+                  <button 
+                    onClick={() => startGame(gameState.id)} 
+                    disabled={gameState.players.length < 2}
+                    style={{
+                      background: gameState.players.length < 2 ? 'rgba(255,255,255,0.1)' : '#10b981',
+                      color: gameState.players.length < 2 ? 'rgba(255,255,255,0.4)' : 'white',
+                      border: gameState.players.length < 2 ? '1px solid rgba(255,255,255,0.1)' : 'none',
+                      padding: '10px 20px',
+                      borderRadius: '8px',
+                      fontWeight: 'bold',
+                      cursor: gameState.players.length < 2 ? 'not-allowed' : 'pointer',
+                      boxShadow: gameState.players.length < 2 ? 'none' : '0 4px 6px rgba(16, 185, 129, 0.3)'
+                    }}
+                  >
+                    Start Game
+                  </button>
                 </>
               )}
               {gameState.hostId !== playerId && (

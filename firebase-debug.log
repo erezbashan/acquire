@@ -3862,3 +3862,97 @@ INFO: Detected non-HTTP/2 connection.
 [debug] [2026-07-08T13:27:56.139Z] Jul 08, 2026 4:27:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
 INFO: Detected non-HTTP/2 connection.
  {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:27:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-08T13:28:56.160Z] Jul 08, 2026 4:28:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:28:56 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-08T13:30:11.869Z] Jul 08, 2026 4:30:11 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:30:11 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-08T13:30:53.030Z] Jul 08, 2026 4:30:53 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:30:53 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-08T13:30:53.055Z] Jul 08, 2026 4:30:53 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:30:53 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-08T13:30:53.055Z] Jul 08, 2026 4:30:53 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:30:53 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-08T13:30:57.787Z] [work-queue] {"queuedWork":["/acquire-game-1782999027/us-central1/quitGame-2026-07-08T13:30:57.786Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-08T13:30:57.787Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/acquire-game-1782999027/us-central1/quitGame-2026-07-08T13:30:57.786Z"],"workRunningCount":1}
+[debug] [2026-07-08T13:30:57.787Z] Accepted request OPTIONS /acquire-game-1782999027/us-central1/quitGame --> us-central1-quitGame
+[debug] [2026-07-08T13:30:57.790Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2026-07-08T13:30:57.790Z] [functions] Got req.url=/acquire-game-1782999027/us-central1/quitGame, mapping to path=/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/acquire-game-1782999027/us-central1/quitGame, mapping to path=/"}}
+[debug] [2026-07-08T13:30:57.790Z] [worker-pool] submitRequest(triggerId=us-central1-quitGame) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-quitGame)"}}
+[info] i  functions: Beginning execution of "us-central1-quitGame" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"Beginning execution of \"us-central1-quitGame\""}}
+[debug] [2026-07-08T13:30:57.791Z] [worker-us-central1-quitGame-f5ac462c-fbd7-435a-ba29-0cab341b4009]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"[worker-us-central1-quitGame-f5ac462c-fbd7-435a-ba29-0cab341b4009]: BUSY"}}
+[debug] [2026-07-08T13:30:57.798Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-quitGame" in 6.884209ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"Finished \"us-central1-quitGame\" in 6.884209ms"}}
+[debug] [2026-07-08T13:30:57.798Z] [worker-us-central1-quitGame-f5ac462c-fbd7-435a-ba29-0cab341b4009]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"[worker-us-central1-quitGame-f5ac462c-fbd7-435a-ba29-0cab341b4009]: IDLE"}}
+[debug] [2026-07-08T13:30:57.798Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2026-07-08T13:30:57.798Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2026-07-08T13:30:57.798Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-08T13:30:57.800Z] [work-queue] {"queuedWork":["/acquire-game-1782999027/us-central1/quitGame-2026-07-08T13:30:57.800Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-08T13:30:57.800Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/acquire-game-1782999027/us-central1/quitGame-2026-07-08T13:30:57.800Z"],"workRunningCount":1}
+[debug] [2026-07-08T13:30:57.800Z] Accepted request POST /acquire-game-1782999027/us-central1/quitGame --> us-central1-quitGame
+[debug] [2026-07-08T13:30:57.800Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2026-07-08T13:30:57.800Z] [functions] Got req.url=/acquire-game-1782999027/us-central1/quitGame, mapping to path=/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/acquire-game-1782999027/us-central1/quitGame, mapping to path=/"}}
+[debug] [2026-07-08T13:30:57.800Z] [worker-pool] submitRequest(triggerId=us-central1-quitGame) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-quitGame)"}}
+[info] i  functions: Beginning execution of "us-central1-quitGame" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"Beginning execution of \"us-central1-quitGame\""}}
+[debug] [2026-07-08T13:30:57.800Z] [worker-us-central1-quitGame-f5ac462c-fbd7-435a-ba29-0cab341b4009]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"[worker-us-central1-quitGame-f5ac462c-fbd7-435a-ba29-0cab341b4009]: BUSY"}}
+[info] >  {"verifications":{"app":"MISSING","auth":"MISSING"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"} {"user":{"verifications":{"app":"MISSING","auth":"MISSING"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"},"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":">  {\"verifications\":{\"app\":\"MISSING\",\"auth\":\"MISSING\"},\"logging.googleapis.com/labels\":{\"firebase-log-type\":\"callable-request-verification\"},\"severity\":\"DEBUG\",\"message\":\"Callable request verification passed\"}"}}
+[debug] [2026-07-08T13:30:57.812Z] Jul 08, 2026 4:30:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:30:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected HTTP/2 connection.\n"}}
+[debug] [2026-07-08T13:30:57.850Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-quitGame" in 50.0665ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"Finished \"us-central1-quitGame\" in 50.0665ms"}}
+[debug] [2026-07-08T13:30:57.851Z] [worker-us-central1-quitGame-f5ac462c-fbd7-435a-ba29-0cab341b4009]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"[worker-us-central1-quitGame-f5ac462c-fbd7-435a-ba29-0cab341b4009]: IDLE"}}
+[debug] [2026-07-08T13:30:57.851Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2026-07-08T13:30:57.851Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-quitGame"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2026-07-08T13:30:57.851Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-08T13:30:57.866Z] [work-queue] {"queuedWork":["/acquire-game-1782999027/us-central1/createGame-2026-07-08T13:30:57.866Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-08T13:30:57.866Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/acquire-game-1782999027/us-central1/createGame-2026-07-08T13:30:57.866Z"],"workRunningCount":1}
+[debug] [2026-07-08T13:30:57.866Z] Accepted request OPTIONS /acquire-game-1782999027/us-central1/createGame --> us-central1-createGame
+[debug] [2026-07-08T13:30:57.867Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2026-07-08T13:30:57.867Z] [functions] Got req.url=/acquire-game-1782999027/us-central1/createGame, mapping to path=/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/acquire-game-1782999027/us-central1/createGame, mapping to path=/"}}
+[debug] [2026-07-08T13:30:57.867Z] [worker-pool] submitRequest(triggerId=us-central1-createGame) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-createGame)"}}
+[info] i  functions: Beginning execution of "us-central1-createGame" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Beginning execution of \"us-central1-createGame\""}}
+[debug] [2026-07-08T13:30:57.867Z] [worker-us-central1-createGame-32db6bd4-bf92-4944-b097-cac3256b2841]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[worker-us-central1-createGame-32db6bd4-bf92-4944-b097-cac3256b2841]: BUSY"}}
+[debug] [2026-07-08T13:30:57.873Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-createGame" in 6.449625ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finished \"us-central1-createGame\" in 6.449625ms"}}
+[debug] [2026-07-08T13:30:57.874Z] [worker-us-central1-createGame-32db6bd4-bf92-4944-b097-cac3256b2841]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[worker-us-central1-createGame-32db6bd4-bf92-4944-b097-cac3256b2841]: IDLE"}}
+[debug] [2026-07-08T13:30:57.874Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2026-07-08T13:30:57.874Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2026-07-08T13:30:57.874Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-08T13:30:57.874Z] [work-queue] {"queuedWork":["/acquire-game-1782999027/us-central1/createGame-2026-07-08T13:30:57.874Z"],"queueLength":1,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-08T13:30:57.874Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":["/acquire-game-1782999027/us-central1/createGame-2026-07-08T13:30:57.874Z"],"workRunningCount":1}
+[debug] [2026-07-08T13:30:57.874Z] Accepted request POST /acquire-game-1782999027/us-central1/createGame --> us-central1-createGame
+[debug] [2026-07-08T13:30:57.874Z] [functions] Runtime ready! Sending request! {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Runtime ready! Sending request!"}}
+[debug] [2026-07-08T13:30:57.874Z] [functions] Got req.url=/acquire-game-1782999027/us-central1/createGame, mapping to path=/ {"metadata":{"emulator":{"name":"functions"},"message":"[functions] Got req.url=/acquire-game-1782999027/us-central1/createGame, mapping to path=/"}}
+[debug] [2026-07-08T13:30:57.874Z] [worker-pool] submitRequest(triggerId=us-central1-createGame) {"metadata":{"emulator":{"name":"functions"},"message":"[worker-pool] submitRequest(triggerId=us-central1-createGame)"}}
+[info] i  functions: Beginning execution of "us-central1-createGame" {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Beginning execution of \"us-central1-createGame\""}}
+[debug] [2026-07-08T13:30:57.874Z] [worker-us-central1-createGame-32db6bd4-bf92-4944-b097-cac3256b2841]: BUSY {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[worker-us-central1-createGame-32db6bd4-bf92-4944-b097-cac3256b2841]: BUSY"}}
+[info] >  {"verifications":{"app":"MISSING","auth":"MISSING"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"} {"user":{"verifications":{"app":"MISSING","auth":"MISSING"},"logging.googleapis.com/labels":{"firebase-log-type":"callable-request-verification"},"severity":"DEBUG","message":"Callable request verification passed"},"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":">  {\"verifications\":{\"app\":\"MISSING\",\"auth\":\"MISSING\"},\"logging.googleapis.com/labels\":{\"firebase-log-type\":\"callable-request-verification\"},\"severity\":\"DEBUG\",\"message\":\"Callable request verification passed\"}"}}
+[debug] [2026-07-08T13:30:57.899Z] Jul 08, 2026 4:30:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:30:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected HTTP/2 connection.\n"}}
+[debug] [2026-07-08T13:30:57.917Z] Finishing up request with event=pause {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finishing up request with event=pause"}}
+[info] i  functions: Finished "us-central1-createGame" in 42.256166ms {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finished \"us-central1-createGame\" in 42.256166ms"}}
+[debug] [2026-07-08T13:30:57.917Z] [worker-us-central1-createGame-32db6bd4-bf92-4944-b097-cac3256b2841]: IDLE {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"[worker-us-central1-createGame-32db6bd4-bf92-4944-b097-cac3256b2841]: IDLE"}}
+[debug] [2026-07-08T13:30:57.917Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finishing up request with event=finish"}}
+[debug] [2026-07-08T13:30:57.917Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-createGame"},"extension":{},"message":"Finishing up request with event=close"}}
+[debug] [2026-07-08T13:30:57.917Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-08T13:30:57.934Z] Jul 08, 2026 4:30:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:30:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-08T13:30:57.954Z] Jul 08, 2026 4:30:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:30:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-08T13:31:57.985Z] Jul 08, 2026 4:31:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:31:57 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-08T13:32:43.881Z] Jul 08, 2026 4:32:43 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:32:43 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
+[debug] [2026-07-08T13:33:59.882Z] Jul 08, 2026 4:33:59 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 08, 2026 4:33:59 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}
