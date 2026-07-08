@@ -658,7 +658,22 @@ function App() {
                   })}
                   <th style={{ minWidth: '50px', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></th>
                   <th style={{ minWidth: '60px' }}></th>
-                  <th></th>
+                  <th style={{ verticalAlign: 'bottom', paddingBottom: '4px', textAlign: 'right' }}>
+                    {gameState.phase === 'BuyStocks' && isMyTurn && (
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                        <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', whiteSpace: 'nowrap' }}>
+                          Bought: {gameState.sharesBoughtThisTurn}/3
+                        </span>
+                        <button 
+                          className="end-turn-btn action-required-buy" 
+                          style={{ padding: '4px 12px', fontSize: '0.8rem', whiteSpace: 'nowrap', width: 'auto' }} 
+                          onClick={() => endTurn(gameState.id)}
+                        >
+                          End Turn
+                        </button>
+                      </div>
+                    )}
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -784,13 +799,6 @@ function App() {
                 })}
               </tbody>
             </table>
-            
-            {gameState.phase === 'BuyStocks' && isMyTurn && (
-              <div style={{ marginTop: '1rem', textAlign: 'right' }}>
-                 <span>Shares bought: {gameState.sharesBoughtThisTurn}/3</span>
-                 <button className="end-turn-btn action-required-buy" style={{ width: 'auto', marginLeft: '10px', padding: '5px 15px' }} onClick={() => endTurn(gameState.id)}>End Turn</button>
-              </div>
-            )}
           </div>
 
 
