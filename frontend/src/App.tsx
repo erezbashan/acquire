@@ -618,7 +618,7 @@ function App() {
                             <span style={{ 
                               position: 'absolute', 
                               top: '-18px',
-                              left: '50%',
+                              left: '1.5ch',
                               transform: 'translateX(-50%) scaleX(3)',
                               fontSize: '1.2rem', 
                               color: 'var(--accent)',
