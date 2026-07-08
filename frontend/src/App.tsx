@@ -612,22 +612,23 @@ function App() {
                   <th></th>
                   {orderedPlayers.map(p => {
                     return (
-                      <th key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ minWidth: '75px', textAlign: 'right', verticalAlign: 'bottom' }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', float: 'right' }}>
-                          <span style={{ 
-                            visibility: (p.id === activePlayerId && gameState.phase !== 'GameOver') ? 'visible' : 'hidden', 
-                            fontSize: '1.2rem', 
-                            lineHeight: '1', 
-                            marginBottom: '4px',
-                            color: 'var(--accent)',
-                            textShadow: '0 0 5px var(--accent)'
-                          }}>
-                            ▼
-                          </span>
-                          <span className="player-name" style={{ color: p.color, lineHeight: '1' }}>
-                            {p.name.replace(' (Me)', '').replace(' (You)', '')}
-                          </span>
-                        </div>
+                      <th key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ minWidth: '75px', textAlign: 'right', verticalAlign: 'bottom', paddingTop: '20px' }}>
+                        <span className="player-name" style={{ color: p.color, position: 'relative', display: 'inline-block', lineHeight: '1' }}>
+                          {p.id === activePlayerId && gameState.phase !== 'GameOver' && (
+                            <span style={{ 
+                              position: 'absolute', 
+                              top: '-18px',
+                              left: '50%',
+                              transform: 'translateX(-50%)',
+                              fontSize: '1.2rem', 
+                              color: 'var(--accent)',
+                              textShadow: '0 0 5px var(--accent)'
+                            }}>
+                              ▼
+                            </span>
+                          )}
+                          {p.name.replace(' (Me)', '').replace(' (You)', '')}
+                        </span>
                       </th>
                     );
                   })}
