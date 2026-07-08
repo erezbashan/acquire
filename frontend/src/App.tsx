@@ -764,8 +764,10 @@ function App() {
 
                   return (
                     <tr key={cName} className={!cState.isActive ? 'corp-inactive' : ''}>
-                      <td className={`corp-name ${cName.toLowerCase()}`} style={{ cursor: 'pointer', textDecoration: 'underline', maxWidth: '80px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} onClick={() => setSelectedCorp(cName as Corporation)} title={`${cName} ${cState.isSafe ? '🛡️' : ''} ${!cState.isActive ? '💤' : ''}`.trim()}>
-                        {cName} {cState.isSafe && '🛡️'} {!cState.isActive && '💤'}
+                      <td className={`corp-name ${cName.toLowerCase()}`} style={{ cursor: 'pointer', textDecoration: 'underline', maxWidth: '80px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} onClick={() => setSelectedCorp(cName as Corporation)} title={`${cState.isSafe ? '🛡️ ' : ''}${!cState.isActive ? '💤 ' : ''}${cName}`.trim()}>
+                        {cState.isSafe && '🛡️ '}
+                        {!cState.isActive && '💤 '}
+                        {cName}
                       </td>
                       {orderedPlayers.map(p => {
                         const isMajority = highest > 0 && majority.includes(p.id);
