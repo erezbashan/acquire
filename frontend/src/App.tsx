@@ -612,13 +612,21 @@ function App() {
                   <th></th>
                   {orderedPlayers.map(p => {
                     return (
-                      <th key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ minWidth: '75px', textAlign: 'right' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '6px' }}>
-                          <span className="player-name" style={{ color: p.color, position: 'relative' }}>
+                      <th key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ minWidth: '75px', textAlign: 'right', verticalAlign: 'bottom' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', float: 'right' }}>
+                          <span style={{ 
+                            visibility: (p.id === activePlayerId && gameState.phase !== 'GameOver') ? 'visible' : 'hidden', 
+                            fontSize: '1.4rem', 
+                            lineHeight: '1', 
+                            marginBottom: '4px',
+                            transform: 'scaleX(1.5)',
+                            color: 'var(--accent)',
+                            textShadow: '0 0 5px var(--accent)'
+                          }}>
+                            ▼
+                          </span>
+                          <span className="player-name" style={{ color: p.color, lineHeight: '1' }}>
                             {p.name.replace(' (Me)', '').replace(' (You)', '')}
-                            {p.id === activePlayerId && gameState.phase !== 'GameOver' && (
-                              <span style={{ marginLeft: '6px' }}>▼</span>
-                            )}
                           </span>
                         </div>
                       </th>
