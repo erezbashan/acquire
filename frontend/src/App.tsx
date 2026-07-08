@@ -643,8 +643,8 @@ function App() {
                     const displayName = p.name.replace('🤖 ', '').replace(' (Me)', '').replace(' (You)', '');
                     return (
                       <th key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ minWidth: '75px', textAlign: 'right', verticalAlign: 'bottom', paddingTop: '8px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
-                          {isBot && <span>🤖</span>}
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px', height: '24px' }}>
+                          {isBot && <span style={{ lineHeight: '1' }}>🤖</span>}
                           <span className="player-name" style={{ color: p.color, position: 'relative', display: 'inline-block', lineHeight: '1' }}>
                             {p.id === activePlayerId && gameState.phase !== 'GameOver' && (
                               <span style={{ 
