@@ -616,10 +616,9 @@ function App() {
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', float: 'right' }}>
                           <span style={{ 
                             visibility: (p.id === activePlayerId && gameState.phase !== 'GameOver') ? 'visible' : 'hidden', 
-                            fontSize: '1.4rem', 
+                            fontSize: '1.2rem', 
                             lineHeight: '1', 
                             marginBottom: '4px',
-                            transform: 'scaleX(1.5)',
                             color: 'var(--accent)',
                             textShadow: '0 0 5px var(--accent)'
                           }}>
