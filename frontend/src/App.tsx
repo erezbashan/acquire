@@ -630,24 +630,29 @@ function App() {
                 <tr>
                   <th></th>
                   {orderedPlayers.map(p => {
+                    const isBot = p.name.includes('🤖');
+                    const displayName = p.name.replace('🤖 ', '').replace(' (Me)', '').replace(' (You)', '');
                     return (
                       <th key={p.id} className={p.id === me?.id ? 'me-col' : ''} style={{ minWidth: '75px', textAlign: 'right', verticalAlign: 'bottom', paddingTop: '20px' }}>
-                        <span className="player-name" style={{ color: p.color, position: 'relative', display: 'inline-block', lineHeight: '1' }}>
-                          {p.id === activePlayerId && gameState.phase !== 'GameOver' && (
-                            <span style={{ 
-                              position: 'absolute', 
-                              top: '-18px',
-                              left: '50%',
-                              transform: 'translateX(-50%) scaleX(3)',
-                              fontSize: '1.2rem', 
-                              color: 'var(--accent)',
-                              textShadow: '0 0 5px var(--accent)'
-                            }}>
-                              ▼
-                            </span>
-                          )}
-                          {p.name.replace(' (Me)', '').replace(' (You)', '')}
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '4px' }}>
+                          {isBot && <span>🤖</span>}
+                          <span className="player-name" style={{ color: p.color, position: 'relative', display: 'inline-block', lineHeight: '1' }}>
+                            {p.id === activePlayerId && gameState.phase !== 'GameOver' && (
+                              <span style={{ 
+                                position: 'absolute', 
+                                top: '-18px',
+                                left: '50%',
+                                transform: 'translateX(-50%) scaleX(3)',
+                                fontSize: '1.2rem', 
+                                color: 'var(--accent)',
+                                textShadow: '0 0 5px var(--accent)'
+                              }}>
+                                ▼
+                              </span>
+                            )}
+                            {displayName}
+                          </span>
+                        </div>
                       </th>
                     );
                   })}
