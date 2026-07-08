@@ -272,14 +272,14 @@ function App() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: '1rem' }}>
               <span style={{ 
                 padding: '8px 24px', 
-                backgroundColor: '#ef4444', 
+                backgroundColor: '#10b981', 
                 color: 'white', 
                 fontWeight: '900', 
                 fontSize: '1.5rem', 
                 borderRadius: '8px',
                 textTransform: 'uppercase',
                 letterSpacing: '2px',
-                boxShadow: '0 0 15px rgba(239,68,68,0.5)',
+                boxShadow: '0 0 15px rgba(16, 185, 129, 0.5)',
               }}>
                 Game Over
               </span>
@@ -327,9 +327,48 @@ function App() {
             </>
           )}
           
-          <button className="quit-btn" onClick={handleQuitGame}>
-            {gameState.phase === 'GameOver' ? 'Back to Lobby' : 'Quit Game'}
-          </button>
+          {gameState.phase === 'GameOver' ? (
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button 
+                onClick={handleQuitGame}
+                style={{ 
+                  background: '#10b981', 
+                  color: 'white',
+                  fontWeight: 'bold',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                Back to Lobby
+              </button>
+              <button 
+                onClick={async () => {
+                  const myName = me?.name.replace('🤖 ', '') || localStorage.getItem('acquire_username') || 'Player';
+                  if (gameState) {
+                    await quitGame(gameState.id);
+                  }
+                  await createGame(myName);
+                }}
+                style={{ 
+                  background: '#3b82f6', 
+                  color: 'white',
+                  fontWeight: 'bold',
+                  padding: '10px 20px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                New Game
+              </button>
+            </div>
+          ) : (
+            <button className="quit-btn" onClick={handleQuitGame}>
+              Quit Game
+            </button>
+          )}
 
           <button 
             onClick={() => {
