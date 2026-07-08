@@ -619,7 +619,7 @@ function App() {
                               position: 'absolute', 
                               top: '-18px',
                               left: '50%',
-                              transform: 'translateX(-50%)',
+                              transform: 'translateX(-50%) scaleX(3)',
                               fontSize: '1.2rem', 
                               color: 'var(--accent)',
                               textShadow: '0 0 5px var(--accent)'
