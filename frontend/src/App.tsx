@@ -667,15 +667,17 @@ function App() {
                   })}
                   <th style={{ minWidth: '50px', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></th>
                   <th style={{ minWidth: '60px' }}></th>
-                  <th style={{ verticalAlign: 'bottom', paddingBottom: '4px', textAlign: 'right' }}>
+                  <th style={{ position: 'relative' }}>
                     {gameState.phase === 'BuyStocks' && isMyTurn && (
-                      <button 
-                        className="end-turn-btn action-required-buy" 
-                        style={{ padding: '4px 12px', fontSize: '0.8rem', whiteSpace: 'nowrap', width: 'auto' }} 
-                        onClick={() => endTurn(gameState.id)}
-                      >
-                        End Turn
-                      </button>
+                      <div style={{ position: 'absolute', right: '0', bottom: '4px' }}>
+                        <button 
+                          className="end-turn-btn action-required-buy" 
+                          style={{ padding: '4px 12px', fontSize: '0.8rem', whiteSpace: 'nowrap', width: 'auto' }} 
+                          onClick={() => endTurn(gameState.id)}
+                        >
+                          End Turn
+                        </button>
+                      </div>
                     )}
                   </th>
                 </tr>
@@ -689,11 +691,13 @@ function App() {
                   })}
                   <td style={{ border: 'none', borderLeft: '2px solid rgba(255,255,255,0.2)' }}></td>
                   <td style={{ border: 'none' }}></td>
-                  <td style={{ border: 'none', textAlign: 'right', verticalAlign: 'middle', paddingRight: '12px' }}>
+                  <td style={{ border: 'none', position: 'relative' }}>
                     {gameState.phase === 'BuyStocks' && isMyTurn && (
-                      <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', whiteSpace: 'nowrap' }}>
-                        Bought: {gameState.sharesBoughtThisTurn}/3
-                      </span>
+                      <div style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)' }}>
+                        <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.7)', whiteSpace: 'nowrap' }}>
+                          Bought: {gameState.sharesBoughtThisTurn}/3
+                        </span>
+                      </div>
                     )}
                   </td>
                 </tr>
