@@ -272,14 +272,14 @@ function App() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: '1rem' }}>
               <span style={{ 
                 padding: '8px 24px', 
-                backgroundColor: '#10b981', 
-                color: 'white', 
+                backgroundColor: '#f59e0b', 
+                color: 'black', 
                 fontWeight: '900', 
                 fontSize: '1.5rem', 
                 borderRadius: '8px',
                 textTransform: 'uppercase',
                 letterSpacing: '2px',
-                boxShadow: '0 0 15px rgba(16, 185, 129, 0.5)',
+                boxShadow: '0 0 15px rgba(245, 158, 11, 0.5)',
               }}>
                 Game Over
               </span>
@@ -293,7 +293,18 @@ function App() {
                 );
               })()}
               {!showGameOver && (
-                <button onClick={() => setShowGameOver(true)} style={{ padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>
+                <button 
+                  onClick={() => setShowGameOver(true)} 
+                  style={{ 
+                    padding: '10px 20px', 
+                    borderRadius: '8px', 
+                    cursor: 'pointer', 
+                    fontWeight: 'bold',
+                    background: 'rgba(255,255,255,0.1)',
+                    border: '1px solid rgba(255,255,255,0.2)',
+                    color: 'white'
+                  }}
+                >
                   Show Final Results
                 </button>
               )}
@@ -332,12 +343,12 @@ function App() {
               <button 
                 onClick={handleQuitGame}
                 style={{ 
-                  background: '#10b981', 
+                  background: 'rgba(255,255,255,0.1)', 
+                  border: '1px solid rgba(255,255,255,0.2)',
                   color: 'white',
                   fontWeight: 'bold',
                   padding: '10px 20px',
                   borderRadius: '8px',
-                  border: 'none',
                   cursor: 'pointer'
                 }}
               >
@@ -352,13 +363,14 @@ function App() {
                   await createGame(myName);
                 }}
                 style={{ 
-                  background: '#3b82f6', 
+                  background: '#10b981', 
                   color: 'white',
                   fontWeight: 'bold',
                   padding: '10px 20px',
                   borderRadius: '8px',
                   border: 'none',
-                  cursor: 'pointer'
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 6px rgba(16, 185, 129, 0.3)'
                 }}
               >
                 New Game
@@ -380,8 +392,10 @@ function App() {
               setShowShareModal(true);
             }}
             style={{ 
-              background: copiedLink ? '#059669' : '#10b981', 
-              transition: 'background 0.3s ease'
+              background: copiedLink ? '#10b981' : 'rgba(255,255,255,0.1)', 
+              border: copiedLink ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.2)',
+              color: 'white',
+              transition: 'all 0.3s ease'
             }}
           >
             {copiedLink ? 'Copied!' : 'Share'}
