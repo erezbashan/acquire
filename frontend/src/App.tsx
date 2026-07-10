@@ -143,8 +143,14 @@ function App() {
   }, [connected, gameState?.id]);
   React.useEffect(() => {
     setSystemNotification('');
+    setShowGameOver(true);
   }, [gameState?.id]);
 
+  React.useEffect(() => {
+    if (gameState?.phase === 'GameOver') {
+      setShowGameOver(true);
+    }
+  }, [gameState?.phase]);
 
   React.useEffect(() => {
     if (gameState?.chat && gameState.chat.length > 0) {
