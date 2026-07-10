@@ -118,7 +118,7 @@ header h2 { margin: 0; }
 
 .cell-corp {
   position: absolute;
-  bottom: 2px;
+  bottom: 15%;
   left: 0;
   right: 0;
   font-size: 0.65rem;
