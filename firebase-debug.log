@@ -13930,3 +13930,6 @@ INFO: Detected non-HTTP/2 connection.
 [debug] [2026-07-10T13:34:34.022Z] Finishing up request with event=finish {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-buyStock"},"extension":{},"message":"Finishing up request with event=finish"}}
 [debug] [2026-07-10T13:34:34.022Z] Finishing up request with event=close {"metadata":{"emulator":{"name":"functions"},"function":{"name":"us-central1-buyStock"},"extension":{},"message":"Finishing up request with event=close"}}
 [debug] [2026-07-10T13:34:34.022Z] [work-queue] {"queuedWork":[],"queueLength":0,"runningWork":[],"workRunningCount":0}
+[debug] [2026-07-10T13:35:34.032Z] Jul 10, 2026 4:35:34 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead
+INFO: Detected non-HTTP/2 connection.
+ {"metadata":{"emulator":{"name":"firestore"},"message":"Jul 10, 2026 4:35:34 PM io.gapi.emulators.netty.HttpVersionRoutingHandler channelRead\nINFO: Detected non-HTTP/2 connection.\n"}}

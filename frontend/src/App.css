@@ -141,9 +141,9 @@ header h2 { margin: 0; }
 }
 
 .board-cell.in-hand {
-  border: 2px solid var(--accent);
-  background: rgba(59, 130, 246, 0.35);
-  box-shadow: inset 0 0 12px rgba(59, 130, 246, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.2);
   color: white;
 }
 
@@ -167,7 +167,7 @@ header h2 { margin: 0; }
 }
 
 .board-cell.in-hand:hover {
-  background: rgba(59, 130, 246, 0.3);
+  background: rgba(255, 255, 255, 0.25);
   transform: scale(1.05);
   z-index: 10;
 }
