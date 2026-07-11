@@ -662,8 +662,20 @@ function App() {
                 <div className="modal-backdrop" style={{ position: 'absolute', borderRadius: 'inherit', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
                   <div className="merge-panel glass" style={{ padding: '1rem', border: '2px solid var(--accent)' }}>
                     <h4>Resolve Merge Stocks</h4>
-                  <p><strong>{dCorp}</strong> is defunct. <strong>{aCorp}</strong> is the survivor.</p>
-                  <p>You have <strong>{myDefunctStocks}</strong> shares of {dCorp}.</p>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '15px', margin: '20px 0' }}>
+                    <div className={`board-cell ${dCorp.toLowerCase()}`} style={{ width: '100px', height: '70px', flex: 'none', borderRadius: '8px', opacity: 0.8 }}>
+                      <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.8 }}>Defunct</div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 'bold', marginTop: '4px' }}>{dCorp}</div>
+                    </div>
+                    <div style={{ fontSize: '2rem', color: 'white' }}>➔</div>
+                    <div className={`board-cell ${aCorp.toLowerCase()}`} style={{ width: '100px', height: '70px', flex: 'none', borderRadius: '8px', border: '2px solid white', boxShadow: '0 0 15px rgba(255,255,255,0.3)' }}>
+                      <div style={{ fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.8 }}>Survivor</div>
+                      <div style={{ fontSize: '0.9rem', fontWeight: 'bold', marginTop: '4px' }}>{aCorp}</div>
+                    </div>
+                  </div>
+                  <p style={{ textAlign: 'center', fontSize: '1.1rem', marginBottom: '20px' }}>
+                    You have <strong>{myDefunctStocks}</strong> shares of <strong>{dCorp}</strong>.
+                  </p>
                   
                   {myDefunctStocks > 0 ? (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '10px' }}>
