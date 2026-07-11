@@ -682,7 +682,7 @@ function App() {
                       <table style={{ width: '100%', textAlign: 'center', borderSpacing: '0 10px' }}>
                         <tbody>
                           <tr>
-                            <td style={{ textAlign: 'left' }}>Trade 2 (${gameState.corporations[dCorp].stockPrice.toLocaleString()}) for 1 (${gameState.corporations[aCorp].stockPrice.toLocaleString()})</td>
+                            <td style={{ textAlign: 'left' }}>Trade 2 shares (@ ${gameState.corporations[dCorp].stockPrice.toLocaleString()} each) for 1 share (@ ${gameState.corporations[aCorp].stockPrice.toLocaleString()} each)</td>
                             <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                               <button disabled={tradeCount <= 0} onClick={() => setTradeCount(t => t - 2)} style={{ width: '30px' }}>-</button>
                               <span style={{ margin: '0 15px', display: 'inline-block', width: '20px', textAlign: 'center' }}>{tradeCount}</span>
@@ -694,7 +694,7 @@ function App() {
                             </td>
                           </tr>
                           <tr>
-                            <td style={{ textAlign: 'left' }}>Sell (@ ${gameState.corporations[dCorp].stockPrice.toLocaleString()})</td>
+                            <td style={{ textAlign: 'left' }}>Sell shares (@ ${gameState.corporations[dCorp].stockPrice.toLocaleString()} each)</td>
                             <td style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                               <button disabled={sellCount <= 0} onClick={() => setSellCount(s => s - 1)} style={{ width: '30px' }}>-</button>
                               <span style={{ margin: '0 15px', display: 'inline-block', width: '20px', textAlign: 'center' }}>{sellCount}</span>
