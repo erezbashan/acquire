@@ -319,6 +319,11 @@ header h2 { margin: 0; }
   color: #ef4444;
 }
 
+.quit-btn:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
 .log-messages {
   font-size: 0.9rem;
   color: #cbd5e1;
